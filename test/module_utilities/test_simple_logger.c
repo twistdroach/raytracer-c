@@ -3,7 +3,6 @@
 //
 
 #include <unity.h>
-#include <stdbool.h>
 #include "simple_logger.h"
 
 void setUp(void) {
