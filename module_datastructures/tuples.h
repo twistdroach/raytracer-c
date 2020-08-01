@@ -10,15 +10,63 @@ typedef struct TUPLES_Tuple_ {
     double x, y, z, w;
 } TUPLES_Tuple;
 
-typedef TUPLES_Tuple* TUPLES_Point;
-typedef TUPLES_Tuple* TUPLES_Vector;
+typedef TUPLES_Tuple TUPLES_Point;
+typedef TUPLES_Tuple TUPLES_Vector;
 
+/**
+ * Allocates and initializes a tuple.  Destroy must be called.
+ * @param x
+ * @param y
+ * @param z
+ * @return
+ */
+TUPLES_Point* TUPLES_new_point(double x, double y, double z);
 
-TUPLES_Point TUPLES_new_point(double x, double y, double z);
-TUPLES_Vector TUPLES_new_vector(double x, double y, double z);
+/**
+ * Allocates and initializes a tuple.  Destroy must be called.
+ * @param x
+ * @param y
+ * @param z
+ * @return
+ */
+TUPLES_Vector* TUPLES_new_vector(double x, double y, double z);
 
-bool TUPLES_is_point(TUPLES_Tuple *tuple);
-bool TUPLES_is_vector(TUPLES_Tuple *tuple);
+/**
+ * Initializes a tuple as a vector, user responsible for destroy
+ * @param v
+ * @param x
+ * @param y
+ * @param z
+ */
+void TUPLES_init_vector(TUPLES_Vector* v, double x, double y, double z);
+
+/**
+ * Initializes a tuple as a point, user responsible for destroy
+ * @param v
+ * @param x
+ * @param y
+ * @param z
+ */
+void TUPLES_init_point(TUPLES_Point* t, double x, double y, double z);
+
+bool TUPLES_is_point(const TUPLES_Tuple *tuple);
+bool TUPLES_is_vector(const TUPLES_Tuple *tuple);
+
+/**
+ * Adds two tuples
+ * @param dest The destination of the addition operation.  Should be allocated.
+ * @param t1 First operand
+ * @param t2 Second operand
+ */
+void TUPLES_add(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const TUPLES_Tuple* t2);
+
+/**
+ * Subtracts two tuples (t1 - t2)
+ * @param dest The destination of the subtraction operation.  Should be allocated.
+ * @param t1 First operand
+ * @param t2 Second operand
+ */
+void TUPLES_subtract(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const TUPLES_Tuple* t2);
 
 void TUPLES_destroy(TUPLES_Tuple* tuple);
 
