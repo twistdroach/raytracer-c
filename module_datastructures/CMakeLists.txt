@@ -1,5 +1,4 @@
 add_library(module_datastructures STATIC
-        proj_exceptions.h
         tuples.c tuples.h)
 
 target_include_directories(module_datastructures PUBLIC
