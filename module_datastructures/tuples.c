@@ -139,6 +139,25 @@ void TUPLES_cross(TUPLES_Vector* dest, const TUPLES_Vector* v1, const TUPLES_Vec
     dest->z = v1->x * v2->y - v1->y * v2->x;
 }
 
+void TUPLES_init_color(TUPLES_Color* c, double red, double green, double blue) {
+    assert(c);
+    c->red = red;
+    c->green = green;
+    c->blue = blue;
+    c->alpha = 0;
+}
+
+// aka Hadamard or Schur product
+void TUPLES_multiply_colors(TUPLES_Color* dest, const TUPLES_Color* c1, const TUPLES_Color* c2) {
+    assert(dest);
+    assert(c1);
+    assert(c2);
+    dest->red = c1->red * c2->red;
+    dest->green = c1->green * c2->green;
+    dest->blue = c1->blue * c2->blue;
+    dest->alpha = c1->alpha * c2->alpha;
+}
+
 void TUPLES_destroy(TUPLES_Tuple* tuple) {
     if (tuple) {
         free(tuple);

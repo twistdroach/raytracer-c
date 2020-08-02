@@ -207,6 +207,58 @@ void test_cross_product()
     TEST_ASSERT_EQUAL_DOUBLE(1, result.z);
 }
 
+void test_color_init()
+{
+    TUPLES_Color c;
+    TUPLES_init_color(&c, -0.5, 0.4, 1.7);
+    TEST_ASSERT_EQUAL_DOUBLE(-0.5, c.red);
+    TEST_ASSERT_EQUAL_DOUBLE(0.4, c.green);
+    TEST_ASSERT_EQUAL_DOUBLE(1.7, c.blue);
+}
+
+void test_color_add()
+{
+    TUPLES_Color result, c1, c2;
+    TUPLES_init_color(&c1, 0.9, 0.6, 0.75);
+    TUPLES_init_color(&c2, 0.7, 0.1, 0.25);
+    TUPLES_add(&result, &c1, &c2);
+    TEST_ASSERT_EQUAL_DOUBLE(1.6, result.red);
+    TEST_ASSERT_EQUAL_DOUBLE(0.7, result.green);
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, result.blue);
+}
+
+void test_color_subtract()
+{
+    TUPLES_Color result, c1, c2;
+    TUPLES_init_color(&c1, 0.9, 0.6, 0.75);
+    TUPLES_init_color(&c2, 0.7, 0.1, 0.25);
+    TUPLES_subtract(&result, &c1, &c2);
+    TEST_ASSERT_EQUAL_DOUBLE(0.2, result.red);
+    TEST_ASSERT_EQUAL_DOUBLE(0.5, result.green);
+    TEST_ASSERT_EQUAL_DOUBLE(0.5, result.blue);
+}
+
+void test_color_multiply_by_scalar()
+{
+    TUPLES_Color result, c1;
+    TUPLES_init_color(&c1, 0.2, 0.3, 0.4);
+    TUPLES_multiply(&result, &c1, 2);
+    TEST_ASSERT_EQUAL_DOUBLE(0.4, result.red);
+    TEST_ASSERT_EQUAL_DOUBLE(0.6, result.green);
+    TEST_ASSERT_EQUAL_DOUBLE(0.8, result.blue);
+}
+
+void test_color_multiply_by_color()
+{
+    TUPLES_Color result, c1, c2;
+    TUPLES_init_color(&c1, 1, 0.2, 0.4);
+    TUPLES_init_color(&c2, 0.9, 1, 0.1);
+    TUPLES_multiply_colors(&result, &c1, &c2);
+    TEST_ASSERT_EQUAL_DOUBLE(0.9, result.red);
+    TEST_ASSERT_EQUAL_DOUBLE(0.2, result.green);
+    TEST_ASSERT_EQUAL_DOUBLE(0.04, result.blue);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -228,6 +280,11 @@ int main(void)
     RUN_TEST(test_magnitude_normalized_vector);
     RUN_TEST(test_simple_dot_product);
     RUN_TEST(test_cross_product);
+    RUN_TEST(test_color_init);
+    RUN_TEST(test_color_add);
+    RUN_TEST(test_color_subtract);
+    RUN_TEST(test_color_multiply_by_scalar);
+    RUN_TEST(test_color_multiply_by_color);
 
     return UNITY_END();
 }
