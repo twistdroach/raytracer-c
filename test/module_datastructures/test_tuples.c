@@ -1,6 +1,7 @@
+#define UNITY_DOUBLE_PRECISION 0.00001f
 #include <unity.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <math.h>
 #include "tuples.h"
 
 void setUp() {}
@@ -92,6 +93,120 @@ void test_subtract_vector_from_point()
     TEST_ASSERT_TRUE_MESSAGE(TUPLES_is_point(&a3), "Subtracting vectors should create a vector");
 }
 
+void test_negate_vector()
+{
+    TUPLES_Vector v;
+    TUPLES_init_vector(&v, 1, -2, 3);
+    TUPLES_negate(&v);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(2, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-3, v.z);
+}
+
+void test_multiply_tuple_by_scalar()
+{
+    TUPLES_Vector v;
+    TUPLES_init_vector(&v, 1, -2, 3);
+    TUPLES_multiply(&v, &v, 3.5);
+    TEST_ASSERT_EQUAL_DOUBLE(3.5, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-7, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(10.5, v.z);
+}
+
+void test_multiply_tuple_by_fraction()
+{
+    TUPLES_Vector v;
+    TUPLES_init_vector(&v, 1, -2, 3);
+    TUPLES_multiply(&v, &v, 0.5);
+    TEST_ASSERT_EQUAL_DOUBLE(0.5, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(1.5, v.z);
+}
+
+void test_divide_tuple_by_scalar()
+{
+    TUPLES_Vector v;
+    TUPLES_init_vector(&v, 1, -2, 3);
+    TUPLES_divide(&v, &v, 2);
+    TEST_ASSERT_EQUAL_DOUBLE(0.5, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(1.5, v.z);
+}
+
+void test_a_magnitude(double x, double y, double z, double expected_magnitude)
+{
+    TUPLES_Vector v;
+    char str[80];
+    double magnitude;
+
+    TUPLES_init_vector(&v, x, y, z);
+    magnitude = TUPLES_magnitude(&v);
+    sprintf(str, "Vector(%f, %f, %f)", v.x, v.y, v.z);
+    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(expected_magnitude, magnitude, str);
+}
+
+void test_magnitude()
+{
+    test_a_magnitude(1, 0, 0, 1);
+    test_a_magnitude(0, 1, 0, 1);
+    test_a_magnitude(0, 0, 1, 1);
+
+    test_a_magnitude(1, 2, 3, sqrt(14));
+    test_a_magnitude(-1, -2, -3, sqrt(14));
+}
+
+void test_simple_normalize()
+{
+    TUPLES_Vector v;
+    TUPLES_init_vector(&v, 4, 0, 0);
+    TUPLES_normalize(&v);
+    TEST_ASSERT_EQUAL_DOUBLE(1, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.z);
+}
+
+void test_less_simple_normalize()
+{
+    TUPLES_Vector v;
+    TUPLES_init_vector(&v, 1, 2, 3);
+    TUPLES_normalize(&v);
+    TEST_ASSERT_EQUAL_DOUBLE(0.26726, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(0.53452, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(0.80178, v.z);
+}
+
+void test_magnitude_normalized_vector()
+{
+    TUPLES_Vector v;
+    TUPLES_init_vector(&v, 15, 25, 37);
+    TUPLES_normalize(&v);
+    TEST_ASSERT_EQUAL_DOUBLE(1, TUPLES_magnitude(&v));
+}
+
+void test_simple_dot_product()
+{
+    TUPLES_Vector v1, v2;
+    TUPLES_init_vector(&v1, 1, 2, 3);
+    TUPLES_init_vector(&v2, 2, 3, 4);
+    double dot = TUPLES_dot(&v1, &v2);
+    TEST_ASSERT_EQUAL_DOUBLE(20, dot);
+}
+
+void test_cross_product()
+{
+    TUPLES_Vector result, v1, v2;
+    TUPLES_init_vector(&v1, 1, 2, 3);
+    TUPLES_init_vector(&v2, 2, 3, 4);
+    TUPLES_cross(&result, &v1, &v2);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, result.x);
+    TEST_ASSERT_EQUAL_DOUBLE(2, result.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, result.z);
+    TUPLES_cross(&result, &v2, &v1);
+    TEST_ASSERT_EQUAL_DOUBLE(1, result.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, result.y);
+    TEST_ASSERT_EQUAL_DOUBLE(1, result.z);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -103,6 +218,16 @@ int main(void)
     RUN_TEST(test_subtract_points);
     RUN_TEST(test_subtract_vectors);
     RUN_TEST(test_subtract_vector_from_point);
+    RUN_TEST(test_negate_vector);
+    RUN_TEST(test_multiply_tuple_by_scalar);
+    RUN_TEST(test_multiply_tuple_by_fraction);
+    RUN_TEST(test_divide_tuple_by_scalar);
+    RUN_TEST(test_magnitude);
+    RUN_TEST(test_simple_normalize);
+    RUN_TEST(test_less_simple_normalize);
+    RUN_TEST(test_magnitude_normalized_vector);
+    RUN_TEST(test_simple_dot_product);
+    RUN_TEST(test_cross_product);
 
     return UNITY_END();
 }

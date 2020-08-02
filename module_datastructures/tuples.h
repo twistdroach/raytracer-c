@@ -68,6 +68,20 @@ void TUPLES_add(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const TUPLES_Tuple* 
  */
 void TUPLES_subtract(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const TUPLES_Tuple* t2);
 
+/**
+ * Negate a vector
+ * @param tuple
+ */
+void TUPLES_negate(TUPLES_Vector* vec);
+
+
+void TUPLES_multiply(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const double);
+void TUPLES_divide(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const double);
+double TUPLES_magnitude(const TUPLES_Vector* v);
+void TUPLES_normalize(TUPLES_Vector* v);
+double TUPLES_dot(const TUPLES_Vector* v1, const TUPLES_Vector* v2);
+void TUPLES_cross(TUPLES_Vector* dest, const TUPLES_Vector* v1, const TUPLES_Vector* v2);
+
 void TUPLES_destroy(TUPLES_Tuple* tuple);
 
 #endif //MODULE_DATASTRUCTURES_TUPLE
