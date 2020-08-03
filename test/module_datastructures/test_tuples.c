@@ -12,7 +12,7 @@ void test_point_is_point()
     TUPLES_Point* p = TUPLES_new_point(4.3, -4.2, 1.0);
     TEST_ASSERT_TRUE_MESSAGE(TUPLES_is_point(p), "is_point should return true when given a point");
     TEST_ASSERT_FALSE_MESSAGE(TUPLES_is_vector(p), "is_vector should return false when given a point");
-    TUPLES_destroy(p);
+    TUPLES_delete(p);
 }
 
 void test_point_is_vector()
@@ -20,7 +20,7 @@ void test_point_is_vector()
     TUPLES_Vector* v = TUPLES_new_vector(4.3, -4.2, 1.0);
     TEST_ASSERT_TRUE_MESSAGE(TUPLES_is_vector(v), "is_vector should return true when given a vector");
     TEST_ASSERT_FALSE_MESSAGE(TUPLES_is_point(v), "is_point should return false when given a vector");
-    TUPLES_destroy(v);
+    TUPLES_delete(v);
 }
 
 void test_add_vectors()
@@ -259,6 +259,18 @@ void test_color_multiply_by_color()
     TEST_ASSERT_EQUAL_DOUBLE(0.04, result.blue);
 }
 
+void test_tuple_copy()
+{
+    TUPLES_Point p;
+    TUPLES_init_point(&p, 1, 2, 3);
+    TUPLES_Point q;
+    TUPLES_copy(&q, &p);
+    TEST_ASSERT_EQUAL_DOUBLE(1, p.x);
+    TEST_ASSERT_EQUAL_DOUBLE(2, p.y);
+    TEST_ASSERT_EQUAL_DOUBLE(3, p.z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(&q));
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -285,6 +297,7 @@ int main(void)
     RUN_TEST(test_color_subtract);
     RUN_TEST(test_color_multiply_by_scalar);
     RUN_TEST(test_color_multiply_by_color);
+    RUN_TEST(test_tuple_copy);
 
     return UNITY_END();
 }

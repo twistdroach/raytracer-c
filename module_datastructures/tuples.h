@@ -95,6 +95,8 @@ void TUPLES_cross(TUPLES_Vector* dest, const TUPLES_Vector* v1, const TUPLES_Vec
  */
 void TUPLES_multiply_colors(TUPLES_Color* dest, const TUPLES_Color* c1, const TUPLES_Color* c2);
 
+void TUPLES_copy(TUPLES_Tuple* dest, const TUPLES_Tuple* src);
 void TUPLES_destroy(TUPLES_Tuple* tuple);
+void TUPLES_delete(TUPLES_Tuple* tuple);
 
 #endif //MODULE_DATASTRUCTURES_TUPLE

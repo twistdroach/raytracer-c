@@ -1,5 +1,5 @@
 add_library(module_datastructures STATIC
-        tuples.c tuples.h)
+        tuples.c tuples.h canvas.c canvas.h)
 
 target_include_directories(module_datastructures PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

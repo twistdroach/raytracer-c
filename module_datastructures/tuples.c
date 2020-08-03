@@ -158,9 +158,20 @@ void TUPLES_multiply_colors(TUPLES_Color* dest, const TUPLES_Color* c1, const TU
     dest->alpha = c1->alpha * c2->alpha;
 }
 
-void TUPLES_destroy(TUPLES_Tuple* tuple) {
-    if (tuple) {
-        free(tuple);
-    }
+void TUPLES_copy(TUPLES_Tuple* dest, const TUPLES_Tuple* src) {
+    dest->x = src->x;
+    dest->y = src->y;
+    dest->z = src->z;
+    dest->w = src->w;
 }
 
+void TUPLES_destroy(TUPLES_Tuple* tuple) {
+    assert(tuple);
+    // don't need to destroy anything here
+}
+
+void TUPLES_delete(TUPLES_Tuple* tuple) {
+    assert(tuple);
+    TUPLES_destroy(tuple);
+    free(tuple);
+}
