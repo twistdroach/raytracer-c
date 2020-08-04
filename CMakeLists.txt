@@ -7,14 +7,15 @@ add_compile_options(-Wall -g -O0 -Wextra -pedantic -Werror)
 
 add_subdirectory(module_datastructures)
 add_subdirectory(module_utilities)
+add_subdirectory(external)
 
 if(TARGET_GROUP STREQUAL production)
     add_subdirectory(main)
 elseif(TARGET_GROUP STREQUAL test)
     include(CTest)
 
-    add_subdirectory(external)
     add_subdirectory(test)
+    add_subdirectory(main)
 else()
     message(FATAL_ERROR "Given TARGET_GROUP unknown")
 endif()

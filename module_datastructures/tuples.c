@@ -26,6 +26,12 @@ TUPLES_Tuple* TUPLES_new() {
     return new_t;
 }
 
+TUPLES_Color* TUPLES_new_color(double red, double green, double blue) {
+    TUPLES_Color* new_color = TUPLES_new();
+    TUPLES_init_color(new_color, red, green, blue);
+    return new_color;
+}
+
 TUPLES_Point* TUPLES_new_point(double x, double y, double z) {
     TUPLES_Point* new_point = TUPLES_new();
     TUPLES_init_point(new_point, x, y, z);

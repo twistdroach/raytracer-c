@@ -86,6 +86,7 @@ double TUPLES_magnitude(const TUPLES_Vector* v);
 void TUPLES_normalize(TUPLES_Vector* v);
 double TUPLES_dot(const TUPLES_Vector* v1, const TUPLES_Vector* v2);
 void TUPLES_cross(TUPLES_Vector* dest, const TUPLES_Vector* v1, const TUPLES_Vector* v2);
+TUPLES_Color* TUPLES_new_color(double red, double green, double blue);
 
 /**
  * Hadamard or Schur product

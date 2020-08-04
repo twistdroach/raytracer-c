@@ -82,7 +82,35 @@ char* CANVAS_get_ppm_body_string(const CANVAS_Canvas* canvas) {
         }
         Sasprintf(buffer, "%s\n", buffer);
     }
+    Sasprintf(buffer, "%s\n", buffer);
     return buffer;
+}
+
+void CANVAS_write_body_to_file(const CANVAS_Canvas* canvas, FILE* file) {
+    assert(canvas);
+    assert(file);
+    for (uint j = 0; j < canvas->height; j++) {
+        for (uint k = 0; k < canvas->width; k++) {
+            TUPLES_Color *color = CANVAS_read_pixel(canvas, k, j);
+            u_int8_t red = clampnscale_double(color->red);
+            u_int8_t green = clampnscale_double(color->green);
+            u_int8_t blue = clampnscale_double(color->blue);
+            fprintf(file, "%u %u %u ", red, green, blue);
+        }
+        fprintf(file, "\n");
+    }
+    fprintf(file, "\n");
+}
+
+void CANVAS_write_to_file(const CANVAS_Canvas* canvas, const char* filename) {
+    FILE* file = fopen(filename, "wb");
+    if (!file)
+        Throw(E_FILE_FAILED);
+    char* header = CANVAS_get_ppm_header_string(canvas);
+    fprintf(file, "%s", header);
+    CANVAS_write_body_to_file(canvas, file);
+    fclose(file);
+    free(header);
 }
 
 void CANVAS_destroy(CANVAS_Canvas* canvas) {

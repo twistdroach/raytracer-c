@@ -70,7 +70,7 @@ void test_canvas_get_ppm_body()
     TEST_ASSERT_NOT_EMPTY(body);
     TEST_ASSERT_EQUAL_STRING("255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
                                       "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 \n"
-                                      "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 \n", body);
+                                      "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 \n\n", body);
     free(body);
     CANVAS_destroy(&canvas);
 }

@@ -18,5 +18,5 @@ TUPLES_Color* CANVAS_read_pixel(const CANVAS_Canvas* canvas, uint x, uint y);
 void CANVAS_write_pixel(CANVAS_Canvas* canvas, uint x, uint y, const TUPLES_Color* color);
 char* CANVAS_get_ppm_header_string(const CANVAS_Canvas* canvas);
 char* CANVAS_get_ppm_body_string(const CANVAS_Canvas* canvas);
-
+void CANVAS_write_to_file(const CANVAS_Canvas* canvas, const char* filename);
 #endif //DATA_STRUCTURES_CANVAS_H

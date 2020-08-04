@@ -7,7 +7,8 @@
 
 typedef enum {
     E_NO_ERROR,
-    E_MALLOC_FAILED
+    E_MALLOC_FAILED,
+    E_FILE_FAILED
 } ExceptionError;
 
 #endif //UTILITIES_PROJ_EXCEPTIONS_H
