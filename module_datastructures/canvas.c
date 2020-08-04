@@ -1,10 +1,13 @@
 //
 // Created by zrowitsch on 8/3/20.
 //
-
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <CException.h>
 #include <assert.h>
+#include <stdio.h>
+#include <utilities.h>
+#include <math.h>
 #include "proj_exceptions.h"
 #include "canvas.h"
 
@@ -29,13 +32,13 @@ void CANVAS_init(CANVAS_Canvas* canvas, uint width, uint height) {
     }
 }
 
-uint calculate_index(CANVAS_Canvas* canvas, uint x, uint y) {
+uint calculate_index(const CANVAS_Canvas* canvas, uint x, uint y) {
     assert(x < canvas->width);
     assert(y < canvas->height);
-    return y * canvas->height + canvas->width;
+    return y * canvas->width + x;
 }
 
-TUPLES_Color* CANVAS_read_pixel(CANVAS_Canvas* canvas, uint x, uint y) {
+TUPLES_Color* CANVAS_read_pixel(const CANVAS_Canvas* canvas, uint x, uint y) {
     assert(canvas);
     uint ndx = calculate_index(canvas, x, y);
     return &canvas->data[ndx];
@@ -46,6 +49,40 @@ void CANVAS_write_pixel(CANVAS_Canvas* canvas, uint x, uint y, const TUPLES_Colo
     assert(color);
     TUPLES_Color* dest = CANVAS_read_pixel(canvas, x, y);
     TUPLES_copy(dest, color);
+}
+
+char* CANVAS_get_ppm_header_string(const CANVAS_Canvas* canvas) {
+    assert(canvas);
+    char * retval;
+    if (asprintf(&retval, "P3\n%u %u\n255\n", canvas->width, canvas->height) == -1)
+        Throw(E_MALLOC_FAILED);
+    return retval;
+}
+
+u_int8_t clampnscale_double(double d) {
+    if (d > 1) d = 1;
+    if (d < 0) d = 0;
+    return round(d * 255.0);
+}
+
+char* CANVAS_get_ppm_body_string(const CANVAS_Canvas* canvas) {
+    assert(canvas);
+    char* buffer = NULL;
+    for (uint j=0; j<canvas->height; j++) {
+        for (uint k=0; k<canvas->width; k++) {
+            TUPLES_Color* color = CANVAS_read_pixel(canvas, k, j);
+            u_int8_t red = clampnscale_double(color->red);
+            u_int8_t green = clampnscale_double(color->green);
+            u_int8_t blue = clampnscale_double(color->blue);
+            if (buffer) {
+                Sasprintf(buffer, "%s%u %u %u ", buffer, red, green, blue);
+            } else {
+                Sasprintf(buffer, "%u %u %u ", red, green, blue);
+            }
+        }
+        Sasprintf(buffer, "%s\n", buffer);
+    }
+    return buffer;
 }
 
 void CANVAS_destroy(CANVAS_Canvas* canvas) {
