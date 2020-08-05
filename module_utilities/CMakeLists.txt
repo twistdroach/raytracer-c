@@ -1,5 +1,5 @@
 add_library(module_utilities STATIC
-  proj_exceptions.h
+		exceptions.h
 	simple_logger.c simple_logger.h utilities.h utilities.c)
 
 target_include_directories(module_utilities PUBLIC

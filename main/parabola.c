@@ -1,7 +1,6 @@
 #include "canvas.h"
-#include "proj_exceptions.h"
+#include "exceptions.h"
 #include <stdio.h>
-#include <CException.h>
 
 int main(void) {
     CEXCEPTION_T e;

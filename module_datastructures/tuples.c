@@ -1,6 +1,6 @@
 #include "tuples.h"
 #include "utilities.h"
-#include "proj_exceptions.h"
+#include "exceptions.h"
 
 #include <assert.h>
 #include <stdlib.h>

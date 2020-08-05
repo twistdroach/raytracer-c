@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <utilities.h>
 #include <math.h>
-#include "proj_exceptions.h"
+#include "exceptions.h"
 #include "canvas.h"
 
 CANVAS_Canvas* CANVAS_new(uint width, uint height) {

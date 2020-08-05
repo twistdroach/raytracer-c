@@ -5,10 +5,12 @@
 #ifndef UTILITIES_PROJ_EXCEPTIONS_H
 #define UTILITIES_PROJ_EXCEPTIONS_H
 
+#include <CException.h>
+
 typedef enum {
     E_NO_ERROR,
     E_MALLOC_FAILED,
     E_FILE_FAILED
-} ExceptionError;
+} EXCEPTIONS_exceptions;
 
 #endif //UTILITIES_PROJ_EXCEPTIONS_H
