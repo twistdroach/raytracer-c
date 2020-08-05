@@ -1,8 +1,8 @@
-add_executable(main
-    main.c
+add_executable(parabola
+        parabola.c
 )
 
-target_link_libraries(main PRIVATE
+target_link_libraries(parabola PRIVATE
         module_datastructures
         m
 )
