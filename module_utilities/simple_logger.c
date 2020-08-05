@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -23,6 +21,9 @@ void SIMPLE_LOGGER_log(LogLevel level, const char* fmt, ...) {
         case INFO:
             printf("Info: ");
             break;
+        case DEBUG:
+            printf("Debug: ");
+            break;
     }
     //Reset formatting
     printf("\x1b[0m");
@@ -34,4 +35,3 @@ void SIMPLE_LOGGER_log(LogLevel level, const char* fmt, ...) {
     va_end(vargs);
     printf("%s", buf);
 }
-
