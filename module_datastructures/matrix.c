@@ -19,11 +19,11 @@ uint calculate_index(const MATRIX_Matrix* matrix, uint row, uint column) {
     return row * matrix->width + column;
 }
 
-double* MATRIX_get_cell(const MATRIX_Matrix* matrix, uint row, uint column) {
+double MATRIX_read_cell(const MATRIX_Matrix* matrix, uint row, uint column) {
     assert(matrix);
     assert(matrix->data);
     uint ndx = calculate_index(matrix, row, column);
-    return &matrix->data[ndx];
+    return matrix->data[ndx];
 }
 
 void MATRIX_write_cell(MATRIX_Matrix* matrix, uint row, uint column, double value) {
@@ -93,7 +93,7 @@ double compute_dot_product(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2, uin
     uint vector_column=0;
     double total = 0.0;
     for (uint vector_row=0; vector_row < m1->height; vector_row++) {
-        total += *MATRIX_get_cell(m1, row, vector_column) * *MATRIX_get_cell(m2, vector_row, column);
+        total += MATRIX_read_cell(m1, row, vector_column) * MATRIX_read_cell(m2, vector_row, column);
         vector_column++;
     }
     return total;
@@ -132,16 +132,16 @@ void convert_matrix_to_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* src) {
     assert(src);
     assert(src->width == 1);
     assert(src->height == 4);
-    TUPLES_init_vector(dest, *MATRIX_get_cell(src, 0, 0), *MATRIX_get_cell(src, 1, 0), *MATRIX_get_cell(src, 2, 0));
+    TUPLES_init_vector(dest, MATRIX_read_cell(src, 0, 0), MATRIX_read_cell(src, 1, 0), MATRIX_read_cell(src, 2, 0));
     //hack
-    dest->w = *MATRIX_get_cell(src, 3, 0);
+    dest->w = MATRIX_read_cell(src, 3, 0);
 }
 
 double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple, uint row) {
-    return *MATRIX_get_cell(matrix, row, 0) * tuple->x +
-           *MATRIX_get_cell(matrix, row, 1) * tuple->y +
-           *MATRIX_get_cell(matrix, row, 2) * tuple->z +
-           *MATRIX_get_cell(matrix, row, 3) * tuple->w;
+    return MATRIX_read_cell(matrix, row, 0) * tuple->x +
+            MATRIX_read_cell(matrix, row, 1) * tuple->y +
+            MATRIX_read_cell(matrix, row, 2) * tuple->z +
+            MATRIX_read_cell(matrix, row, 3) * tuple->w;
 }
 
 void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {

@@ -18,7 +18,7 @@ void MATRIX_init(MATRIX_Matrix* matrix, uint width, uint height);
 void MATRIX_destroy(MATRIX_Matrix* matrix);
 void MATRIX_delete(MATRIX_Matrix* matrix);
 
-double* MATRIX_get_cell(const MATRIX_Matrix* matrix, uint row, uint column);
+double MATRIX_read_cell(const MATRIX_Matrix* matrix, uint row, uint column);
 void MATRIX_write_cell(MATRIX_Matrix* matrix, uint row, uint column, double value);
 bool MATRIX_is_equal(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2);
 

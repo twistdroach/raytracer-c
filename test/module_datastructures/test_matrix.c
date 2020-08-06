@@ -13,13 +13,13 @@ void test_construct_4x4_matrix()
                 5.5, 6.5, 7.5, 8.5,
                 9.0, 10.0, 11.0, 12.0,
                 13.5, 14.5, 15.5, 16.5);
-    TEST_ASSERT_EQUAL_DOUBLE(1.0, *(MATRIX_get_cell(m, 0,0)));
-    TEST_ASSERT_EQUAL_DOUBLE(4, *(MATRIX_get_cell(m, 0,3)));
-    TEST_ASSERT_EQUAL_DOUBLE(5.5, *(MATRIX_get_cell(m, 1,0)));
-    TEST_ASSERT_EQUAL_DOUBLE(7.5, *(MATRIX_get_cell(m, 1,2)));
-    TEST_ASSERT_EQUAL_DOUBLE(11, *(MATRIX_get_cell(m, 2,2)));
-    TEST_ASSERT_EQUAL_DOUBLE(13.5, *(MATRIX_get_cell(m, 3,0)));
-    TEST_ASSERT_EQUAL_DOUBLE(15.5, *(MATRIX_get_cell(m, 3,2)));
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, MATRIX_read_cell(m, 0, 0));
+    TEST_ASSERT_EQUAL_DOUBLE(4, MATRIX_read_cell(m, 0, 3));
+    TEST_ASSERT_EQUAL_DOUBLE(5.5, MATRIX_read_cell(m, 1, 0));
+    TEST_ASSERT_EQUAL_DOUBLE(7.5, MATRIX_read_cell(m, 1, 2));
+    TEST_ASSERT_EQUAL_DOUBLE(11, MATRIX_read_cell(m, 2, 2));
+    TEST_ASSERT_EQUAL_DOUBLE(13.5, MATRIX_read_cell(m, 3, 0));
+    TEST_ASSERT_EQUAL_DOUBLE(15.5, MATRIX_read_cell(m, 3, 2));
     MATRIX_delete(m);
 }
 
@@ -28,10 +28,10 @@ void test_construct_2x2_matrix()
     MATRIX_Matrix m;
     MATRIX_init(&m, 2, 2);
     MATRIX_fill(&m, -3.0, 5.0, 1.0, -2.0);
-    TEST_ASSERT_EQUAL_DOUBLE(-3, *(MATRIX_get_cell(&m, 0,0)));
-    TEST_ASSERT_EQUAL_DOUBLE(5, *(MATRIX_get_cell(&m, 0,1)));
-    TEST_ASSERT_EQUAL_DOUBLE(1, *(MATRIX_get_cell(&m, 1,0)));
-    TEST_ASSERT_EQUAL_DOUBLE(-2, *(MATRIX_get_cell(&m, 1,1)));
+    TEST_ASSERT_EQUAL_DOUBLE(-3, MATRIX_read_cell(&m, 0, 0));
+    TEST_ASSERT_EQUAL_DOUBLE(5, MATRIX_read_cell(&m, 0, 1));
+    TEST_ASSERT_EQUAL_DOUBLE(1, MATRIX_read_cell(&m, 1, 0));
+    TEST_ASSERT_EQUAL_DOUBLE(-2, MATRIX_read_cell(&m, 1, 1));
     MATRIX_destroy(&m);
 }
 
@@ -42,9 +42,9 @@ void test_construct_3x3_matrix()
     MATRIX_fill(&m, -3.0, 5.0, 0.0,
                 1.0, -2.0, -7.0,
                 0.0, 1.0, 1.0);
-    TEST_ASSERT_EQUAL_DOUBLE(-3, *(MATRIX_get_cell(&m, 0,0)));
-    TEST_ASSERT_EQUAL_DOUBLE(-2, *(MATRIX_get_cell(&m, 1,1)));
-    TEST_ASSERT_EQUAL_DOUBLE(1, *(MATRIX_get_cell(&m, 2,2)));
+    TEST_ASSERT_EQUAL_DOUBLE(-3, MATRIX_read_cell(&m, 0, 0));
+    TEST_ASSERT_EQUAL_DOUBLE(-2, MATRIX_read_cell(&m, 1, 1));
+    TEST_ASSERT_EQUAL_DOUBLE(1, MATRIX_read_cell(&m, 2, 2));
     MATRIX_destroy(&m);
 }
 
