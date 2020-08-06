@@ -14,3 +14,10 @@ target_link_libraries(module_datastructures_canvas
         m)
 add_test(datastructures_canvas module_datastructures_canvas)
 
+add_executable(module_datastructures_matrix
+        test_matrix.c)
+target_link_libraries(module_datastructures_matrix
+        module_datastructures
+        Unity
+        m)
+add_test(datastructures_matrix module_datastructures_matrix)
