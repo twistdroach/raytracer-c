@@ -22,6 +22,47 @@ double MATRIX_read_cell(const MATRIX_Matrix* matrix, uint row, uint column);
 void MATRIX_write_cell(MATRIX_Matrix* matrix, uint row, uint column, double value);
 bool MATRIX_is_equal(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2);
 
+char* MATRIX_to_string(const MATRIX_Matrix* matrix);
+
+double MATRIX_determinant(const MATRIX_Matrix* matrix);
+
+/**
+ * Returns a ptr to a copy of the matrix with the row & column removed.
+ * Must call MATRIX_delete() on the returned ptr to avoid leaking memory.
+ * @param matrix
+ * @param row
+ * @param column
+ * @return
+ */
+MATRIX_Matrix* MATRIX_submatrix(const MATRIX_Matrix* matrix, uint row, uint column);
+
+double MATRIX_minor(const MATRIX_Matrix* matrix, uint row, uint column);
+
+double MATRIX_cofactor(const MATRIX_Matrix* matrix, uint row, uint column);
+
+bool MATRIX_is_invertible(const MATRIX_Matrix* matrix);
+
+/**
+ * Should only be called on an invertible matrix.  Test with MATRIX_is_invertible!
+ * Must call MATRIX_delete() on the returned ptr to avoid leaking memory.
+ * @param matrix
+ * @return
+ */
+MATRIX_Matrix* MATRIX_inverse(const MATRIX_Matrix* matrix);
+
+/**
+ * Initialize a matrix as an identity matrix.
+ *
+ * @param width The width & height of the matrix (identities are always square).
+ */
+void MATRIX_init_identity(MATRIX_Matrix* matrix, uint width);
+
+/**
+ * Transposes square matrix in place.
+ * @param matrix
+ */
+void MATRIX_transpose(MATRIX_Matrix* matrix);
+
 /**
  * Matrix multiplication.  dest should be uninit'd!
  * @param dest

@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <assert.h>
 #include <stdarg.h>
 #include "exceptions.h"
@@ -50,6 +51,7 @@ void MATRIX_fill(MATRIX_Matrix* matrix, ...) {
     }
     va_end(args);
 }
+
 void MATRIX_copy(MATRIX_Matrix* dest, const MATRIX_Matrix* source) {
     assert(dest);
     assert(source);
@@ -86,6 +88,15 @@ void MATRIX_init(MATRIX_Matrix* matrix, uint width, uint height) {
 
     for (uint i=0; i < width * height; i++) {
         matrix->data[i] = 0.0;
+    }
+}
+
+void MATRIX_init_identity(MATRIX_Matrix* matrix, uint width) {
+    assert(matrix);
+    assert(width > 0);
+    MATRIX_init(matrix, width, width);
+    for (uint column=0; column < matrix->width; column++) {
+        MATRIX_write_cell(matrix, column, column, 1.0);
     }
 }
 
@@ -153,6 +164,114 @@ void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, cons
                             multiply_row_by_tuple(matrix, tuple, 1),
                             multiply_row_by_tuple(matrix, tuple, 2));
     dest->w = multiply_row_by_tuple(matrix, tuple, 3);
+}
+
+void transpose_cell(MATRIX_Matrix* matrix, uint row, uint column) {
+    double val = MATRIX_read_cell(matrix, row, column);
+    MATRIX_write_cell(matrix, row, column, MATRIX_read_cell(matrix, column, row));
+    MATRIX_write_cell(matrix, column, row, val);
+}
+
+void MATRIX_transpose(MATRIX_Matrix* matrix) {
+    assert(matrix);
+    // only needs to support square matrix
+    assert(matrix->width == matrix->height);
+    uint offset = 1;
+    for (uint row=0; row < matrix->height; row++) {
+        for (uint column=offset; column < matrix->width; column++) {
+            transpose_cell(matrix, row, column);
+        }
+        offset++;
+    }
+}
+
+char* MATRIX_to_string(const MATRIX_Matrix* matrix) {
+    assert(matrix);
+    char* str = NULL;
+    Sasprintf(str, "Matrix:\n");
+    for (uint row=0; row < matrix->height; row++) {
+        for (uint column=0; column < matrix->width; column++) {
+            Sasprintf(str, "%s %.1f", str, MATRIX_read_cell(matrix, row, column));
+        }
+        Sasprintf(str, "%s\n", str);
+    }
+    return str;
+}
+
+double MATRIX_determinant(const MATRIX_Matrix* matrix) {
+    assert(matrix);
+    assert(matrix->width >= 2);
+    assert(matrix->height >= 2);
+    double determinant = 0.0;
+    if (matrix->width == 2 && matrix->height == 2) {
+        determinant = (MATRIX_read_cell(matrix, 0, 0) * MATRIX_read_cell(matrix, 1, 1) -
+                       MATRIX_read_cell(matrix, 0, 1) * MATRIX_read_cell(matrix, 1, 0));
+
+    } else {
+        for (uint column = 0; column < matrix->width; column++) {
+            determinant += MATRIX_read_cell(matrix, 0, column) * MATRIX_cofactor(matrix, 0, column);
+        }
+    }
+    return determinant;
+}
+
+MATRIX_Matrix* MATRIX_submatrix(const MATRIX_Matrix* matrix, uint row, uint column) {
+    assert(matrix);
+    assert(row < matrix->height);
+    assert(column < matrix->width);
+    assert(matrix->height >= 3);
+    assert(matrix->width >= 3);
+    MATRIX_Matrix* submatrix = MATRIX_new(matrix->width - 1, matrix->height - 1);
+    for (uint write_row=0; write_row < submatrix->height; write_row++) {
+        for (uint write_column=0; write_column < submatrix->width; write_column++) {
+            uint read_row = write_row;
+            if (write_row >= row) read_row++;
+            uint read_column = write_column;
+            if (write_column >= column) read_column++;
+            MATRIX_write_cell(submatrix, write_row, write_column, MATRIX_read_cell(matrix, read_row, read_column));
+        }
+    }
+    return submatrix;
+}
+
+double MATRIX_minor(const MATRIX_Matrix* matrix, uint row, uint column) {
+    assert(matrix);
+    assert(row < matrix->height);
+    assert(column < matrix->width);
+    MATRIX_Matrix* submatrix = MATRIX_submatrix(matrix, row, column);
+    double determinant = MATRIX_determinant(submatrix);
+    MATRIX_delete(submatrix);
+    return determinant;
+}
+
+double MATRIX_cofactor(const MATRIX_Matrix* matrix, uint row, uint column) {
+    assert(matrix);
+    assert(row < matrix->height);
+    assert(column < matrix->width);
+    double cofactor = MATRIX_minor(matrix, row, column);
+    if ((row + column) % 2 == 1) {
+        cofactor = 0.0 - cofactor;
+    }
+    return cofactor;
+}
+
+bool MATRIX_is_invertible(const MATRIX_Matrix* matrix) {
+    return !double_equal(MATRIX_determinant(matrix), 0.0);
+}
+
+MATRIX_Matrix* MATRIX_inverse(const MATRIX_Matrix* matrix) {
+    assert(matrix);
+    assert(MATRIX_is_invertible(matrix));
+    MATRIX_Matrix* inverse = MATRIX_new(matrix->width, matrix->height);
+    double determinant = MATRIX_determinant(matrix);
+    for (uint row=0; row<matrix->height; row++) {
+        for (uint column=0; column<matrix->width; column++) {
+            double cofactor = MATRIX_cofactor(matrix, row, column);
+            // we are transposing also so column / row are swapped below
+            MATRIX_write_cell(inverse, column, row, cofactor/determinant);
+        }
+    }
+    return inverse;
 }
 
 void MATRIX_destroy(MATRIX_Matrix* matrix) {
