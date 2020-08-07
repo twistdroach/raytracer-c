@@ -64,12 +64,12 @@ void MATRIX_init_identity(MATRIX_Matrix* matrix, uint width);
 void MATRIX_transpose(MATRIX_Matrix* matrix);
 
 /**
- * Matrix multiplication.  dest should be uninit'd!
- * @param dest
+ * Matrix multiplication.
+ * Must call MATRIX_delete() on the returned ptr to avoid leaking memory.
  * @param m1
  * @param m2
  */
-void MATRIX_multiply(MATRIX_Matrix* dest, const MATRIX_Matrix* m1, const MATRIX_Matrix* m2);
+MATRIX_Matrix* MATRIX_multiply(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2);
 
 /**
  * (deep) Copy a matrix

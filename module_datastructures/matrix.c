@@ -111,23 +111,22 @@ double compute_dot_product(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2, uin
     return total;
 }
 
-void MATRIX_multiply(MATRIX_Matrix* dest, const MATRIX_Matrix* m1, const MATRIX_Matrix* m2) {
-    assert(dest);
+MATRIX_Matrix* MATRIX_multiply(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2) {
     assert(m1);
     assert(m2);
-    assert(dest != m1);
-    assert(dest != m2);
     /* matrix multiplication is only valid if the rows of the first matrix is equals
        to the columns in the second.  the resulting matrix will have the number of rows
        of the first matrix & columns of the second
     */
     assert(m1->height == m2->width);
+    MATRIX_Matrix* dest = MATRIX_new(m1->width, m2->height);
     MATRIX_init(dest, m1->width, m2->height);
     for (uint row=0; row < m1->height; row++) {
         for (uint column=0; column < m1->width; column++) {
             MATRIX_write_cell(dest, row, column, compute_dot_product(m1, m2, row, column));
         }
     }
+    return dest;
 }
 
 //TODO write tests & expose in interface

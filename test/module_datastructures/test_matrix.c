@@ -97,7 +97,7 @@ void test_copy() {
 }
 
 void test_multiply() {
-    MATRIX_Matrix m1, m2, m3;
+    MATRIX_Matrix m1, m2;
     MATRIX_init(&m1, 4, 4);
     MATRIX_init(&m2, 4, 4);
     MATRIX_fill(&m1, 1.0, 2.0, 3.0, 4.0,
@@ -108,7 +108,7 @@ void test_multiply() {
                 3.0, 2.0, 1.0, -1.0,
                 4.0, 3.0, 6.0, 5.0,
                 1.0, 2.0, 7.0, 8.0);
-   MATRIX_multiply(&m3, &m1, &m2);
+   MATRIX_Matrix* m3 = MATRIX_multiply(&m1, &m2);
 
    MATRIX_Matrix expected;
    MATRIX_init(&expected, 4, 4);
@@ -116,10 +116,10 @@ void test_multiply() {
                44.0, 54.0, 114.0, 108.0,
                40.0, 58.0, 110.0, 102.0,
                16.0, 26.0, 46.0, 42.0);
-   TEST_ASSERT_TRUE(MATRIX_is_equal(&expected, &m3));
+   TEST_ASSERT_TRUE(MATRIX_is_equal(&expected, m3));
    MATRIX_destroy(&m1);
    MATRIX_destroy(&m2);
-   MATRIX_destroy(&m3);
+   MATRIX_delete(m3);
    MATRIX_destroy(&expected);
 }
 
@@ -154,11 +154,10 @@ void test_identity_matrix()
                     4.0, 8.0, 16.0, 32.0);
     MATRIX_Matrix ident;
     MATRIX_init_identity(&ident, 4);
-    MATRIX_Matrix result;
-    MATRIX_multiply(&result, &m, &ident);
-    TEST_ASSERT_TRUE(MATRIX_is_equal(&m, &result));
+    MATRIX_Matrix* result = MATRIX_multiply(&m, &ident);
+    TEST_ASSERT_TRUE(MATRIX_is_equal(&m, result));
     MATRIX_destroy(&m);
-    MATRIX_destroy(&result);
+    MATRIX_delete(result);
     MATRIX_destroy(&ident);
 }
 
@@ -412,6 +411,29 @@ void test_inverse3() {
     MATRIX_delete(inverse);
 }
 
+void test_multiply_by_inverse() {
+    MATRIX_Matrix* a = MATRIX_new(4, 4);
+    MATRIX_fill(a, 3.0, -9.0, 7.0, 3.0,
+                    3.0, -8.0, 2.0, -9.0,
+                    -4.0, 4.0, 4.0, 1.0,
+                    -6.0, 5.0, -1.0, 1.0);
+    MATRIX_Matrix* b = MATRIX_new(4, 4);
+    MATRIX_fill(b, 8.0, 2.0, 2.0, 2.0,
+                   3.0, -1.0, 7.0, 0.0,
+                   7.0, 0.0, 5.0, 4.0,
+                   6.0, -2.0, 0.0, 5.0);
+    MATRIX_Matrix* c = MATRIX_multiply(a, b);
+    TEST_ASSERT_TRUE_MESSAGE(MATRIX_is_invertible(b), "Matrix b does not appear to be invertible");
+    MATRIX_Matrix* inverseb = MATRIX_inverse(b);
+    MATRIX_Matrix* c_times_inverse_b = MATRIX_multiply(c, inverseb);
+    TEST_ASSERT_TRUE(MATRIX_is_equal(a, c_times_inverse_b));
+    MATRIX_delete(c_times_inverse_b);
+    MATRIX_delete(a);
+    MATRIX_delete(b);
+    MATRIX_delete(c);
+    MATRIX_delete(inverseb);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -438,5 +460,6 @@ int main(void)
     RUN_TEST(test_inverse);
     RUN_TEST(test_inverse2);
     RUN_TEST(test_inverse3);
+    RUN_TEST(test_multiply_by_inverse);
     return UNITY_END();
 }
