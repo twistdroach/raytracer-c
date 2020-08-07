@@ -150,13 +150,12 @@ void test_identity_matrix()
                     1.0, 2.0, 4.0, 8.0,
                     2.0, 4.0, 8.0, 16.0,
                     4.0, 8.0, 16.0, 32.0);
-    MATRIX_Matrix ident;
-    MATRIX_init_identity(&ident, 4);
-    MATRIX_Matrix* result = MATRIX_multiply(&m, &ident);
+    MATRIX_Matrix* ident  = MATRIX_new_identity(4);
+    MATRIX_Matrix* result = MATRIX_multiply(&m, ident);
     TEST_ASSERT_TRUE(MATRIX_is_equal(&m, result));
     MATRIX_destroy(&m);
     MATRIX_delete(result);
-    MATRIX_destroy(&ident);
+    MATRIX_delete(ident);
 }
 
 void test_transpose()
@@ -184,16 +183,13 @@ void test_transpose()
 
 void test_transpose_identity()
 {
-    MATRIX_Matrix ident;
-    MATRIX_init_identity(&ident, 4);
-    MATRIX_Matrix expected;
-    MATRIX_init_identity(&expected, 4);
-    if (!MATRIX_is_equal(&expected, &ident)) {
-        printf("Expected:\n%s\nGot:\n%s\n", MATRIX_to_string(&expected), MATRIX_to_string(&ident));
+    MATRIX_Matrix* ident = MATRIX_new_identity(4);
+    MATRIX_Matrix* expected = MATRIX_new_identity(4);
+    if (!MATRIX_is_equal(expected, ident)) {
+        printf("Expected:\n%s\nGot:\n%s\n", MATRIX_to_string(expected), MATRIX_to_string(ident));
         TEST_FAIL_MESSAGE("Identity matrix transposed should be unchanged");
     }
-    MATRIX_destroy(&ident);
-    MATRIX_destroy(&expected);
+    MATRIX_delete_all(ident, expected);
 }
 
 void test_2x2_determinant()

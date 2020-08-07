@@ -92,13 +92,13 @@ void MATRIX_init(MATRIX_Matrix* matrix, uint width, uint height) {
     }
 }
 
-void MATRIX_init_identity(MATRIX_Matrix* matrix, uint width) {
-    assert(matrix);
+MATRIX_Matrix* MATRIX_new_identity(uint width) {
     assert(width > 0);
-    MATRIX_init(matrix, width, width);
+    MATRIX_Matrix* matrix = MATRIX_new(width, width);
     for (uint column=0; column < matrix->width; column++) {
         MATRIX_write_cell(matrix, column, column, 1.0);
     }
+    return matrix;
 }
 
 double compute_dot_product(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2, uint row, uint column) {

@@ -54,11 +54,12 @@ bool MATRIX_is_invertible(const MATRIX_Matrix* matrix);
 MATRIX_Matrix* MATRIX_inverse(const MATRIX_Matrix* matrix);
 
 /**
- * Initialize a matrix as an identity matrix.
+ * Allocates and initializes a an identity matrix.
+ * Must call MATRIX_delete() on the returned ptr to avoid leaking memory.
  *
  * @param width The width & height of the matrix (identities are always square).
  */
-void MATRIX_init_identity(MATRIX_Matrix* matrix, uint width);
+MATRIX_Matrix* MATRIX_new_identity(uint width);
 
 /**
  * Transposes square matrix in place.
