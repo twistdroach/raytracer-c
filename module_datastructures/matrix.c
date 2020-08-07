@@ -120,7 +120,6 @@ MATRIX_Matrix* MATRIX_multiply(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2)
     */
     assert(m1->height == m2->width);
     MATRIX_Matrix* dest = MATRIX_new(m1->width, m2->height);
-    MATRIX_init(dest, m1->width, m2->height);
     for (uint row=0; row < m1->height; row++) {
         for (uint column=0; column < m1->width; column++) {
             MATRIX_write_cell(dest, row, column, compute_dot_product(m1, m2, row, column));

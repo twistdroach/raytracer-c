@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "tuples.h"
+#include "utilities.h"
 
 typedef struct {
     uint width, height;
@@ -16,7 +17,9 @@ typedef struct {
 MATRIX_Matrix* MATRIX_new(uint width, uint height);
 void MATRIX_init(MATRIX_Matrix* matrix, uint width, uint height);
 void MATRIX_destroy(MATRIX_Matrix* matrix);
+#define MATRIX_destroy_all(...) Fn_apply(MATRIX_Matrix, MATRIX_destroy, __VA_ARGS__);
 void MATRIX_delete(MATRIX_Matrix* matrix);
+#define MATRIX_delete_all(...) Fn_apply(MATRIX_Matrix, MATRIX_delete, __VA_ARGS__);
 
 double MATRIX_read_cell(const MATRIX_Matrix* matrix, uint row, uint column);
 void MATRIX_write_cell(MATRIX_Matrix* matrix, uint row, uint column, double value);

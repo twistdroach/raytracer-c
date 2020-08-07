@@ -117,10 +117,8 @@ void test_multiply() {
                40.0, 58.0, 110.0, 102.0,
                16.0, 26.0, 46.0, 42.0);
    TEST_ASSERT_TRUE(MATRIX_is_equal(&expected, m3));
-   MATRIX_destroy(&m1);
-   MATRIX_destroy(&m2);
+   MATRIX_destroy_all(&m1, &m2, &expected);
    MATRIX_delete(m3);
-   MATRIX_destroy(&expected);
 }
 
 void test_multiply_matrix_by_tuple()
@@ -427,11 +425,7 @@ void test_multiply_by_inverse() {
     MATRIX_Matrix* inverseb = MATRIX_inverse(b);
     MATRIX_Matrix* c_times_inverse_b = MATRIX_multiply(c, inverseb);
     TEST_ASSERT_TRUE(MATRIX_is_equal(a, c_times_inverse_b));
-    MATRIX_delete(c_times_inverse_b);
-    MATRIX_delete(a);
-    MATRIX_delete(b);
-    MATRIX_delete(c);
-    MATRIX_delete(inverseb);
+    MATRIX_delete_all(c_times_inverse_b, a, b, c, inverseb);
 }
 
 int main(void)
