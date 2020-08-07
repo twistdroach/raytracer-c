@@ -70,8 +70,9 @@ bool MATRIX_is_equal(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2) {
     if (m1->width != m2->width) return false;
     if (m1->height != m2->height) return false;
     for (uint ndx=0; ndx < m1->height * m1->width; ndx++) {
-        if (!double_equal(m1->data[ndx], m2->data[ndx]))
+        if (!double_equal(m1->data[ndx], m2->data[ndx])){
             return false;
+        }
     }
     return true;
 }
@@ -191,7 +192,7 @@ char* MATRIX_to_string(const MATRIX_Matrix* matrix) {
     Sasprintf(str, "Matrix:\n");
     for (uint row=0; row < matrix->height; row++) {
         for (uint column=0; column < matrix->width; column++) {
-            Sasprintf(str, "%s %.1f", str, MATRIX_read_cell(matrix, row, column));
+            Sasprintf(str, "%s %.5f", str, MATRIX_read_cell(matrix, row, column));
         }
         Sasprintf(str, "%s\n", str);
     }

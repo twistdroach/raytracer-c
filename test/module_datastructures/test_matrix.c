@@ -362,6 +362,56 @@ void test_inverse() {
     MATRIX_delete(inverse);
 }
 
+void test_inverse2() {
+    MATRIX_Matrix* matrix = MATRIX_new(4, 4);
+    MATRIX_fill(matrix, 8.0, -5.0, 9.0, 2.0,
+                        7.0, 5.0, 6.0, 1.0,
+                        -6.0, 0.0, 9.0, 6.0,
+                        -3.0, 0.0, -9.0, -4.0);
+    TEST_ASSERT_TRUE(MATRIX_is_invertible(matrix));
+    MATRIX_Matrix* inverse = MATRIX_inverse(matrix);
+    MATRIX_Matrix* expected = MATRIX_new(4, 4);
+    MATRIX_fill(expected, -0.15385, -0.15385, -0.28205, -0.53846,
+                          -0.07692, 0.12308,  0.02564,  0.03077,
+                           0.35897,  0.35897,  0.43590,  0.92308,
+                          -0.69231, -0.69231, -0.76923, -1.92308);
+    if (!MATRIX_is_equal(expected, inverse)) {
+        printf("Source:\n%s\nExpected:\n%s\nGot:\n%s\n",
+               MATRIX_to_string(matrix),
+               MATRIX_to_string(expected),
+               MATRIX_to_string(inverse));
+        TEST_FAIL();
+    }
+    MATRIX_delete(matrix);
+    MATRIX_delete(expected);
+    MATRIX_delete(inverse);
+}
+
+void test_inverse3() {
+    MATRIX_Matrix* matrix = MATRIX_new(4, 4);
+    MATRIX_fill(matrix, 9.0, 3.0, 0.0, 9.0,
+                       -5.0, -2.0, -6.0, -3.0,
+                       -4.0, 9.0, 6.0, 4.0,
+                       -7.0, 6.0, 6.0, 2.0);
+    TEST_ASSERT_TRUE(MATRIX_is_invertible(matrix));
+    MATRIX_Matrix* inverse = MATRIX_inverse(matrix);
+    MATRIX_Matrix* expected = MATRIX_new(4, 4);
+    MATRIX_fill(expected, -0.04074, -0.07778, 0.14444, -0.22222,
+                          -0.07778, 0.03333, 0.36667, -0.33333,
+                          -0.02901, -0.14630, -0.10926, 0.12963,
+                          0.17778, 0.06667, -0.26667, 0.33333);
+    if (!MATRIX_is_equal(expected, inverse)) {
+        printf("Source:\n%s\nExpected:\n%s\nGot:\n%s\n",
+               MATRIX_to_string(matrix),
+               MATRIX_to_string(expected),
+               MATRIX_to_string(inverse));
+        TEST_FAIL();
+    }
+    MATRIX_delete(matrix);
+    MATRIX_delete(expected);
+    MATRIX_delete(inverse);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -386,5 +436,7 @@ int main(void)
     RUN_TEST(test_invertible_false);
     RUN_TEST(test_invertible_true);
     RUN_TEST(test_inverse);
+    RUN_TEST(test_inverse2);
+    RUN_TEST(test_inverse3);
     return UNITY_END();
 }
