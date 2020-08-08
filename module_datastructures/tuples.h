@@ -98,6 +98,8 @@ void TUPLES_multiply_colors(TUPLES_Color* dest, const TUPLES_Color* c1, const TU
 
 void TUPLES_copy(TUPLES_Tuple* dest, const TUPLES_Tuple* src);
 void TUPLES_destroy(TUPLES_Tuple* tuple);
+#define TUPLES_destroy_all(...) Fn_apply(TUPLES_Tuple, TUPLES_destroy, __VA_ARGS__);
 void TUPLES_delete(TUPLES_Tuple* tuple);
+#define TUPLES_delete_all(...) Fn_apply(TUPLES_Tuple, TUPLES_delete, __VA_ARGS__);
 
 #endif //MODULE_DATASTRUCTURES_TUPLE

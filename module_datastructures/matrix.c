@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <assert.h>
 #include <stdarg.h>
+#include <math.h>
 #include "exceptions.h"
 #include "matrix.h"
 #include "utilities.h"
@@ -101,6 +102,74 @@ MATRIX_Matrix* MATRIX_new_identity(uint width) {
     return matrix;
 }
 
+MATRIX_Matrix* MATRIX_new_translation(double x, double y, double z) {
+    MATRIX_Matrix* matrix = MATRIX_new_identity(4);
+    MATRIX_write_cell(matrix, 0, 3, x);
+    MATRIX_write_cell(matrix, 1, 3, y);
+    MATRIX_write_cell(matrix, 2, 3, z);
+    return matrix;
+}
+
+MATRIX_Matrix* MATRIX_new_scaling(double x, double y, double z) {
+    MATRIX_Matrix* matrix = MATRIX_new(4, 4);
+    MATRIX_write_cell(matrix, 0, 0, x);
+    MATRIX_write_cell(matrix, 1, 1, y);
+    MATRIX_write_cell(matrix, 2, 2, z);
+    MATRIX_write_cell(matrix, 3, 3, 1.0);
+    return matrix;
+}
+
+MATRIX_Matrix* MATRIX_new_rotation_x(double radians) {
+    MATRIX_Matrix* matrix = MATRIX_new(4, 4);
+    double s = sin(radians);
+    double c = cos(radians);
+    MATRIX_write_cell(matrix, 0, 0, 1.0);
+    MATRIX_write_cell(matrix, 1, 1, c);
+    MATRIX_write_cell(matrix, 2, 1, s);
+    MATRIX_write_cell(matrix, 1, 2, -s);
+    MATRIX_write_cell(matrix, 2, 2, c);
+    MATRIX_write_cell(matrix, 3, 3, 1.0);
+    return matrix;
+}
+
+MATRIX_Matrix* MATRIX_new_rotation_y(double radians) {
+    MATRIX_Matrix *matrix = MATRIX_new(4, 4);
+    double s = sin(radians);
+    double c = cos(radians);
+    MATRIX_write_cell(matrix, 1, 1, 1.0);
+    MATRIX_write_cell(matrix, 0, 0, c);
+    MATRIX_write_cell(matrix, 2, 2, c);
+    MATRIX_write_cell(matrix, 2, 0, -s);
+    MATRIX_write_cell(matrix, 0, 2, s);
+    MATRIX_write_cell(matrix, 3, 3, 1.0);
+    return matrix;
+}
+
+MATRIX_Matrix* MATRIX_new_rotation_z(double radians) {
+    MATRIX_Matrix *matrix = MATRIX_new(4, 4);
+    double s = sin(radians);
+    double c = cos(radians);
+    MATRIX_write_cell(matrix, 0, 0, c);
+    MATRIX_write_cell(matrix, 1, 1, c);
+    MATRIX_write_cell(matrix, 0, 1, -s);
+    MATRIX_write_cell(matrix, 1, 0, s);
+    MATRIX_write_cell(matrix, 2, 2, 1.0);
+    MATRIX_write_cell(matrix, 3, 3, 1.0);
+    return matrix;
+}
+
+MATRIX_Matrix* MATRIX_new_shearing(double xy, double xz, double yx, double yz, double zx, double zy) {
+    MATRIX_Matrix *matrix = MATRIX_new_identity(4);
+    MATRIX_write_cell(matrix, 0, 1, xy);
+    MATRIX_write_cell(matrix, 0, 2, xz);
+    MATRIX_write_cell(matrix, 1, 0, yx);
+    MATRIX_write_cell(matrix, 1, 2, yz);
+    MATRIX_write_cell(matrix, 2, 0, zx);
+    MATRIX_write_cell(matrix, 2, 1, zy);
+
+    return matrix;
+}
+
 double compute_dot_product(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2, uint row, uint column) {
     uint vector_column=0;
     double total = 0.0;
@@ -154,15 +223,15 @@ double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tu
             MATRIX_read_cell(matrix, row, 3) * tuple->w;
 }
 
-void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
-    assert(dest);
+TUPLES_Tuple* MATRIX_multiply_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
     assert(matrix);
     assert(tuple);
     assert(matrix->height == 4 && matrix->width == 4);
-    TUPLES_init_point(dest, multiply_row_by_tuple(matrix, tuple, 0),
-                            multiply_row_by_tuple(matrix, tuple, 1),
-                            multiply_row_by_tuple(matrix, tuple, 2));
+    TUPLES_Tuple* dest = TUPLES_new_point(multiply_row_by_tuple(matrix, tuple, 0),
+                                          multiply_row_by_tuple(matrix, tuple, 1),
+                                          multiply_row_by_tuple(matrix, tuple, 2));
     dest->w = multiply_row_by_tuple(matrix, tuple, 3);
+    return dest;
 }
 
 void transpose_cell(MATRIX_Matrix* matrix, uint row, uint column) {

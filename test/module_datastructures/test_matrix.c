@@ -1,4 +1,3 @@
-#define UNITY_DOUBLE_PRECISION 0.00001f
 #include <unity.h>
 #include <matrix.h>
 #include <tuples.h>
@@ -131,15 +130,14 @@ void test_multiply_matrix_by_tuple()
                     0.0, 0.0, 0.0, 1.0);
     TUPLES_Point p;
     TUPLES_init_point(&p, 1.0, 2.0, 3.0);
-    TUPLES_Tuple result;
-    MATRIX_multiply_tuple(&result, &m, &p);
-    TEST_ASSERT_EQUAL_DOUBLE(18, result.x);
-    TEST_ASSERT_EQUAL_DOUBLE(24, result.y);
-    TEST_ASSERT_EQUAL_DOUBLE(33, result.z);
-    TEST_ASSERT_TRUE(TUPLES_is_point(&result));
+    TUPLES_Tuple* result = MATRIX_multiply_tuple(&m, &p);
+    TEST_ASSERT_EQUAL_DOUBLE(18, result->x);
+    TEST_ASSERT_EQUAL_DOUBLE(24, result->y);
+    TEST_ASSERT_EQUAL_DOUBLE(33, result->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(result));
     MATRIX_destroy(&m);
     TUPLES_destroy(&p);
-    TUPLES_destroy(&result);
+    TUPLES_delete(result);
 }
 
 void test_identity_matrix()
@@ -424,6 +422,289 @@ void test_multiply_by_inverse() {
     MATRIX_delete_all(c_times_inverse_b, a, b, c, inverseb);
 }
 
+void test_translation_matrix() {
+    MATRIX_Matrix* trans = MATRIX_new_translation(5, -3, 2);
+    TUPLES_Point* p = TUPLES_new_point(-3, 4, 5);
+    TUPLES_Point* res = MATRIX_multiply_tuple(trans, p);
+    TEST_ASSERT_EQUAL_DOUBLE(2, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(1, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(7, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    TUPLES_delete(p);
+    TUPLES_delete(res);
+    MATRIX_delete(trans);
+}
+
+void test_translation_inverse_matrix() {
+    MATRIX_Matrix* trans = MATRIX_new_translation(5, -3, 2);
+    MATRIX_Matrix* trans_inv = MATRIX_inverse(trans);
+    TUPLES_Point* p = TUPLES_new_point(-3, 4, 5);
+    TUPLES_Point* res = MATRIX_multiply_tuple(trans_inv, p);
+    TEST_ASSERT_EQUAL_DOUBLE(-8, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(7, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(3, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    TUPLES_delete(p);
+    TUPLES_delete(res);
+    MATRIX_delete_all(trans, trans_inv);
+}
+
+void test_translation_not_affect_vector() {
+    MATRIX_Matrix* trans = MATRIX_new_translation(5, -3, 2);
+    TUPLES_Vector* v = TUPLES_new_vector(-3, 4, 5);
+    TUPLES_Vector* res = MATRIX_multiply_tuple(trans, v);
+    TEST_ASSERT_EQUAL_DOUBLE(v->x, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(v->y, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(v->z, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(res));
+    TUPLES_delete_all(v, res);
+    MATRIX_delete(trans);
+}
+
+void test_scaling_matrix_applied_to_point() {
+    MATRIX_Matrix* m = MATRIX_new_scaling(2, 3, 4);
+    TUPLES_Point* p = TUPLES_new_point(-4, 6, 8);
+    TUPLES_Point* res = MATRIX_multiply_tuple(m, p);
+    TEST_ASSERT_EQUAL_DOUBLE(-8, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(18, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(32, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(m);
+    TUPLES_delete_all(p, res);
+}
+
+void test_scaling_matrix_applied_to_vector() {
+    MATRIX_Matrix* m = MATRIX_new_scaling(2, 3, 4);
+    TUPLES_Vector* p = TUPLES_new_vector(-4, 6, 8);
+    TUPLES_Vector* res = MATRIX_multiply_tuple(m, p);
+    TEST_ASSERT_EQUAL_DOUBLE(-8, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(18, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(32, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(res));
+    MATRIX_delete(m);
+    TUPLES_delete_all(p, res);
+}
+
+void test_inverse_scaling_matrix_applied_to_vector() {
+    MATRIX_Matrix* m = MATRIX_new_scaling(2, 3, 4);
+    TUPLES_Vector* p = TUPLES_new_vector(-4, 6, 8);
+    MATRIX_Matrix* m_inv = MATRIX_inverse(m);
+    TUPLES_Vector* res = MATRIX_multiply_tuple(m_inv, p);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(2, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(2, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(res));
+    MATRIX_delete_all(m, m_inv);
+    TUPLES_delete_all(p, res);
+}
+
+void test_reflection_applied_to_point() {
+    MATRIX_Matrix* m = MATRIX_new_scaling(-1, 1, 1);
+    TUPLES_Point* p = TUPLES_new_point(2, 3, 4);
+    TUPLES_Point* res = MATRIX_multiply_tuple(m, p);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(4, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(m);
+    TUPLES_delete_all(p, res);
+}
+
+void test_rotation_x() {
+    TUPLES_Point* p = TUPLES_new_point(0, 1, 0);
+
+    MATRIX_Matrix* half_quarter = MATRIX_new_rotation_x(M_PI_4);
+    TUPLES_Point* half_quarter_p = MATRIX_multiply_tuple(half_quarter, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, half_quarter_p->x);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt(2.0)/2.0, half_quarter_p->y);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt(2.0)/2.0, half_quarter_p->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(half_quarter_p));
+
+    MATRIX_Matrix* full_quarter = MATRIX_new_rotation_x(M_PI_2);
+    TUPLES_Point* full_quarter_p = MATRIX_multiply_tuple(full_quarter, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, full_quarter_p->x);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, full_quarter_p->y);
+    TEST_ASSERT_EQUAL_DOUBLE(1, full_quarter_p->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(full_quarter_p));
+
+    MATRIX_delete_all(half_quarter, full_quarter);
+    TUPLES_delete_all(p, half_quarter_p, full_quarter_p);
+}
+
+void test_inverse_rotation_x() {
+    TUPLES_Point* p = TUPLES_new_point(0, 1, 0);
+    MATRIX_Matrix* half_quarter = MATRIX_new_rotation_x(M_PI / 4.0);
+    MATRIX_Matrix* half_quarter_inv = MATRIX_inverse(half_quarter);
+    TUPLES_Point* half_quarter_p = MATRIX_multiply_tuple(half_quarter_inv, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, half_quarter_p->x);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt(2.0)/2.0, half_quarter_p->y);
+    TEST_ASSERT_EQUAL_DOUBLE(-sqrt(2.0)/2.0, half_quarter_p->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(half_quarter_p));
+    MATRIX_delete_all(half_quarter, half_quarter_inv);
+    TUPLES_delete_all(p, half_quarter_p);
+}
+
+void test_rotation_y() {
+    TUPLES_Point* p = TUPLES_new_point(0, 0, 1);
+
+    MATRIX_Matrix* half_quarter = MATRIX_new_rotation_y(M_PI_4);
+    TUPLES_Point* half_quarter_p = MATRIX_multiply_tuple(half_quarter, p);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt(2.0)/2.0, half_quarter_p->x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, half_quarter_p->y);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt(2.0)/2.0, half_quarter_p->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(half_quarter_p));
+
+    MATRIX_Matrix* full_quarter = MATRIX_new_rotation_y(M_PI_2);
+    TUPLES_Point* full_quarter_p = MATRIX_multiply_tuple(full_quarter, p);
+    TEST_ASSERT_EQUAL_DOUBLE(1, full_quarter_p->x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, full_quarter_p->y);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, full_quarter_p->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(full_quarter_p));
+
+    MATRIX_delete_all(half_quarter, full_quarter);
+    TUPLES_delete_all(p, half_quarter_p, full_quarter_p);
+}
+
+void test_rotation_z() {
+    TUPLES_Point* p = TUPLES_new_point(0, 1, 0);
+
+    MATRIX_Matrix* half_quarter = MATRIX_new_rotation_z(M_PI_4);
+    TUPLES_Point* half_quarter_p = MATRIX_multiply_tuple(half_quarter, p);
+    TEST_ASSERT_EQUAL_DOUBLE(-sqrt(2.0)/2.0, half_quarter_p->x);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt(2.0)/2.0, half_quarter_p->y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, half_quarter_p->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(half_quarter_p));
+
+    MATRIX_Matrix* full_quarter = MATRIX_new_rotation_z(M_PI_2);
+    TUPLES_Point* full_quarter_p = MATRIX_multiply_tuple(full_quarter, p);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, full_quarter_p->x);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, full_quarter_p->y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, full_quarter_p->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(full_quarter_p));
+
+    MATRIX_delete_all(half_quarter, full_quarter);
+    TUPLES_delete_all(p, half_quarter_p, full_quarter_p);
+}
+
+void test_shearing_x_to_y() {
+    MATRIX_Matrix* shear = MATRIX_new_shearing(1, 0, 0, 0, 0, 0);
+    TUPLES_Point* p = TUPLES_new_point(2, 3, 4);
+    TUPLES_Point* res = MATRIX_multiply_tuple(shear, p);
+    TEST_ASSERT_EQUAL_DOUBLE(5, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(4, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(shear);
+    TUPLES_delete_all(p, res);
+}
+
+void test_shearing_x_to_z() {
+    MATRIX_Matrix* shear = MATRIX_new_shearing(0, 1, 0, 0, 0, 0);
+    TUPLES_Point* p = TUPLES_new_point(2, 3, 4);
+    TUPLES_Point* res = MATRIX_multiply_tuple(shear, p);
+    TEST_ASSERT_EQUAL_DOUBLE(6, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(4, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(shear);
+    TUPLES_delete_all(p, res);
+}
+
+void test_shearing_y_to_x() {
+    MATRIX_Matrix* shear = MATRIX_new_shearing(0, 0, 1, 0, 0, 0);
+    TUPLES_Point* p = TUPLES_new_point(2, 3, 4);
+    TUPLES_Point* res = MATRIX_multiply_tuple(shear, p);
+    TEST_ASSERT_EQUAL_DOUBLE(2, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(5, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(4, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(shear);
+    TUPLES_delete_all(p, res);
+}
+
+void test_shearing_y_to_z() {
+    MATRIX_Matrix* shear = MATRIX_new_shearing(0, 0, 0, 1, 0, 0);
+    TUPLES_Point* p = TUPLES_new_point(2, 3, 4);
+    TUPLES_Point* res = MATRIX_multiply_tuple(shear, p);
+    TEST_ASSERT_EQUAL_DOUBLE(2, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(7, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(4, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(shear);
+    TUPLES_delete_all(p, res);
+}
+
+void test_shearing_z_to_x() {
+    MATRIX_Matrix* shear = MATRIX_new_shearing(0, 0, 0, 0, 1, 0);
+    TUPLES_Point* p = TUPLES_new_point(2, 3, 4);
+    TUPLES_Point* res = MATRIX_multiply_tuple(shear, p);
+    TEST_ASSERT_EQUAL_DOUBLE(2, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(6, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(shear);
+    TUPLES_delete_all(p, res);
+}
+
+void test_shearing_z_to_y() {
+    MATRIX_Matrix* shear = MATRIX_new_shearing(0, 0, 0, 0, 0, 1);
+    TUPLES_Point* p = TUPLES_new_point(2, 3, 4);
+    TUPLES_Point* res = MATRIX_multiply_tuple(shear, p);
+    TEST_ASSERT_EQUAL_DOUBLE(2, res->x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, res->y);
+    TEST_ASSERT_EQUAL_DOUBLE(7, res->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(res));
+    MATRIX_delete(shear);
+    TUPLES_delete_all(p, res);
+}
+
+void test_apply_transformations_in_sequence() {
+    TUPLES_Point* p = TUPLES_new_point(1, 0, 1);
+    MATRIX_Matrix* A = MATRIX_new_rotation_x(M_PI_2);
+    MATRIX_Matrix* B = MATRIX_new_scaling(5, 5, 5);
+    MATRIX_Matrix* C = MATRIX_new_translation(10, 5, 7);
+
+    TUPLES_Point* p2 = MATRIX_multiply_tuple(A, p);
+    TEST_ASSERT_EQUAL_DOUBLE(1, p2->x);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, p2->y);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, p2->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(p2));
+
+    TUPLES_Point* p3 = MATRIX_multiply_tuple(B, p2);
+    TEST_ASSERT_EQUAL_DOUBLE(5, p3->x);
+    TEST_ASSERT_EQUAL_DOUBLE(-5, p3->y);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, p2->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(p3));
+
+    TUPLES_Point* p4 = MATRIX_multiply_tuple(C, p3);
+    TEST_ASSERT_EQUAL_DOUBLE(15, p4->x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, p4->y);
+    TEST_ASSERT_EQUAL_DOUBLE(7, p4->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(p4));
+
+    TUPLES_delete_all(p, p2, p3, p4);
+    MATRIX_delete_all(A, B, C);
+}
+
+void test_apply_chained_transformations_in_reverse_order() {
+    TUPLES_Point* p = TUPLES_new_point(1, 0, 1);
+    MATRIX_Matrix* A = MATRIX_new_rotation_x(M_PI_2);
+    MATRIX_Matrix* B = MATRIX_new_scaling(5, 5, 5);
+    MATRIX_Matrix* C = MATRIX_new_translation(10, 5, 7);
+
+    MATRIX_Matrix* C_B = MATRIX_multiply(C, B);
+    MATRIX_Matrix* C_B_A = MATRIX_multiply(C_B, A);
+
+    TUPLES_Point* p2 = MATRIX_multiply_tuple(C_B_A, p);
+    TEST_ASSERT_EQUAL_DOUBLE(15, p2->x);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, p2->y);
+    TEST_ASSERT_EQUAL_DOUBLE(7, p2->z);
+    TEST_ASSERT_TRUE(TUPLES_is_point(p2));
+
+    TUPLES_delete_all(p, p2);
+    MATRIX_delete_all(A, B, C, C_B, C_B_A);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -451,5 +732,24 @@ int main(void)
     RUN_TEST(test_inverse2);
     RUN_TEST(test_inverse3);
     RUN_TEST(test_multiply_by_inverse);
+    RUN_TEST(test_translation_matrix);
+    RUN_TEST(test_translation_inverse_matrix);
+    RUN_TEST(test_translation_not_affect_vector);
+    RUN_TEST(test_scaling_matrix_applied_to_point);
+    RUN_TEST(test_scaling_matrix_applied_to_vector);
+    RUN_TEST(test_inverse_scaling_matrix_applied_to_vector);
+    RUN_TEST(test_reflection_applied_to_point);
+    RUN_TEST(test_rotation_x);
+    RUN_TEST(test_inverse_rotation_x);
+    RUN_TEST(test_rotation_y);
+    RUN_TEST(test_rotation_z);
+    RUN_TEST(test_shearing_x_to_y);
+    RUN_TEST(test_shearing_x_to_z);
+    RUN_TEST(test_shearing_y_to_x);
+    RUN_TEST(test_shearing_y_to_z);
+    RUN_TEST(test_shearing_z_to_x);
+    RUN_TEST(test_shearing_z_to_y);
+    RUN_TEST(test_apply_transformations_in_sequence);
+    RUN_TEST(test_apply_chained_transformations_in_reverse_order);
     return UNITY_END();
 }

@@ -1,4 +1,3 @@
-#define UNITY_DOUBLE_PRECISION 0.00001f
 #include <unity.h>
 #include <stdlib.h>
 #include <math.h>

@@ -60,6 +60,12 @@ MATRIX_Matrix* MATRIX_inverse(const MATRIX_Matrix* matrix);
  * @param width The width & height of the matrix (identities are always square).
  */
 MATRIX_Matrix* MATRIX_new_identity(uint width);
+MATRIX_Matrix* MATRIX_new_translation(double x, double y, double z);
+MATRIX_Matrix* MATRIX_new_scaling(double x, double y, double z);
+MATRIX_Matrix* MATRIX_new_rotation_x(double radians);
+MATRIX_Matrix* MATRIX_new_rotation_y(double radians);
+MATRIX_Matrix* MATRIX_new_rotation_z(double radians);
+MATRIX_Matrix* MATRIX_new_shearing(double xy, double xz, double yx, double yz, double zx, double zy);
 
 /**
  * Transposes square matrix in place.
@@ -90,11 +96,11 @@ void MATRIX_copy(MATRIX_Matrix* dest, const MATRIX_Matrix* source);
 void MATRIX_fill(MATRIX_Matrix* matrix, ...);
 
 /**
- * Multiplies a matrix by a tuple.  Destination tuple should be uninit'd
- * @param dest
+ * Multiplies a matrix by a tuple.
+ * Must call TUPLES_delete() on the returned ptr to avoid leaking memory.
  * @param matrix
  * @param tuple
  */
-void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple);
+TUPLES_Tuple* MATRIX_multiply_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple);
 
 #endif //DATA_STRUCTURES_MATRIX_H
