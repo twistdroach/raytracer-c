@@ -21,3 +21,19 @@ target_link_libraries(module_datastructures_matrix
         Unity
         m)
 add_test(datastructures_matrix module_datastructures_matrix)
+
+add_executable(module_datastructures_rays
+        test_rays.c)
+target_link_libraries(module_datastructures_rays
+        module_datastructures
+        Unity
+        m)
+add_test(datastructures_rays module_datastructures_rays)
+
+add_executable(module_datastructures_sphere
+        test_sphere.c)
+target_link_libraries(module_datastructures_sphere
+        module_datastructures
+        Unity
+        m)
+add_test(datastructures_sphere module_datastructures_sphere)
