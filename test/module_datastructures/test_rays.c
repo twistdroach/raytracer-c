@@ -13,6 +13,16 @@ void test_create_and_query_ray() {
     RAY_delete(ray);
 }
 
+void test_create_and_query_from_tuples() {
+    TUPLES_Point* origin = TUPLES_new_point(1, 2, 3);
+    TUPLES_Vector* direction = TUPLES_new_vector(4, 5, 6);
+    RAY_Ray* ray = RAY_new_from_tuples(origin, direction);
+    TEST_ASSERT_EQUAL_DOUBLE(2, ray->origin.y);
+    TEST_ASSERT_EQUAL_DOUBLE(6, ray->direction.z);
+    RAY_delete(ray);
+    TUPLES_delete_all(origin, direction);
+}
+
 void test_create_and_query_ray_on_stack() {
     RAY_Ray ray;
     RAY_init(&ray, 1, 2, 3, 4, 5, 6);
@@ -61,6 +71,7 @@ void test_intersection() {
     TEST_ASSERT_EQUAL_DOUBLE(4, intersections->xs[0].t);
     TEST_ASSERT_EQUAL_DOUBLE(6, intersections->xs[1].t);
     RAY_delete_intersections(intersections);
+    SPHERE_destroy(&s);
 }
 
 void test_find_hit_with_all_positive_ts() {
@@ -73,6 +84,7 @@ void test_find_hit_with_all_positive_ts() {
     TEST_ASSERT_NOT_NULL(hit);
     TEST_ASSERT_EQUAL_DOUBLE(1.0, hit->t);
     RAY_delete_intersections(intersections);
+    SPHERE_destroy(&s);
 }
 
 void test_find_hit_with_a_negative_t() {
@@ -85,6 +97,7 @@ void test_find_hit_with_a_negative_t() {
     TEST_ASSERT_NOT_NULL(hit);
     TEST_ASSERT_EQUAL_DOUBLE(1.0, hit->t);
     RAY_delete_intersections(intersections);
+    SPHERE_destroy(&s);
 }
 
 void test_find_hit_with_negative_ts() {
@@ -96,6 +109,7 @@ void test_find_hit_with_negative_ts() {
     RAY_Xs* hit = RAY_hit(intersections);
     TEST_ASSERT_NULL(hit);
     RAY_delete_intersections(intersections);
+    SPHERE_destroy(&s);
 }
 
 void test_find_hit_with_lowest_nonnegative_t() {
@@ -110,6 +124,7 @@ void test_find_hit_with_lowest_nonnegative_t() {
     TEST_ASSERT_NOT_NULL(hit);
     TEST_ASSERT_EQUAL_DOUBLE(2.0, hit->t);
     RAY_delete_intersections(intersections);
+    SPHERE_destroy(&s);
 }
 
 void test_translate_ray() {
@@ -157,5 +172,6 @@ int main(void)
     RUN_TEST(test_find_hit_with_lowest_nonnegative_t);
     RUN_TEST(test_translate_ray);
     RUN_TEST(test_scale_ray);
+    RUN_TEST(test_create_and_query_from_tuples);
     return UNITY_END();
 }

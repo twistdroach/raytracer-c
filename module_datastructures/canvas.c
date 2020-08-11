@@ -32,7 +32,7 @@ void CANVAS_init(CANVAS_Canvas* canvas, uint width, uint height) {
     }
 }
 
-uint calculate_index(const CANVAS_Canvas* canvas, uint x, uint y) {
+static uint calculate_index(const CANVAS_Canvas* canvas, uint x, uint y) {
     assert(x < canvas->width);
     assert(y < canvas->height);
     return y * canvas->width + x;

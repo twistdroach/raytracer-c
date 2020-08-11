@@ -13,10 +13,18 @@ RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direc
     return ray;
 }
 
+RAY_Ray* RAY_new_from_tuples(const TUPLES_Point* origin, const TUPLES_Vector* direction) {
+    return RAY_new(origin->x, origin->y, origin->z, direction->x, direction->y, direction->z);
+}
+
 void RAY_init(RAY_Ray* ray, double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z) {
     assert(ray);
     TUPLES_init_point(&ray->origin, origin_x, origin_y, origin_z);
     TUPLES_init_vector(&ray->direction, direction_x, direction_y, direction_z);
+}
+
+void RAY_init_from_tuples(RAY_Ray* ray, const TUPLES_Point* origin, const TUPLES_Vector* direction) {
+    RAY_init(ray, origin->x, origin->y, origin->z, direction->x, direction->y, direction->z);
 }
 
 void RAY_position(TUPLES_Point* pos, const RAY_Ray* ray, double t) {

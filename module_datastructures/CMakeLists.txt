@@ -14,4 +14,5 @@ target_include_directories(module_datastructures PUBLIC
 target_link_libraries(module_datastructures
         module_utilities
         CException
+        m
 )

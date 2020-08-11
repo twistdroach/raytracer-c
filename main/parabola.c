@@ -23,8 +23,8 @@ int main(void) {
             printf("%.0f %.0f\n", p->x, p->y);
         }
 
-        char *filename = "test.ppm";
-        printf("Writing file %s\n", filename);
+        char *filename = "parabola.ppm";
+        printf("Writing file %s...", filename);
         CANVAS_write_to_file(canvas, filename);
         printf("done\n");
         TUPLES_delete(v);

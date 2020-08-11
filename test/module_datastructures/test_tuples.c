@@ -72,9 +72,9 @@ void test_subtract_vectors()
     TUPLES_init_vector(&a2, 5, 6, 7);
     TUPLES_Vector a3;
     TUPLES_subtract(&a3, &a1, &a2);
-    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-2, a3.x, "x component should be -3");
-    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-4, a3.y, "y component should be -3");
-    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-6, a3.z, "z component should be -3");
+    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-2, a3.x, "x component should be -2");
+    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-4, a3.y, "y component should be -4");
+    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-6, a3.z, "z component should be -6");
     TEST_ASSERT_TRUE_MESSAGE(TUPLES_is_vector(&a3), "Subtracting vectors should create a vector");
 }
 
@@ -86,9 +86,9 @@ void test_subtract_vector_from_point()
     TUPLES_init_vector(&a2, 5, 6, 7);
     TUPLES_Point a3;
     TUPLES_subtract(&a3, &a1, &a2);
-    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-2, a3.x, "x component should be -3");
-    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-4, a3.y, "y component should be -3");
-    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-6, a3.z, "z component should be -3");
+    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-2, a3.x, "x component should be -2");
+    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-4, a3.y, "y component should be -4");
+    TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(-6, a3.z, "z component should be -6");
     TEST_ASSERT_TRUE_MESSAGE(TUPLES_is_point(&a3), "Subtracting vectors should create a vector");
 }
 
