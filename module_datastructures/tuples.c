@@ -92,6 +92,16 @@ void TUPLES_negate(TUPLES_Vector* vec)  {
     vec->z = 0.0 - vec->z;
 }
 
+TUPLES_Vector* TUPLES_reflect(const TUPLES_Vector* v, const TUPLES_Vector* normal) {
+    // v - normal * 2 * dot(v, normal)
+    TUPLES_Vector intermediate;
+    TUPLES_multiply(&intermediate, normal, 2 * TUPLES_dot(v, normal));
+    TUPLES_Vector* r = TUPLES_new_vector(0, 0, 0);
+    TUPLES_subtract(r, v, &intermediate);
+    TUPLES_destroy(&intermediate);
+    return r;
+}
+
 void TUPLES_multiply(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const double mult) {
     assert(t1);
     assert(dest);
@@ -180,4 +190,11 @@ void TUPLES_delete(TUPLES_Tuple* tuple) {
     assert(tuple);
     TUPLES_destroy(tuple);
     free(tuple);
+}
+
+bool TUPLES_is_equal(const TUPLES_Tuple* t1, const TUPLES_Tuple* t2) {
+    return (double_equal(t1->x, t2->x) &&
+            double_equal(t1->y, t2->y) &&
+            double_equal(t1->z, t2->z) &&
+            double_equal(t1->w, t2->w));
 }

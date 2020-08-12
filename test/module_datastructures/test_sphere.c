@@ -7,7 +7,7 @@ void tearDown() {}
 
 void test_ray_intersects_sphere_at_two_points() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0, 0, 0, 1);
+    SPHERE_init(&s);
     RAY_Ray r;
     RAY_init(&r, 0, 0, -5, 0, 0, 1);
     RAY_Intersections* intersections = SPHERE_intersect(&s, &r);
@@ -20,7 +20,7 @@ void test_ray_intersects_sphere_at_two_points() {
 
 void test_ray_sets_object_on_intersection() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0, 0, 0, 1);
+    SPHERE_init(&s);
     RAY_Ray r;
     RAY_init(&r, 0, 0, -5, 0, 0, 1);
     RAY_Intersections* intersections = SPHERE_intersect(&s, &r);
@@ -33,7 +33,7 @@ void test_ray_sets_object_on_intersection() {
 
 void test_ray_intersects_sphere_at_tangent() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0, 0, 0, 1);
+    SPHERE_init(&s);
     RAY_Ray r;
     RAY_init(&r, 0, 1, -5, 0, 0, 1);
     RAY_Intersections* intersections = SPHERE_intersect(&s, &r);
@@ -46,7 +46,7 @@ void test_ray_intersects_sphere_at_tangent() {
 
 void test_ray_misses_sphere() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0, 0, 0, 1);
+    SPHERE_init(&s);
     RAY_Ray r;
     RAY_init(&r, 0, 2, -5, 0, 0, 1);
     RAY_Intersections* intersections = SPHERE_intersect(&s, &r);
@@ -57,7 +57,7 @@ void test_ray_misses_sphere() {
 
 void test_ray_originates_inside_sphere() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0, 0, 0, 1);
+    SPHERE_init(&s);
     RAY_Ray r;
     RAY_init(&r, 0, 0, 0, 0, 0, 1);
     RAY_Intersections* intersections = SPHERE_intersect(&s, &r);
@@ -70,7 +70,7 @@ void test_ray_originates_inside_sphere() {
 
 void test_sphere_behind_ray() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0, 0, 0, 1);
+    SPHERE_init(&s);
     RAY_Ray r;
     RAY_init(&r, 0, 0, 5, 0, 0, 1);
     RAY_Intersections* intersections = SPHERE_intersect(&s, &r);
@@ -82,7 +82,7 @@ void test_sphere_behind_ray() {
 }
 
 void test_sphere_default_transformation() {
-    SPHERE_Sphere* s = SPHERE_new(0, 0, 0, 1);
+    SPHERE_Sphere* s = SPHERE_new();
     MATRIX_Matrix* identity_m = MATRIX_new_identity(4);
     TEST_ASSERT_TRUE(MATRIX_is_equal(identity_m, s->transform));
     SPHERE_delete(s);
@@ -90,7 +90,7 @@ void test_sphere_default_transformation() {
 }
 
 void test_sphere_modifying_transformation() {
-    SPHERE_Sphere* s = SPHERE_new(0, 0, 0, 1);
+    SPHERE_Sphere* s = SPHERE_new();
     MATRIX_Matrix* t = MATRIX_new_translation(2, 3, 4);
     SPHERE_set_transform(s, t);
     TEST_ASSERT_TRUE(MATRIX_is_equal(t, s->transform));
@@ -99,7 +99,7 @@ void test_sphere_modifying_transformation() {
 }
 
 void test_sphere_intersect_scaled_ray() {
-    SPHERE_Sphere* s = SPHERE_new(0, 0, 0, 1);
+    SPHERE_Sphere* s = SPHERE_new();
     MATRIX_Matrix* m = MATRIX_new_scaling(2, 2, 2);
     SPHERE_set_transform(s, m);
     MATRIX_delete(m);
@@ -115,7 +115,7 @@ void test_sphere_intersect_scaled_ray() {
 }
 
 void test_sphere_intersect_translated_ray() {
-    SPHERE_Sphere* s = SPHERE_new(0, 0, 0, 1);
+    SPHERE_Sphere* s = SPHERE_new();
     MATRIX_Matrix* m = MATRIX_new_translation(5, 0, 0);
     SPHERE_set_transform(s, m);
     MATRIX_delete(m);
@@ -127,6 +127,123 @@ void test_sphere_intersect_translated_ray() {
     RAY_delete_intersections(intersections);
     RAY_delete(r);
 }
+
+void test_normal_on_sphere_at_point_on_x_axis() {
+    SPHERE_Sphere* s = SPHERE_new();
+    TUPLES_Point* p = TUPLES_new_point(1, 0, 0);
+    TUPLES_Vector* v = SPHERE_normal_at(s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(1, v->x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v->y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    SPHERE_delete(s);
+    TUPLES_delete_all(p, v);
+}
+
+void test_normal_on_sphere_at_point_on_y_axis() {
+    SPHERE_Sphere* s = SPHERE_new();
+    TUPLES_Point* p = TUPLES_new_point(0, 1, 0);
+    TUPLES_Vector* v = SPHERE_normal_at(s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v->x);
+    TEST_ASSERT_EQUAL_DOUBLE(1, v->y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    SPHERE_delete(s);
+    TUPLES_delete_all(p, v);
+}
+
+void test_normal_on_sphere_at_point_on_z_axis() {
+    SPHERE_Sphere* s = SPHERE_new();
+    TUPLES_Point* p = TUPLES_new_point(0, 0, 1);
+    TUPLES_Vector* v = SPHERE_normal_at(s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v->x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v->y);
+    TEST_ASSERT_EQUAL_DOUBLE(1, v->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    SPHERE_delete(s);
+    TUPLES_delete_all(p, v);
+}
+
+void test_normal_on_sphere_at_point_on_nonaxial() {
+    SPHERE_Sphere* s = SPHERE_new();
+    double sqrt3over3 = sqrt(3.0) / 3.0;
+    TUPLES_Point* p = TUPLES_new_point(sqrt3over3, sqrt3over3, sqrt3over3);
+    TUPLES_Vector* v = SPHERE_normal_at(s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v->x);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v->y);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    SPHERE_delete(s);
+    TUPLES_delete_all(p, v);
+}
+
+void test_normal_should_be_normalized_vector() {
+    SPHERE_Sphere* s = SPHERE_new();
+    double sqrt3over3 = sqrt(3.0) / 3.0;
+    TUPLES_Point* p = TUPLES_new_point(sqrt3over3, sqrt3over3, sqrt3over3);
+    TUPLES_Vector* v = SPHERE_normal_at(s, p);
+    TUPLES_Vector nv;
+    TUPLES_copy(&nv, v);
+    TUPLES_normalize(&nv);
+    TEST_ASSERT_EQUAL_DOUBLE(nv.x, v->x);
+    TEST_ASSERT_EQUAL_DOUBLE(nv.y, v->y);
+    TEST_ASSERT_EQUAL_DOUBLE(nv.z, v->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    SPHERE_delete(s);
+    TUPLES_destroy(&nv);
+    TUPLES_delete_all(p, v);
+}
+
+void test_compute_normal_on_translated_sphere() {
+    SPHERE_Sphere* s = SPHERE_new();
+    MATRIX_Matrix* t = MATRIX_new_translation(0, 1, 0);
+    SPHERE_set_transform(s, t);
+    TUPLES_Point* p = TUPLES_new_point(0, 1.70711, -0.70711);
+    TUPLES_Vector* normal = SPHERE_normal_at(s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, normal->x);
+    TEST_ASSERT_EQUAL_DOUBLE(0.70711, normal->y);
+    TEST_ASSERT_EQUAL_DOUBLE(-0.70711, normal->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(normal));
+    SPHERE_delete(s);
+    MATRIX_delete(t);
+    TUPLES_delete_all(p, normal);
+}
+
+void test_compute_normal_on_transformed_sphere() {
+    SPHERE_Sphere* s = SPHERE_new();
+    MATRIX_Matrix* scaling = MATRIX_new_scaling(1, 0.5, 1);
+    MATRIX_Matrix* rotation = MATRIX_new_rotation_z(M_PI / 5.0);
+    MATRIX_Matrix* transform_m = MATRIX_multiply(scaling, rotation);
+    SPHERE_set_transform(s, transform_m);
+    TUPLES_Point* p = TUPLES_new_point(0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0);
+    TUPLES_Vector* normal = SPHERE_normal_at(s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, normal->x);
+    TEST_ASSERT_EQUAL_DOUBLE(0.97014, normal->y);
+    TEST_ASSERT_EQUAL_DOUBLE(-0.242535625, normal->z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(normal));
+    SPHERE_delete(s);
+    MATRIX_delete_all(scaling, rotation, transform_m);
+    TUPLES_delete_all(p, normal);
+}
+
+void test_sphere_has_a_default_material() {
+    SPHERE_Sphere* s = SPHERE_new();
+    MATERIAL_Material* m = MATERIAL_new();
+    TEST_ASSERT_TRUE(MATERIAL_is_equal(s->material, m));
+    MATERIAL_delete(m);
+    SPHERE_delete(s);
+}
+
+void test_sphere_may_be_assigned_material() {
+    SPHERE_Sphere* s = SPHERE_new();
+    MATERIAL_Material* m = MATERIAL_new();
+    m->ambient = 1;
+    SPHERE_set_material(s, m);
+    TEST_ASSERT_TRUE(MATERIAL_is_equal(m, s->material));
+    SPHERE_delete(s);
+    MATERIAL_delete(m);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -140,5 +257,14 @@ int main(void)
     RUN_TEST(test_sphere_modifying_transformation);
     RUN_TEST(test_sphere_intersect_scaled_ray);
     RUN_TEST(test_sphere_intersect_translated_ray);
+    RUN_TEST(test_normal_on_sphere_at_point_on_x_axis);
+    RUN_TEST(test_normal_on_sphere_at_point_on_y_axis);
+    RUN_TEST(test_normal_on_sphere_at_point_on_z_axis);
+    RUN_TEST(test_normal_on_sphere_at_point_on_nonaxial);
+    RUN_TEST(test_normal_should_be_normalized_vector);
+    RUN_TEST(test_compute_normal_on_translated_sphere);
+    RUN_TEST(test_compute_normal_on_transformed_sphere);
+    RUN_TEST(test_sphere_has_a_default_material);
+    RUN_TEST(test_sphere_may_be_assigned_material);
     return UNITY_END();
 }

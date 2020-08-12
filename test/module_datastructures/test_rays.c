@@ -64,7 +64,7 @@ void test_compute_point_from_a_distance() {
 
 void test_intersection() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0,0,0,1);
+    SPHERE_init(&s);
     RAY_Intersections* intersections = RAY_new_intersections();
     RAY_add_intersection(intersections, 4.0, &s);
     RAY_add_intersection(intersections, 6.0, &s);
@@ -76,7 +76,7 @@ void test_intersection() {
 
 void test_find_hit_with_all_positive_ts() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0,0,0,1);
+    SPHERE_init(&s);
     RAY_Intersections* intersections = RAY_new_intersections();
     RAY_add_intersection(intersections, 1, &s);
     RAY_add_intersection(intersections, 2, &s);
@@ -89,7 +89,7 @@ void test_find_hit_with_all_positive_ts() {
 
 void test_find_hit_with_a_negative_t() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0,0,0,1);
+    SPHERE_init(&s);
     RAY_Intersections* intersections = RAY_new_intersections();
     RAY_add_intersection(intersections, -1, &s);
     RAY_add_intersection(intersections, 1, &s);
@@ -102,7 +102,7 @@ void test_find_hit_with_a_negative_t() {
 
 void test_find_hit_with_negative_ts() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0,0,0,1);
+    SPHERE_init(&s);
     RAY_Intersections* intersections = RAY_new_intersections();
     RAY_add_intersection(intersections, -1, &s);
     RAY_add_intersection(intersections, -2, &s);
@@ -114,7 +114,7 @@ void test_find_hit_with_negative_ts() {
 
 void test_find_hit_with_lowest_nonnegative_t() {
     SPHERE_Sphere s;
-    SPHERE_init(&s, 0,0,0,1);
+    SPHERE_init(&s);
     RAY_Intersections* intersections = RAY_new_intersections();
     RAY_add_intersection(intersections, 5, &s);
     RAY_add_intersection(intersections, 7, &s);

@@ -1,6 +1,7 @@
 #ifndef MODULE_DATASTRUCTURES_TUPLE
 #define MODULE_DATASTRUCTURES_TUPLE
 
+#include "utilities.h"
 #include <stdbool.h>
 
 /**
@@ -86,6 +87,7 @@ double TUPLES_magnitude(const TUPLES_Vector* v);
 void TUPLES_normalize(TUPLES_Vector* v);
 double TUPLES_dot(const TUPLES_Vector* v1, const TUPLES_Vector* v2);
 void TUPLES_cross(TUPLES_Vector* dest, const TUPLES_Vector* v1, const TUPLES_Vector* v2);
+TUPLES_Vector* TUPLES_reflect(const TUPLES_Vector* v, const TUPLES_Vector* normal);
 TUPLES_Color* TUPLES_new_color(double red, double green, double blue);
 
 /**
@@ -95,6 +97,7 @@ TUPLES_Color* TUPLES_new_color(double red, double green, double blue);
  * @param c2
  */
 void TUPLES_multiply_colors(TUPLES_Color* dest, const TUPLES_Color* c1, const TUPLES_Color* c2);
+bool TUPLES_is_equal(const TUPLES_Tuple* t1, const TUPLES_Tuple* t2);
 
 void TUPLES_copy(TUPLES_Tuple* dest, const TUPLES_Tuple* src);
 void TUPLES_destroy(TUPLES_Tuple* tuple);

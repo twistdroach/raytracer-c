@@ -37,3 +37,19 @@ target_link_libraries(module_datastructures_sphere
         Unity
         m)
 add_test(datastructures_sphere module_datastructures_sphere)
+
+add_executable(module_datastructures_lights
+        test_lights.c)
+target_link_libraries(module_datastructures_lights
+        module_datastructures
+        Unity
+        m)
+add_test(datastructures_lights module_datastructures_lights)
+
+add_executable(module_datastructures_material
+        test_material.c)
+target_link_libraries(module_datastructures_material
+        module_datastructures
+        Unity
+        m)
+add_test(datastructures_material module_datastructures_material)

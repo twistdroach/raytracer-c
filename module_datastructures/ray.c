@@ -72,7 +72,7 @@ RAY_Intersections* RAY_new_intersections() {
     return intersections;
 }
 
-int compare_RAY_Xs(const void* a, const void* b) {
+static int compare_RAY_Xs(const void* a, const void* b) {
     double ad = ((RAY_Xs*)a)->t;
     double bd = ((RAY_Xs*)b)->t;
     if (ad > bd) {
