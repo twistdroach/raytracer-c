@@ -47,6 +47,8 @@ TUPLES_Color* CANVAS_read_pixel(const CANVAS_Canvas* canvas, uint x, uint y) {
 void CANVAS_write_pixel(CANVAS_Canvas* canvas, uint x, uint y, const TUPLES_Color* color) {
     assert(canvas);
     assert(color);
+    assert(x < canvas->width);
+    assert(y < canvas->height);
     TUPLES_Color* dest = CANVAS_read_pixel(canvas, x, y);
     TUPLES_copy(dest, color);
 }
