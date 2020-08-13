@@ -113,3 +113,4 @@ TUPLES_Vector* SPHERE_normal_at(const SPHERE_Sphere* sphere, const TUPLES_Point*
     return world_normal;
 
 }
+

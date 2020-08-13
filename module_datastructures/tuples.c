@@ -198,3 +198,4 @@ bool TUPLES_is_equal(const TUPLES_Tuple* t1, const TUPLES_Tuple* t2) {
             double_equal(t1->z, t2->z) &&
             double_equal(t1->w, t2->w));
 }
+

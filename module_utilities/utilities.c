@@ -11,3 +11,4 @@ bool double_equal(double a, double b)
     //ghetto - but likely close enough, we'll see
     return (fabs(a - b) < 0.00001);
 }
+
