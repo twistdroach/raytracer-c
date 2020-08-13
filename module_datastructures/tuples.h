@@ -81,8 +81,8 @@ void TUPLES_subtract(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const TUPLES_Tu
  */
 void TUPLES_negate(TUPLES_Vector* vec);
 
-void TUPLES_multiply(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const double);
-void TUPLES_divide(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const double);
+void TUPLES_multiply(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, double);
+void TUPLES_divide(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, double);
 double TUPLES_magnitude(const TUPLES_Vector* v);
 void TUPLES_normalize(TUPLES_Vector* v);
 double TUPLES_dot(const TUPLES_Vector* v1, const TUPLES_Vector* v2);

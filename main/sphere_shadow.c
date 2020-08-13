@@ -17,7 +17,7 @@ int main(void) {
         TUPLES_Color* red = TUPLES_new_color(1, 0, 0);
 
         TUPLES_Point* ray_origin = TUPLES_new_point(0, 0, -5);
-        SPHERE_Sphere* sphere = SPHERE_new(0,0,0,1);
+        SPHERE_Sphere* sphere = SPHERE_new();
         for (uint y=0; y < canvas_pixels - 1; y++) {
             double world_y = half - pixel_size * y;
             for (uint x=0; x < canvas_pixels - 1; x++) {
