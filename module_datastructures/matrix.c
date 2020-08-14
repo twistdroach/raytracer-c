@@ -7,7 +7,7 @@
 #include "utilities.h"
 
 MATRIX_Matrix* MATRIX_new(uint width, uint height) {
-    MATRIX_Matrix* m = (MATRIX_Matrix*) malloc(sizeof(MATRIX_Matrix));
+    MATRIX_Matrix* m = malloc(sizeof(MATRIX_Matrix));
     if (!m)
         Throw(E_MALLOC_FAILED);
 
@@ -15,20 +15,20 @@ MATRIX_Matrix* MATRIX_new(uint width, uint height) {
     return m;
 }
 
-static uint calculate_index(const MATRIX_Matrix* matrix, uint row, uint column) {
+inline static uint calculate_index(const MATRIX_Matrix* matrix, uint row, uint column) {
     assert(column < matrix->width);
     assert(row < matrix->height);
     return row * matrix->width + column;
 }
 
-double MATRIX_read_cell(const MATRIX_Matrix* matrix, uint row, uint column) {
+inline double MATRIX_read_cell(const MATRIX_Matrix* matrix, uint row, uint column) {
     assert(matrix);
     assert(matrix->data);
     uint ndx = calculate_index(matrix, row, column);
     return matrix->data[ndx];
 }
 
-void MATRIX_write_cell(MATRIX_Matrix* matrix, uint row, uint column, double value) {
+inline void MATRIX_write_cell(MATRIX_Matrix* matrix, uint row, uint column, double value) {
     assert(matrix);
     uint ndx = calculate_index(matrix, row, column);
     matrix->data[ndx] = value;
@@ -56,12 +56,8 @@ void MATRIX_fill(MATRIX_Matrix* matrix, ...) {
 void MATRIX_copy(MATRIX_Matrix* dest, const MATRIX_Matrix* source) {
     assert(dest);
     assert(source);
-    assert(source->data);
     assert(dest != source);
-    MATRIX_init(dest, source->width, source->height);
-    for (uint ndx=0; ndx < source->height * source->width; ndx++) {
-        dest->data[ndx] = source->data[ndx];
-    }
+    *dest = *source;
 }
 
 bool MATRIX_is_equal(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2) {
@@ -82,11 +78,10 @@ void MATRIX_init(MATRIX_Matrix* matrix, uint width, uint height) {
     assert(matrix);
     assert(width > 0);
     assert(height > 0);
+    assert(width < 5);
+    assert(height < 5);
     matrix->width = width;
     matrix->height = height;
-    matrix->data = (double*) malloc(width * height * sizeof(double));
-    if (!matrix->data)
-        Throw(E_MALLOC_FAILED);
 
     for (uint i=0; i < width * height; i++) {
         matrix->data[i] = 0.0;
@@ -285,13 +280,18 @@ double MATRIX_determinant(const MATRIX_Matrix* matrix) {
     return determinant;
 }
 
-MATRIX_Matrix* MATRIX_submatrix(const MATRIX_Matrix* matrix, uint row, uint column) {
+MATRIX_Matrix* MATRIX_submatrix(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix, uint row, uint column) {
     assert(matrix);
     assert(row < matrix->height);
     assert(column < matrix->width);
     assert(matrix->height >= 3);
     assert(matrix->width >= 3);
-    MATRIX_Matrix* submatrix = MATRIX_new(matrix->width - 1, matrix->height - 1);
+    MATRIX_Matrix* submatrix = dest;
+    if (dest) {
+        MATRIX_init(submatrix, matrix->width - 1, matrix->height - 1);
+    } else {
+        submatrix = MATRIX_new(matrix->width - 1, matrix->height - 1);
+    }
     for (uint write_row=0; write_row < submatrix->height; write_row++) {
         for (uint write_column=0; write_column < submatrix->width; write_column++) {
             uint read_row = write_row;
@@ -308,9 +308,9 @@ double MATRIX_minor(const MATRIX_Matrix* matrix, uint row, uint column) {
     assert(matrix);
     assert(row < matrix->height);
     assert(column < matrix->width);
-    MATRIX_Matrix* submatrix = MATRIX_submatrix(matrix, row, column);
-    double determinant = MATRIX_determinant(submatrix);
-    MATRIX_delete(submatrix);
+    MATRIX_Matrix submatrix;
+    MATRIX_submatrix(&submatrix, matrix, row, column);
+    double determinant = MATRIX_determinant(&submatrix);
     return determinant;
 }
 
@@ -346,8 +346,6 @@ MATRIX_Matrix* MATRIX_inverse(const MATRIX_Matrix* matrix) {
 
 void MATRIX_destroy(MATRIX_Matrix* matrix) {
     assert(matrix);
-    assert(matrix->data);
-    free(matrix->data);
 }
 
 void MATRIX_delete(MATRIX_Matrix* matrix) {

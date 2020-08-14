@@ -11,7 +11,7 @@
 
 typedef struct {
     uint width, height;
-    double* data;
+    double data[16];
 } MATRIX_Matrix;
 
 MATRIX_Matrix* MATRIX_new(uint width, uint height);
@@ -31,13 +31,13 @@ double MATRIX_determinant(const MATRIX_Matrix* matrix);
 
 /**
  * Returns a ptr to a copy of the matrix with the row & column removed.
- * Must call MATRIX_delete() on the returned ptr to avoid leaking memory.
+ * Must call MATRIX_delete() on the returned ptr to avoid leaking memory (unless you provided dest)
  * @param matrix
  * @param row
  * @param column
  * @return
  */
-MATRIX_Matrix* MATRIX_submatrix(const MATRIX_Matrix* matrix, uint row, uint column);
+MATRIX_Matrix* MATRIX_submatrix(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix, uint row, uint column);
 
 double MATRIX_minor(const MATRIX_Matrix* matrix, uint row, uint column);
 

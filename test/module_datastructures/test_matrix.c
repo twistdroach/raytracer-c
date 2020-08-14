@@ -206,7 +206,7 @@ void test_3x3_submatrix()
     MATRIX_fill(m, 1.0, 5.0, 0.0,
                   -3.0, 2.0, 7.0,
                    0.0, 6.0, -3.0);
-    MATRIX_Matrix* submatrix = MATRIX_submatrix(m, 0, 2);
+    MATRIX_Matrix* submatrix = MATRIX_submatrix(NULL, m, 0, 2);
     MATRIX_Matrix* expected = MATRIX_new(2, 2);
     MATRIX_fill(expected, -3.0, 2.0,
                     0.0, 6.0);
@@ -229,7 +229,7 @@ void test_4x4_submatrix()
                    -8.0, 5.0, 8.0, 6.0,
                    -1.0, 0.0, 8.0, 2.0,
                    -7.0, 1.0, -1.0, 1.0);
-    MATRIX_Matrix* submatrix = MATRIX_submatrix(m, 2, 1);
+    MATRIX_Matrix* submatrix = MATRIX_submatrix(NULL, m, 2, 1);
     MATRIX_Matrix* expected = MATRIX_new(3, 3);
     MATRIX_fill(expected, -6.0, 1.0, 6.0,
                    -8.0, 8.0, 6.0,
@@ -252,7 +252,7 @@ void test_minor_of_3x3_matrix()
     MATRIX_fill(matrix, 3.0, 5.0, 0.0,
                    2.0, -1.0, -7.0,
                    6.0, -1.0, 5.0);
-    MATRIX_Matrix* submatrix = MATRIX_submatrix(matrix, 1, 0);
+    MATRIX_Matrix* submatrix = MATRIX_submatrix(NULL, matrix, 1, 0);
     double determinant = MATRIX_determinant(submatrix);
     TEST_ASSERT_EQUAL_DOUBLE_MESSAGE(25.0, determinant, "Determinant was calculated incorrectly");
 
