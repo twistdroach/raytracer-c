@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_C_STANDARD 11)
 set(TARGET_GROUP test CACHE STRING "Group to build")
+# clang
+#add_compile_options(-Wall -g -Ofast -march=native -Wextra -pedantic -Werror -Wno-unused-result)
+# gcc
+#add_compile_options(-Wall -g -Ofast -march=native -Wextra -pedantic -Werror -Wno-unused-result -Wno-clobbered)
+
 add_compile_options(-Wall -g -O0 -Wextra -pedantic -Werror)
 
 add_subdirectory(module_datastructures)
