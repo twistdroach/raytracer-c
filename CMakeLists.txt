@@ -7,6 +7,8 @@ add_compile_options(-Wall -g -O0 -Wextra -pedantic -Werror)
 
 add_subdirectory(module_datastructures)
 add_subdirectory(module_utilities)
+
+add_definitions(-DUNITY_INCLUDE_DOUBLE -DUNITY_DOUBLE_PRECISION=0.00001f -DUNITY_INCLUDE_EXEC_TIME)
 add_subdirectory(external)
 
 if(TARGET_GROUP STREQUAL production)
