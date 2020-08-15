@@ -3,7 +3,7 @@
 
 #include "tuples.h"
 
-typedef struct {
+typedef struct LIGHTS_PointLight {
     TUPLES_Point position;
     TUPLES_Color intensity;
 } LIGHTS_PointLight;

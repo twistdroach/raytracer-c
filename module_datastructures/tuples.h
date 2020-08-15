@@ -7,7 +7,7 @@
 /**
  * struct to represent a point or vector
  */
-typedef union TUPLES_Tuple_ {
+typedef union TUPLES_Tuple {
     struct {
         double x, y, z, w;
     };

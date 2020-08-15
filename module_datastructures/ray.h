@@ -4,7 +4,7 @@
 #include "tuples.h"
 #include "matrix.h"
 
-typedef struct {
+typedef struct RAY_Ray {
     TUPLES_Point  origin;
     TUPLES_Vector direction;
 } RAY_Ray;
@@ -22,12 +22,12 @@ void RAY_position(TUPLES_Point* pos, const RAY_Ray* ray, double t);
 
 
 
-typedef struct {
+typedef struct RAY_Xs {
     double t;
     const void* object;
 } RAY_Xs;
 
-typedef struct {
+typedef struct RAY_Intersections {
     unsigned int count;
     RAY_Xs* xs;
 } RAY_Intersections;
@@ -35,6 +35,13 @@ typedef struct {
 RAY_Intersections* RAY_new_intersections();
 void RAY_add_intersection(RAY_Intersections* intersections, double intersection, const void* object);
 void RAY_delete_intersections(RAY_Intersections* intersections);
+
+/**
+ * Returns the intersection with the lowest positive t value.
+ * Returned ptr should not be freed.  To free - free the full RAY_Intersections object.
+ * @param intersections
+ * @return
+ */
 RAY_Xs* RAY_hit(RAY_Intersections* intersections);
 
 #endif //DATA_STRUCTURES_RAY_H

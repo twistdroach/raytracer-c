@@ -44,11 +44,8 @@ void RAY_transform(RAY_Ray* dest, const RAY_Ray* orig, const MATRIX_Matrix* matr
     assert(orig);
     assert(matrix);
     assert(MATRIX_is_invertible(matrix));
-    TUPLES_Point* new_origin = MATRIX_multiply_tuple(matrix, &orig->origin);
-    TUPLES_Vector* new_direction = MATRIX_multiply_tuple(matrix, &orig->direction);
-    dest->origin = *new_origin;
-    dest->direction = *new_direction;
-    TUPLES_delete_all(new_origin, new_direction);
+    MATRIX_multiply_tuple(&dest->origin, matrix, &orig->origin);
+    MATRIX_multiply_tuple(&dest->direction, matrix, &orig->direction);
 }
 
 void RAY_destroy(RAY_Ray* ray) {

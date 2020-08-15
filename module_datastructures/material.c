@@ -30,9 +30,7 @@ void MATERIAL_copy(MATERIAL_Material* dest, const MATERIAL_Material* src) {
     *dest = *src;
 }
 
-TUPLES_Color* MATERIAL_lighting(const MATERIAL_Material* material, const LIGHTS_PointLight* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector) {
-    TUPLES_Color* result = TUPLES_new_color(0, 0, 0);
-
+void MATERIAL_lighting(TUPLES_Color* dest, const MATERIAL_Material* material, const LIGHTS_PointLight* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector) {
     TUPLES_Color effective_color;
     TUPLES_multiply_colors(&effective_color, &material->color, &light->intensity);
 
@@ -67,8 +65,7 @@ TUPLES_Color* MATERIAL_lighting(const MATERIAL_Material* material, const LIGHTS_
         }
     }
 
-    TUPLES_add(result, &ambient, &diffuse);
-    TUPLES_add(result, result, &specular);
+    TUPLES_add(dest, &ambient, &diffuse);
+    TUPLES_add(dest, dest, &specular);
     TUPLES_destroy_all(&effective_color, &lightv, &ambient, &diffuse, &specular);
-    return result;
 }

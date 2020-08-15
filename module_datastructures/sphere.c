@@ -41,9 +41,9 @@ RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere* sphere, const RAY_Ray* 
     assert(original_ray);
     assert(MATRIX_is_invertible(sphere->transform));
     RAY_Ray ray;
-    MATRIX_Matrix* inv_transform = MATRIX_inverse(SPHERE_get_transform(sphere));
-    RAY_transform(&ray, original_ray, inv_transform);
-    MATRIX_delete(inv_transform);
+    MATRIX_Matrix inv_transform;
+    MATRIX_inverse(&inv_transform, SPHERE_get_transform(sphere));
+    RAY_transform(&ray, original_ray, &inv_transform);
 
     RAY_Intersections* intersections = RAY_new_intersections();
     TUPLES_Vector sphere_to_ray;
@@ -93,24 +93,20 @@ const MATRIX_Matrix* SPHERE_get_transform(const SPHERE_Sphere* sphere) {
     return  sphere->transform;
 }
 
-TUPLES_Vector* SPHERE_normal_at(const SPHERE_Sphere* sphere, const TUPLES_Point* world_point) {
+void SPHERE_normal_at(TUPLES_Vector* world_normal, const SPHERE_Sphere* sphere, const TUPLES_Point* world_point) {
     assert(sphere);
     assert(world_point);
+    assert(world_normal);
 
-    MATRIX_Matrix* inverse = MATRIX_inverse(SPHERE_get_transform(sphere));
-    TUPLES_Point* object_point = MATRIX_multiply_tuple(inverse, world_point);
+    MATRIX_Matrix inverse;
+    TUPLES_Point object_point;
     TUPLES_Vector object_normal;
-    TUPLES_subtract(&object_normal, object_point, &sphere->origin);
-    MATRIX_transpose(inverse);
-    TUPLES_Vector* world_normal = MATRIX_multiply_tuple(inverse, &object_normal);
+
+    MATRIX_inverse(&inverse, SPHERE_get_transform(sphere));
+    MATRIX_multiply_tuple(&object_point, &inverse, world_point);
+    TUPLES_subtract(&object_normal, &object_point, &sphere->origin);
+    MATRIX_transpose(&inverse);
+    MATRIX_multiply_tuple(world_normal, &inverse, &object_normal);
     world_normal->w = 0;
     TUPLES_normalize(world_normal);
-
-    TUPLES_destroy(&object_normal);
-    TUPLES_delete(object_point);
-    MATRIX_delete_all(inverse);
-
-    return world_normal;
-
 }
-

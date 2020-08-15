@@ -28,13 +28,14 @@ void test_lighting_with_eye_between_light_and_surface() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
-    TUPLES_Color* result = MATERIAL_lighting(material, pl, position, eyev, normalv);
+    TUPLES_Color result;
+    MATERIAL_lighting(&result, material, pl, position, eyev, normalv);
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.9, 1.9, 1.9);
-    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, result));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
     LIGHTS_delete_pointlight(pl);
     MATERIAL_delete(material);
-    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, result, expected_result);
+    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
 
 void test_lighting_with_eye_between_light_and_surface_eye_offset_45_deg() {
@@ -47,13 +48,14 @@ void test_lighting_with_eye_between_light_and_surface_eye_offset_45_deg() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
-    TUPLES_Color* result = MATERIAL_lighting(material, pl, position, eyev, normalv);
+    TUPLES_Color result;
+    MATERIAL_lighting(&result, material, pl, position, eyev, normalv);
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.0, 1.0, 1.0);
-    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, result));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
     LIGHTS_delete_pointlight(pl);
     MATERIAL_delete(material);
-    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, result, expected_result);
+    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
 
 void test_lighting_with_eye_opposite_surface_light_offset_45_deg() {
@@ -66,13 +68,14 @@ void test_lighting_with_eye_opposite_surface_light_offset_45_deg() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
-    TUPLES_Color* result = MATERIAL_lighting(material, pl, position, eyev, normalv);
+    TUPLES_Color result;
+    MATERIAL_lighting(&result, material, pl, position, eyev, normalv);
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.7364, 0.7364, 0.7364);
-    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, result));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
     LIGHTS_delete_pointlight(pl);
     MATERIAL_delete(material);
-    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, result, expected_result);
+    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
 
 void test_lighting_with_eye_in_path_of_reflection_vector() {
@@ -85,13 +88,14 @@ void test_lighting_with_eye_in_path_of_reflection_vector() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
-    TUPLES_Color* result = MATERIAL_lighting(material, pl, position, eyev, normalv);
+    TUPLES_Color result;
+    MATERIAL_lighting(&result, material, pl, position, eyev, normalv);
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.6364, 1.6364, 1.6364);
-    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, result));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
     LIGHTS_delete_pointlight(pl);
     MATERIAL_delete(material);
-    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, result, expected_result);
+    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
 
 void test_lighting_with_light_behind_surface() {
@@ -104,13 +108,14 @@ void test_lighting_with_light_behind_surface() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
-    TUPLES_Color* result = MATERIAL_lighting(material, pl, position, eyev, normalv);
+    TUPLES_Color result;
+    MATERIAL_lighting(&result, material, pl, position, eyev, normalv);
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.1, 0.1, 0.1);
-    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, result));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
     LIGHTS_delete_pointlight(pl);
     MATERIAL_delete(material);
-    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, result, expected_result);
+    TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
 
 

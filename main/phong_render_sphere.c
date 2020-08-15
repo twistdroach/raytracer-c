@@ -33,31 +33,34 @@ int main(void) {
                     for (uint x=0; x < canvas_pixels - 1; x++) {
                         double world_x = -half + pixel_size * x;
                         TUPLES_Point position;
-                        TUPLES_init_point(&position, world_x, world_y, wall_z);
                         TUPLES_Vector v_tmp;
+                        RAY_Ray r;
+
+                        TUPLES_init_point(&position, world_x, world_y, wall_z);
                         TUPLES_subtract(&v_tmp, ray_origin, &position);
                         TUPLES_normalize(&v_tmp);
-                        RAY_Ray r;
                         RAY_init_from_tuples(&r, &position, &v_tmp);
+
                         RAY_Intersections* xs = SPHERE_intersect(sphere, &r);
                         RAY_Xs* hit = RAY_hit(xs);
+
                         if (hit) {
                             TUPLES_Point point_of_intersection;
+                            TUPLES_Vector normal;
+                            TUPLES_Vector eyev;
+                            TUPLES_Color color;
+
                             RAY_position(&point_of_intersection, &r, hit->t);
 
-                            TUPLES_Vector* normal = SPHERE_normal_at((SPHERE_Sphere*)hit->object, &point_of_intersection);
+                            SPHERE_normal_at(&normal, (SPHERE_Sphere*)hit->object, &point_of_intersection);
 
-                            TUPLES_Vector eyev;
                             TUPLES_copy(&eyev, &r.direction);
                             TUPLES_negate(&eyev);
 
-                            TUPLES_Color* color = MATERIAL_lighting(((SPHERE_Sphere*)hit->object)->material, light, &point_of_intersection, &eyev, normal);
-                            CANVAS_write_pixel(canvas, x, y, color);
-                            TUPLES_destroy_all(&point_of_intersection, &eyev);
-                            TUPLES_delete_all(normal, color);
+                            MATERIAL_lighting(&color, ((SPHERE_Sphere*)hit->object)->material, light, &point_of_intersection, &eyev, &normal);
+                            CANVAS_write_pixel(canvas, x, y, &color);
                         }
                         RAY_delete_intersections(xs);
-                        TUPLES_destroy_all(&position, &v_tmp);
                         RAY_destroy(&r);
                     }
                 }

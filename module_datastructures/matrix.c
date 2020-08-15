@@ -80,6 +80,7 @@ void MATRIX_init(MATRIX_Matrix* matrix, uint width, uint height) {
     assert(height > 0);
     assert(width < 5);
     assert(height < 5);
+
     matrix->width = width;
     matrix->height = height;
 
@@ -220,15 +221,16 @@ static double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tu
             MATRIX_read_cell(matrix, row, 3) * tuple->w;
 }
 
-TUPLES_Tuple* MATRIX_multiply_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
+void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
     assert(matrix);
     assert(tuple);
+    assert(dest);
     assert(matrix->height == 4 && matrix->width == 4);
-    TUPLES_Tuple* dest = TUPLES_new_point(multiply_row_by_tuple(matrix, tuple, 0),
-                                          multiply_row_by_tuple(matrix, tuple, 1),
-                                          multiply_row_by_tuple(matrix, tuple, 2));
+
+    TUPLES_init_point(dest, multiply_row_by_tuple(matrix, tuple, 0),
+                            multiply_row_by_tuple(matrix, tuple, 1),
+                            multiply_row_by_tuple(matrix, tuple, 2));
     dest->w = multiply_row_by_tuple(matrix, tuple, 3);
-    return dest;
 }
 
 static void transpose_cell(MATRIX_Matrix* matrix, uint row, uint column) {
@@ -286,7 +288,9 @@ MATRIX_Matrix* MATRIX_submatrix(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix
     assert(column < matrix->width);
     assert(matrix->height >= 3);
     assert(matrix->width >= 3);
+
     MATRIX_Matrix* submatrix = dest;
+
     if (dest) {
         MATRIX_init(submatrix, matrix->width - 1, matrix->height - 1);
     } else {
@@ -329,19 +333,20 @@ bool MATRIX_is_invertible(const MATRIX_Matrix* matrix) {
     return !double_equal(MATRIX_determinant(matrix), 0.0);
 }
 
-MATRIX_Matrix* MATRIX_inverse(const MATRIX_Matrix* matrix) {
+void MATRIX_inverse(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix) {
     assert(matrix);
+    assert(dest);
     assert(MATRIX_is_invertible(matrix));
-    MATRIX_Matrix* inverse = MATRIX_new(matrix->width, matrix->height);
+
+    MATRIX_init(dest, matrix->width, matrix->height);
     double determinant = MATRIX_determinant(matrix);
     for (uint row=0; row<matrix->height; row++) {
         for (uint column=0; column<matrix->width; column++) {
             double cofactor = MATRIX_cofactor(matrix, row, column);
             // we are transposing also so column / row are swapped below
-            MATRIX_write_cell(inverse, column, row, cofactor/determinant);
+            MATRIX_write_cell(dest, column, row, cofactor/determinant);
         }
     }
-    return inverse;
 }
 
 void MATRIX_destroy(MATRIX_Matrix* matrix) {

@@ -4,7 +4,7 @@
 #include "tuples.h"
 #include <stdlib.h>
 
-typedef struct CANVAS_Canvas_ {
+typedef struct CANVAS_Canvas {
    uint width, height;
    TUPLES_Color* data;
 } CANVAS_Canvas;

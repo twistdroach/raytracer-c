@@ -131,67 +131,72 @@ void test_sphere_intersect_translated_ray() {
 void test_normal_on_sphere_at_point_on_x_axis() {
     SPHERE_Sphere* s = SPHERE_new();
     TUPLES_Point* p = TUPLES_new_point(1, 0, 0);
-    TUPLES_Vector* v = SPHERE_normal_at(s, p);
-    TEST_ASSERT_EQUAL_DOUBLE(1, v->x);
-    TEST_ASSERT_EQUAL_DOUBLE(0, v->y);
-    TEST_ASSERT_EQUAL_DOUBLE(0, v->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    TUPLES_Vector v;
+    SPHERE_normal_at(&v, s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(1, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&v));
     SPHERE_delete(s);
-    TUPLES_delete_all(p, v);
+    TUPLES_delete_all(p);
 }
 
 void test_normal_on_sphere_at_point_on_y_axis() {
     SPHERE_Sphere* s = SPHERE_new();
     TUPLES_Point* p = TUPLES_new_point(0, 1, 0);
-    TUPLES_Vector* v = SPHERE_normal_at(s, p);
-    TEST_ASSERT_EQUAL_DOUBLE(0, v->x);
-    TEST_ASSERT_EQUAL_DOUBLE(1, v->y);
-    TEST_ASSERT_EQUAL_DOUBLE(0, v->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    TUPLES_Vector v;
+    SPHERE_normal_at(&v, s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(1, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&v));
     SPHERE_delete(s);
-    TUPLES_delete_all(p, v);
+    TUPLES_delete_all(p);
 }
 
 void test_normal_on_sphere_at_point_on_z_axis() {
     SPHERE_Sphere* s = SPHERE_new();
     TUPLES_Point* p = TUPLES_new_point(0, 0, 1);
-    TUPLES_Vector* v = SPHERE_normal_at(s, p);
-    TEST_ASSERT_EQUAL_DOUBLE(0, v->x);
-    TEST_ASSERT_EQUAL_DOUBLE(0, v->y);
-    TEST_ASSERT_EQUAL_DOUBLE(1, v->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    TUPLES_Vector v;
+    SPHERE_normal_at(&v, s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(0, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(1, v.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&v));
     SPHERE_delete(s);
-    TUPLES_delete_all(p, v);
+    TUPLES_delete_all(p);
 }
 
 void test_normal_on_sphere_at_point_on_nonaxial() {
     SPHERE_Sphere* s = SPHERE_new();
     double sqrt3over3 = sqrt(3.0) / 3.0;
     TUPLES_Point* p = TUPLES_new_point(sqrt3over3, sqrt3over3, sqrt3over3);
-    TUPLES_Vector* v = SPHERE_normal_at(s, p);
-    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v->x);
-    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v->y);
-    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    TUPLES_Vector v;
+    SPHERE_normal_at(&v, s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(sqrt3over3, v.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&v));
     SPHERE_delete(s);
-    TUPLES_delete_all(p, v);
+    TUPLES_delete_all(p);
 }
 
 void test_normal_should_be_normalized_vector() {
     SPHERE_Sphere* s = SPHERE_new();
     double sqrt3over3 = sqrt(3.0) / 3.0;
     TUPLES_Point* p = TUPLES_new_point(sqrt3over3, sqrt3over3, sqrt3over3);
-    TUPLES_Vector* v = SPHERE_normal_at(s, p);
+    TUPLES_Vector v;
+    SPHERE_normal_at(&v, s, p);
     TUPLES_Vector nv;
-    TUPLES_copy(&nv, v);
+    TUPLES_copy(&nv, &v);
     TUPLES_normalize(&nv);
-    TEST_ASSERT_EQUAL_DOUBLE(nv.x, v->x);
-    TEST_ASSERT_EQUAL_DOUBLE(nv.y, v->y);
-    TEST_ASSERT_EQUAL_DOUBLE(nv.z, v->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(v));
+    TEST_ASSERT_EQUAL_DOUBLE(nv.x, v.x);
+    TEST_ASSERT_EQUAL_DOUBLE(nv.y, v.y);
+    TEST_ASSERT_EQUAL_DOUBLE(nv.z, v.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&v));
     SPHERE_delete(s);
     TUPLES_destroy(&nv);
-    TUPLES_delete_all(p, v);
+    TUPLES_delete_all(p);
 }
 
 void test_compute_normal_on_translated_sphere() {
@@ -199,14 +204,15 @@ void test_compute_normal_on_translated_sphere() {
     MATRIX_Matrix* t = MATRIX_new_translation(0, 1, 0);
     SPHERE_set_transform(s, t);
     TUPLES_Point* p = TUPLES_new_point(0, 1.70711, -0.70711);
-    TUPLES_Vector* normal = SPHERE_normal_at(s, p);
-    TEST_ASSERT_EQUAL_DOUBLE(0, normal->x);
-    TEST_ASSERT_EQUAL_DOUBLE(0.70711, normal->y);
-    TEST_ASSERT_EQUAL_DOUBLE(-0.70711, normal->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(normal));
+    TUPLES_Vector normal;
+    SPHERE_normal_at(&normal, s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, normal.x);
+    TEST_ASSERT_EQUAL_DOUBLE(0.70711, normal.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-0.70711, normal.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&normal));
     SPHERE_delete(s);
     MATRIX_delete(t);
-    TUPLES_delete_all(p, normal);
+    TUPLES_delete_all(p);
 }
 
 void test_compute_normal_on_transformed_sphere() {
@@ -216,14 +222,15 @@ void test_compute_normal_on_transformed_sphere() {
     MATRIX_Matrix* transform_m = MATRIX_multiply(scaling, rotation);
     SPHERE_set_transform(s, transform_m);
     TUPLES_Point* p = TUPLES_new_point(0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0);
-    TUPLES_Vector* normal = SPHERE_normal_at(s, p);
-    TEST_ASSERT_EQUAL_DOUBLE(0, normal->x);
-    TEST_ASSERT_EQUAL_DOUBLE(0.97014, normal->y);
-    TEST_ASSERT_EQUAL_DOUBLE(-0.242535625, normal->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(normal));
+    TUPLES_Vector normal;
+    SPHERE_normal_at(&normal, s, p);
+    TEST_ASSERT_EQUAL_DOUBLE(0, normal.x);
+    TEST_ASSERT_EQUAL_DOUBLE(0.97014, normal.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-0.242535625, normal.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&normal));
     SPHERE_delete(s);
     MATRIX_delete_all(scaling, rotation, transform_m);
-    TUPLES_delete_all(p, normal);
+    TUPLES_delete_all(p);
 }
 
 void test_sphere_has_a_default_material() {

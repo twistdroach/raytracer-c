@@ -1,15 +1,12 @@
-//
-// Created by zrowitsch on 8/4/20.
-//
-
 #ifndef DATA_STRUCTURES_MATRIX_H
 #define DATA_STRUCTURES_MATRIX_H
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include "tuples.h"
 #include "utilities.h"
 
-typedef struct {
+typedef struct MATRIX_Matrix {
     uint width, height;
     double data[16];
 } MATRIX_Matrix;
@@ -51,7 +48,7 @@ bool MATRIX_is_invertible(const MATRIX_Matrix* matrix);
  * @param matrix
  * @return
  */
-MATRIX_Matrix* MATRIX_inverse(const MATRIX_Matrix* matrix);
+void MATRIX_inverse(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix);
 
 /**
  * Allocates and initializes a an identity matrix.
@@ -96,11 +93,11 @@ void MATRIX_copy(MATRIX_Matrix* dest, const MATRIX_Matrix* source);
 void MATRIX_fill(MATRIX_Matrix* matrix, ...);
 
 /**
- * Multiplies a matrix by a tuple.
- * Must call TUPLES_delete() on the returned ptr to avoid leaking memory.
+ * Multiplies a matrix by a tuple and places the answer in dest.
+ * @param dest
  * @param matrix
  * @param tuple
  */
-TUPLES_Tuple* MATRIX_multiply_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple);
+void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple);
 
 #endif //DATA_STRUCTURES_MATRIX_H
