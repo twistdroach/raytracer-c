@@ -224,7 +224,7 @@ void test_compute_normal_on_transformed_sphere() {
     TUPLES_Point* p = TUPLES_new_point(0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0);
     TUPLES_Vector normal;
     SPHERE_normal_at(&normal, s, p);
-    TEST_ASSERT_EQUAL_DOUBLE(0, normal.x);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, normal.x);
     TEST_ASSERT_EQUAL_DOUBLE(0.97014, normal.y);
     TEST_ASSERT_EQUAL_DOUBLE(-0.242535625, normal.z);
     TEST_ASSERT_TRUE(TUPLES_is_vector(&normal));
