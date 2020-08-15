@@ -1,14 +1,21 @@
 # raytracer-c
 
-## vector physics simulation
+Current executables (and sample output) are:
+
+## main/parabola
+
+simple demonstration of tuple implementation, shooting a projectile with gravity & wind vectors...
+
 ![](images/parabola.png)
 
-## first ray tracing
+## main/sphere_shadow
+
+Matrix implementation allow us to cast rays...and intersect them with a sphere
+
 ![](images/sphere_shadow.png)
 
-## first shading
+## main/phone_render_sphere
 
-Not quite right yet...
+Phone shading!
 
-
-![](images/phong_render_sphere.png)
+![](images/phong_render_sphere2.png)

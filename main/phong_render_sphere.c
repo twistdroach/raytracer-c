@@ -37,9 +37,9 @@ int main(void) {
                         RAY_Ray r;
 
                         TUPLES_init_point(&position, world_x, world_y, wall_z);
-                        TUPLES_subtract(&v_tmp, ray_origin, &position);
+                        TUPLES_subtract(&v_tmp, &position, ray_origin);
                         TUPLES_normalize(&v_tmp);
-                        RAY_init_from_tuples(&r, &position, &v_tmp);
+                        RAY_init_from_tuples(&r, ray_origin, &v_tmp);
 
                         RAY_Intersections* xs = SPHERE_intersect(sphere, &r);
                         RAY_Xs* hit = RAY_hit(xs);
@@ -57,7 +57,7 @@ int main(void) {
                             TUPLES_copy(&eyev, &r.direction);
                             TUPLES_negate(&eyev);
 
-                            MATERIAL_lighting(&color, ((SPHERE_Sphere*)hit->object)->material, light, &point_of_intersection, &eyev, &normal);
+                            MATERIAL_lighting(&color, SPHERE_get_material((SPHERE_Sphere*)hit->object), light, &point_of_intersection, &eyev, &normal);
                             CANVAS_write_pixel(canvas, x, y, &color);
                         }
                         RAY_delete_intersections(xs);
