@@ -44,7 +44,6 @@ bool MATRIX_is_invertible(const MATRIX_Matrix* matrix);
 
 /**
  * Should only be called on an invertible matrix.  Test with MATRIX_is_invertible!
- * Must call MATRIX_delete() on the returned ptr to avoid leaking memory.
  * @param matrix
  * @return
  */

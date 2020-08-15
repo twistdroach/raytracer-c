@@ -289,23 +289,21 @@ MATRIX_Matrix* MATRIX_submatrix(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix
     assert(matrix->height >= 3);
     assert(matrix->width >= 3);
 
-    MATRIX_Matrix* submatrix = dest;
-
     if (dest) {
-        MATRIX_init(submatrix, matrix->width - 1, matrix->height - 1);
+        MATRIX_init(dest, matrix->width - 1, matrix->height - 1);
     } else {
-        submatrix = MATRIX_new(matrix->width - 1, matrix->height - 1);
+        dest = MATRIX_new(matrix->width - 1, matrix->height - 1);
     }
-    for (uint write_row=0; write_row < submatrix->height; write_row++) {
-        for (uint write_column=0; write_column < submatrix->width; write_column++) {
+    for (uint write_row=0; write_row < dest->height; write_row++) {
+        for (uint write_column=0; write_column < dest->width; write_column++) {
             uint read_row = write_row;
             if (write_row >= row) read_row++;
             uint read_column = write_column;
             if (write_column >= column) read_column++;
-            MATRIX_write_cell(submatrix, write_row, write_column, MATRIX_read_cell(matrix, read_row, read_column));
+            MATRIX_write_cell(dest, write_row, write_column, MATRIX_read_cell(matrix, read_row, read_column));
         }
     }
-    return submatrix;
+    return dest;
 }
 
 double MATRIX_minor(const MATRIX_Matrix* matrix, uint row, uint column) {
