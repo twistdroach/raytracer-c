@@ -6,7 +6,8 @@ add_library(module_datastructures STATIC
         sphere.c sphere.h
         lights.c lights.h
         material.c material.h
-        world.c world.h)
+        world.c world.h
+        intersections.c intersections.h)
 
 target_include_directories(module_datastructures PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

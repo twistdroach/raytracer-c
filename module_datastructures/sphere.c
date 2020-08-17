@@ -1,7 +1,3 @@
-//
-// Created by zrowitsch on 8/7/20.
-//
-
 #include "sphere.h"
 #include <math.h>
 #include <exceptions.h>

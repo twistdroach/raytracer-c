@@ -21,10 +21,11 @@ void RAY_transform(RAY_Ray* dest, const RAY_Ray* orig, const MATRIX_Matrix* matr
 void RAY_position(TUPLES_Point* pos, const RAY_Ray* ray, double t);
 
 
-
+//forward declare temporarily until we generalize
+typedef struct SPHERE_Sphere SPHERE_Sphere;
 typedef struct RAY_Xs {
     double t;
-    const void* object;
+    const SPHERE_Sphere* object;
 } RAY_Xs;
 
 typedef struct RAY_Intersections {
