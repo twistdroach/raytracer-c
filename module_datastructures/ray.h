@@ -43,5 +43,6 @@ void RAY_delete_intersections(RAY_Intersections* intersections);
  * @return
  */
 RAY_Xs* RAY_hit(RAY_Intersections* intersections);
+void RAY_sort_intersections(RAY_Intersections* intersections);
 
 #endif //DATA_STRUCTURES_RAY_H

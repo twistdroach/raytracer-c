@@ -5,7 +5,8 @@ add_library(module_datastructures STATIC
         ray.c ray.h
         sphere.c sphere.h
         lights.c lights.h
-        material.c material.h)
+        material.c material.h
+        world.c world.h)
 
 target_include_directories(module_datastructures PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

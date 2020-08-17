@@ -52,4 +52,12 @@ target_link_libraries(module_datastructures_material
         module_datastructures
         Unity
         m)
-add_test(datastructures_material module_datastructures_material)
+
+add_test(datastructures_world module_datastructures_world)
+add_executable(module_datastructures_world
+        test_world.c)
+target_link_libraries(module_datastructures_world
+        module_datastructures
+        Unity
+        m)
+add_test(datastructures_world module_datastructures_world)

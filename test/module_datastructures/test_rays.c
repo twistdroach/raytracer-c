@@ -68,6 +68,7 @@ void test_intersection() {
     RAY_Intersections* intersections = RAY_new_intersections();
     RAY_add_intersection(intersections, 4.0, &s);
     RAY_add_intersection(intersections, 6.0, &s);
+    RAY_sort_intersections(intersections);
     TEST_ASSERT_EQUAL_DOUBLE(4, intersections->xs[0].t);
     TEST_ASSERT_EQUAL_DOUBLE(6, intersections->xs[1].t);
     RAY_delete_intersections(intersections);
@@ -120,6 +121,7 @@ void test_find_hit_with_lowest_nonnegative_t() {
     RAY_add_intersection(intersections, 7, &s);
     RAY_add_intersection(intersections, -3, &s);
     RAY_add_intersection(intersections, 2, &s);
+    RAY_sort_intersections(intersections);
     RAY_Xs* hit = RAY_hit(intersections);
     TEST_ASSERT_NOT_NULL(hit);
     TEST_ASSERT_EQUAL_DOUBLE(2.0, hit->t);

@@ -89,7 +89,6 @@ void RAY_sort_intersections(RAY_Intersections* intersections) {
 
 RAY_Xs* RAY_hit(RAY_Intersections* intersections) {
     //TODO - improve this by just keeping a ptr to the smallest positive value on insertion
-    RAY_sort_intersections(intersections);
     for (uint ndx=0; ndx < intersections->count; ndx++) {
         if (intersections->xs[ndx].t > 0) {
             return &intersections->xs[ndx];

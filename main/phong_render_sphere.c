@@ -41,7 +41,7 @@ int main(void) {
                         TUPLES_normalize(&v_tmp);
                         RAY_init_from_tuples(&r, ray_origin, &v_tmp);
 
-                        RAY_Intersections* xs = SPHERE_intersect(sphere, &r);
+                        RAY_Intersections* xs = SPHERE_intersect(sphere, &r, NULL);
                         RAY_Xs* hit = RAY_hit(xs);
 
                         if (hit) {

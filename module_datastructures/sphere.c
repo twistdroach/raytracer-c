@@ -36,7 +36,7 @@ void SPHERE_delete(SPHERE_Sphere* sphere) {
     free(sphere);
 }
 
-RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere* sphere, const RAY_Ray* original_ray) {
+RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere* sphere, const RAY_Ray* original_ray, RAY_Intersections* other_intersections) {
     assert(sphere);
     assert(original_ray);
     assert(MATRIX_is_invertible(sphere->transform));
@@ -45,7 +45,9 @@ RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere* sphere, const RAY_Ray* 
     MATRIX_inverse(&inv_transform, SPHERE_get_transform(sphere));
     RAY_transform(&ray, original_ray, &inv_transform);
 
-    RAY_Intersections* intersections = RAY_new_intersections();
+    if (!other_intersections) {
+        other_intersections = RAY_new_intersections();
+    }
     TUPLES_Vector sphere_to_ray;
 
     //compute discriminant
@@ -56,16 +58,16 @@ RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere* sphere, const RAY_Ray* 
     double discriminant = pow(b, 2.0) - 4.0 * a *c;
     if (discriminant < 0) {
         //no hit
-        return intersections;
+        return other_intersections;
     }
 
     double t1 = (-b - sqrt(discriminant)) / (2.0 * a);
     double t2 = (-b + sqrt(discriminant)) / (2.0 * a);
 
-    RAY_add_intersection(intersections, t1, sphere);
-    RAY_add_intersection(intersections, t2, sphere);
+    RAY_add_intersection(other_intersections, t1, sphere);
+    RAY_add_intersection(other_intersections, t2, sphere);
     RAY_destroy(&ray);
-    return intersections;
+    return other_intersections;
 }
 
 void SPHERE_set_material(SPHERE_Sphere* sphere, const MATERIAL_Material* material) {

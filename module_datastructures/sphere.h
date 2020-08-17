@@ -19,9 +19,12 @@ void SPHERE_delete(SPHERE_Sphere* sphere);
 
 /**
  * Constructs a set of intersections, must call RAY_delete_intersections() on returned ptr.
+ * If other_intersections == NULL, a new RAY_Intersections is allocated
+ * Otherwise, additional intersections are added to the other_intersections and no new RAY_Intersections
+ * is allocated.
  * @return
  */
-RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere*, const RAY_Ray*);
+RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere*, const RAY_Ray*, RAY_Intersections* other_intersections);
 
 /**
  * Sets dest to a normal vector at surface of the sphere.
