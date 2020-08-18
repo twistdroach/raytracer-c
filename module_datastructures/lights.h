@@ -12,6 +12,6 @@ LIGHTS_PointLight* LIGHTS_new_pointlight(const TUPLES_Point* p, const TUPLES_Col
 void LIGHTS_init_pointlight(LIGHTS_PointLight* pl, const TUPLES_Point* p, const TUPLES_Color* c);
 void LIGHTS_destroy_pointlight(LIGHTS_PointLight* pl);
 void LIGHTS_delete_pointlight(LIGHTS_PointLight* pl);
-
+void LIGHTS_copy(LIGHTS_PointLight* dest, const LIGHTS_PointLight* src);
 
 #endif //DATA_STRUCTURES_LIGHTS_H

@@ -35,3 +35,9 @@ void LIGHTS_delete_pointlight(LIGHTS_PointLight* pl) {
     LIGHTS_destroy_pointlight(pl);
     free(pl);
 }
+void LIGHTS_copy(LIGHTS_PointLight* dest, const LIGHTS_PointLight* src) {
+    assert(dest);
+    assert(src);
+    TUPLES_copy(&dest->position, &src->position);
+    TUPLES_copy(&dest->intensity, &src->intensity);
+}

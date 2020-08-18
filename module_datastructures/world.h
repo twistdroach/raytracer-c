@@ -3,6 +3,7 @@
 
 #include "lights.h"
 #include "sphere.h"
+#include "intersections.h"
 
 typedef struct WORLD_World WORLD_World;
 
@@ -19,9 +20,19 @@ void WORLD_delete(WORLD_World* world);
  * @param sphere
  */
 void WORLD_add_object(WORLD_World* world, SPHERE_Sphere* sphere);
+
+/**
+ * Gets a point to an object in the world
+ * @param world
+ * @param index
+ * @return
+ */
 SPHERE_Sphere* WORLD_get_object(const WORLD_World* world, unsigned int index);
 unsigned int WORLD_get_object_count(const WORLD_World* world);
 const LIGHTS_PointLight* WORLD_get_light(const WORLD_World* world);
-RAY_Intersections* WORLD_intersect(WORLD_World* world, RAY_Ray* ray);
+void WORLD_set_light(WORLD_World* world, const LIGHTS_PointLight*);
+RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray);
+void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const INTERSECTION_Intersection* computation);
+void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray);
 
 #endif //DATA_STRUCTURES_WORLD_H

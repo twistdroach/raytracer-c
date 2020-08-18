@@ -38,6 +38,12 @@ void WORLD_delete(WORLD_World* world) {
     free(world);
 }
 
+void WORLD_set_light(WORLD_World* world, const LIGHTS_PointLight* light) {
+    assert(world);
+    assert(light);
+    world->light = light;
+}
+
 inline const LIGHTS_PointLight* WORLD_get_light(const WORLD_World* world) {
     assert(world);
     return world->light;
@@ -67,11 +73,40 @@ inline unsigned int WORLD_get_object_count(const WORLD_World* world) {
     return world->object_count;
 }
 
-RAY_Intersections* WORLD_intersect(WORLD_World* world, RAY_Ray* ray) {
+RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray) {
+    assert(world);
+    assert(ray);
     RAY_Intersections* intersections = RAY_new_intersections();
     for (unsigned int i=0; i<world->object_count; i++) {
         SPHERE_intersect(WORLD_get_object(world, i), ray, intersections);
     }
     RAY_sort_intersections(intersections);
     return intersections;
+}
+
+void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const INTERSECTION_Intersection* computation) {
+    assert(world);
+    assert(computation);
+    MATERIAL_lighting(dest,
+                      SPHERE_get_material(computation->object),
+                      world->light,
+                      &computation->point,
+                      &computation->eyev,
+                      &computation->normalv);
+}
+
+void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray) {
+    assert(dest);
+    assert(world);
+    assert(ray);
+    RAY_Intersections* intersections = WORLD_intersect(world, ray);
+    RAY_Xs* hit = RAY_hit(intersections);
+    if (!hit) {
+        TUPLES_init_color(dest, 0, 0, 0);
+    } else {
+        INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(hit, ray);
+        WORLD_shade_hit(dest, world, comps);
+        INTERSECTION_delete(comps);
+    }
+    RAY_delete_intersections(intersections);
 }
