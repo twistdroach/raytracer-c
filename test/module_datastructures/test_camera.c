@@ -1,6 +1,9 @@
 #include <unity.h>
 #include <tuples.h>
 #include <camera.h>
+#include <ray.h>
+#include <canvas.h>
+#include "test_world_utils.h"
 
 void setUp() {}
 void tearDown() {}
@@ -70,6 +73,95 @@ void test_construct_a_camera() {
     MATRIX_Matrix* expected = MATRIX_new_identity(4);
     TEST_ASSERT_TRUE(MATRIX_is_equal(expected, camera->transform));
     CAMERA_delete(camera);
+    MATRIX_delete(expected);
+}
+
+void test_pixel_size_for_horizontal_canvas() {
+    CAMERA_Camera* camera = CAMERA_new(200, 125, M_PI_2);
+    TEST_ASSERT_EQUAL_DOUBLE(0.01, camera->pixel_size);
+    CAMERA_delete(camera);
+}
+
+void test_pixel_size_for_vertical_canvas() {
+    CAMERA_Camera* camera = CAMERA_new(125, 200, M_PI_2);
+    TEST_ASSERT_EQUAL_DOUBLE(0.01, camera->pixel_size);
+    CAMERA_delete(camera);
+}
+
+void test_get_ray_through_center_of_canvas() {
+    CAMERA_Camera* camera = CAMERA_new(201, 101, M_PI_2);
+    RAY_Ray r;
+    CAMERA_ray_for_pixel(&r, camera, 100, 50);
+
+    TUPLES_Point origin_expected;
+    TUPLES_Vector direction_expected;
+    TUPLES_init_point(&origin_expected, 0, 0, 0);
+    TUPLES_init_vector(&direction_expected, 0, 0, -1);
+
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&origin_expected, &r.origin));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&direction_expected, &r.direction));
+    CAMERA_delete(camera);
+}
+
+void test_get_ray_through_corner_of_canvas() {
+    CAMERA_Camera* camera = CAMERA_new(201, 101, M_PI_2);
+    RAY_Ray r;
+    CAMERA_ray_for_pixel(&r, camera, 0, 0);
+
+    TUPLES_Point origin_expected;
+    TUPLES_Vector direction_expected;
+    TUPLES_init_point(&origin_expected, 0, 0, 0);
+    TUPLES_init_vector(&direction_expected, 0.66519, 0.33259, -0.66851);
+
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&origin_expected, &r.origin));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&direction_expected, &r.direction));
+    CAMERA_delete(camera);
+}
+
+void test_get_ray_when_camera_is_transformed() {
+    CAMERA_Camera* camera = CAMERA_new(201, 101, M_PI_2);
+    MATRIX_Matrix* rotation = MATRIX_new_rotation_y(M_PI_4);
+    MATRIX_Matrix* translation = MATRIX_new_translation(0, -2, 5);
+    MATRIX_Matrix* transform = MATRIX_multiply(rotation, translation);
+    CAMERA_set_transform(camera, transform);
+    RAY_Ray r;
+    CAMERA_ray_for_pixel(&r, camera, 100, 50);
+
+    TUPLES_Point origin_expected;
+    TUPLES_Vector direction_expected;
+    TUPLES_init_point(&origin_expected, 0, 2, -5);
+    TUPLES_init_vector(&direction_expected, sqrt(2)/2.0, 0, -sqrt(2)/2.0);
+
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&origin_expected, &r.origin));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&direction_expected, &r.direction));
+    MATRIX_delete_all(rotation, translation, transform);
+    CAMERA_delete(camera);
+}
+
+void test_redering_world_with_a_camera() {
+    WORLD_World* world = construct_test_world();
+    CAMERA_Camera* camera = CAMERA_new(11, 11, M_PI_2);
+    TUPLES_Point from, to;
+    TUPLES_Vector up;
+    TUPLES_init_point(&from, 0, 0, -5);
+    TUPLES_init_point(&to, 0, 0, 0);
+    TUPLES_init_vector(&up, 0, 1, 0);
+
+    MATRIX_Matrix* transform = CAMERA_view_transform(&from, &to, &up);
+    CAMERA_set_transform(camera, transform);
+    MATRIX_delete(transform);
+
+    CANVAS_Canvas* canvas = CAMERA_render(camera, world);
+
+    TUPLES_Color* c = CANVAS_read_pixel(canvas, 5, 5);
+    TUPLES_Color expected;
+    TUPLES_init_color(&expected, 0.38066, 0.47583, 0.2855);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, c));
+    TUPLES_delete(c);
+
+    destruct_test_world(world);
+    CAMERA_delete(camera);
+    CANVAS_delete(canvas);
 }
 
 int main(void) {
@@ -79,5 +171,10 @@ int main(void) {
     RUN_TEST(test_transformation_moves_the_world);
     RUN_TEST(test_arbitrary_view_transformation);
     RUN_TEST(test_construct_a_camera);
+    RUN_TEST(test_pixel_size_for_horizontal_canvas);
+    RUN_TEST(test_pixel_size_for_vertical_canvas);
+    RUN_TEST(test_get_ray_through_center_of_canvas);
+    RUN_TEST(test_get_ray_through_corner_of_canvas);
+    RUN_TEST(test_get_ray_when_camera_is_transformed);
     UNITY_END();
 }

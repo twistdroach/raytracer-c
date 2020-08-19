@@ -3,7 +3,7 @@
 //
 
 #include <unity.h>
-#include "simple_logger.h"
+#include "logger.h"
 
 void setUp(void) {
 }
@@ -12,9 +12,9 @@ void tearDown(void) {
 }
 
 void test_dummytest() {
-    SIMPLE_LOGGER_log(ERROR, "This is an error (%s)\n", "asdf");
-    SIMPLE_LOGGER_log(WARN, "This is a warn (%s)\n", "asdf");
-    SIMPLE_LOGGER_log(INFO, "This is an info (%s)\n", "asdf");
+    LOGGER_log(LOGGER_ERROR, "This is an error (%s)\n", "asdf");
+    LOGGER_log(LOGGER_WARN, "This is a warn (%s)\n", "asdf");
+    LOGGER_log(LOGGER_INFO, "This is an info (%s)\n", "asdf");
 }
 
 int main(void)

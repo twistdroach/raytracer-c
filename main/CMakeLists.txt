@@ -1,10 +1,8 @@
 add_executable(parabola
-        parabola.c
-)
+        parabola.c)
 
 target_link_libraries(parabola PRIVATE
-        module_datastructures
-)
+        module_datastructures)
 
 add_executable(sphere_shadow
         sphere_shadow.c)
@@ -16,4 +14,10 @@ add_executable(phong_render_sphere
         phong_render_sphere.c)
 
 target_link_libraries(phong_render_sphere PRIVATE
+        module_datastructures)
+
+add_executable(phong_render_three_spheres
+        phong_render_three_spheres.c)
+
+target_link_libraries(phong_render_three_spheres PRIVATE
         module_datastructures)
