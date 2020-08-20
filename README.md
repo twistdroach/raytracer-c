@@ -30,5 +30,5 @@ Multiple objects, but they are all spheres...Some are simply scaled to look flat
 
 Same executable but now shadows are added...
 
-![](images/images/phong_render_three_spheres_with_shadows.png)
+![](images/phong_render_three_spheres_with_shadows.png)
 
