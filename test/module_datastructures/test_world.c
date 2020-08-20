@@ -84,7 +84,9 @@ void test_shading_an_intersection_from_inside() {
     INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(&i, ray);
     TUPLES_Color c;
     WORLD_shade_hit(&c, world, comps);
-
+//    printf("over_point (%s): is shadowed %u\n", TUPLES_to_string(&comps->over_point), WORLD_is_shadowed(world, &comps->over_point));
+//    printf("point (%s): is shadowed %u\n", TUPLES_to_string(&comps->point), WORLD_is_shadowed(world, &comps->point));
+//    printf("Got color: %s\n", TUPLES_to_string(&c));
     TUPLES_Color expected;
     TUPLES_init_color(&expected, 0.90498, 0.90498, 0.90498);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &c));
@@ -140,6 +142,73 @@ void test_color_with_intersection_behind_ray() {
     destruct_test_world(world);
 }
 
+void test_no_shadow_when_nothing_collinear_with_point_and_light() {
+    WORLD_World* world = construct_test_world();
+    TUPLES_Point p;
+    TUPLES_init_point(&p, 0, 10, 0);
+    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, &p));
+    destruct_test_world(world);
+}
+
+void test_shadow_when_object_is_between_point_and_light() {
+    WORLD_World* world = construct_test_world();
+    TUPLES_Point p;
+    TUPLES_init_point(&p, 10, -10, 10);
+    TEST_ASSERT_TRUE(WORLD_is_shadowed(world, &p));
+    destruct_test_world(world);
+}
+
+void test_shadow_when_object_is_behind_the_light() {
+    WORLD_World* world = construct_test_world();
+    TUPLES_Point p;
+    TUPLES_init_point(&p, -20, 20, -20);
+    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, &p));
+    destruct_test_world(world);
+}
+
+void test_shadow_when_object_is_behind_the_point() {
+    WORLD_World* world = construct_test_world();
+    TUPLES_Point p;
+    TUPLES_init_point(&p, -2, 2, -2);
+    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, &p));
+    destruct_test_world(world);
+}
+
+void test_shade_hit_with_a_point_in_shadow() {
+    TUPLES_Point light_p;
+    TUPLES_Color light_c;
+    TUPLES_init_point(&light_p, 0, 0, -10);
+    TUPLES_init_color(&light_c, 1, 1, 1);
+    LIGHTS_PointLight light;
+    LIGHTS_init_pointlight(&light, &light_p, &light_c);
+    WORLD_World* world = WORLD_new(&light);
+
+    SPHERE_Sphere* s1 = SPHERE_new();
+    WORLD_add_object(world, s1);
+
+    SPHERE_Sphere* s2 = SPHERE_new();
+    WORLD_add_object(world, s2);
+    MATRIX_Matrix* transform = MATRIX_new_translation(0, 0, 10);
+    SPHERE_set_transform(s2, transform);
+    MATRIX_delete(transform);
+
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0, 5, 0, 0, 1);
+
+    RAY_Xs i;
+    i.t = 4.0;
+    i.object = s2;
+
+    INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(&i, &ray);
+    TUPLES_Color c;
+    WORLD_shade_hit(&c, world, comps);
+    TUPLES_Color expected;
+    TUPLES_init_color(&expected, 0.1, 0.1, 0.1);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &c));
+
+    INTERSECTION_delete(comps);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -151,5 +220,10 @@ int main(void)
     RUN_TEST(test_color_when_ray_misses);
     RUN_TEST(test_color_when_ray_hits);
     RUN_TEST(test_color_with_intersection_behind_ray);
+    RUN_TEST(test_no_shadow_when_nothing_collinear_with_point_and_light);
+    RUN_TEST(test_shadow_when_object_is_between_point_and_light);
+    RUN_TEST(test_shadow_when_object_is_behind_the_light);
+    RUN_TEST(test_shadow_when_object_is_behind_the_point);
+    RUN_TEST(test_shade_hit_with_a_point_in_shadow);
     return UNITY_END();
 }

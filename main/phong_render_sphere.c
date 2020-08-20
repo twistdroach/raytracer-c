@@ -57,7 +57,7 @@ int main(void) {
                             TUPLES_copy(&eyev, &r.direction);
                             TUPLES_negate(&eyev);
 
-                            MATERIAL_lighting(&color, SPHERE_get_material((SPHERE_Sphere*)hit->object), light, &point_of_intersection, &eyev, &normal);
+                            MATERIAL_lighting(&color, SPHERE_get_material((SPHERE_Sphere*)hit->object), light, &point_of_intersection, &eyev, &normal, false);
                             CANVAS_write_pixel(canvas, x, y, &color);
                         }
                         RAY_delete_intersections(xs);

@@ -16,6 +16,10 @@ INTERSECTION_Intersection* INTERSECTION_prepare_computations(const RAY_Xs* hit, 
     //compute the normal @ the intersection
     SPHERE_normal_at(&intersection->normalv, intersection->object, &intersection->point);
 
+    //compute the "over_point" to deal with floating point imprecision...
+    TUPLES_multiply(&intersection->over_point, &intersection->normalv, EPSILON);
+    TUPLES_add(&intersection->over_point, &intersection->over_point, &intersection->point);
+
     if (TUPLES_dot(&intersection->normalv, &intersection->eyev) < 0) {
         intersection->inside = true;
         TUPLES_negate(&intersection->normalv);

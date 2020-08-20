@@ -4,12 +4,13 @@
 #include "sphere.h"
 
 typedef struct INTERSECTION_Intersection {
-    double t;
+    double               t;
     const SPHERE_Sphere* object;
-    TUPLES_Point point;
-    TUPLES_Vector eyev;
-    TUPLES_Vector normalv;
-    bool inside;
+    TUPLES_Point         point;
+    TUPLES_Point         over_point;
+    TUPLES_Vector        eyev;
+    TUPLES_Vector        normalv;
+    bool                 inside;
 } INTERSECTION_Intersection;
 
 INTERSECTION_Intersection* INTERSECTION_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray);

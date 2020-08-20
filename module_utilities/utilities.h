@@ -1,7 +1,3 @@
-//
-// Created by zrowitsch on 8/1/20.
-//
-
 #ifndef UTILITIES_UTILITIES_H
 #define UTILITIES_UTILITIES_H
 #define _GNU_SOURCE
@@ -9,6 +5,7 @@
 #include <stdlib.h>  //for asprintf
 #include <stdio.h>   //for free
 
+#define EPSILON 0.00001
 
 bool double_equal(double a, double b);
 

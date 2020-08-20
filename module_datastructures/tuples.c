@@ -199,3 +199,10 @@ bool TUPLES_is_equal(const TUPLES_Tuple* t1, const TUPLES_Tuple* t2) {
             double_equal(t1->w, t2->w));
 }
 
+char* TUPLES_to_string(const TUPLES_Tuple* t) {
+    assert(t);
+    char* str = NULL;
+    Sasprintf(str, "%.6f %.6f %.6f %.6f", t->x, t->y, t->z, t->w);
+    return str;
+}
+

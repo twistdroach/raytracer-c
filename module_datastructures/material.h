@@ -14,6 +14,6 @@ void MATERIAL_delete(MATERIAL_Material* m);
 bool MATERIAL_is_equal(const MATERIAL_Material* m1, const MATERIAL_Material* m2);
 void MATERIAL_copy(MATERIAL_Material* dest, const MATERIAL_Material* src);
 
-void MATERIAL_lighting(TUPLES_Color* dest, const MATERIAL_Material* material, const LIGHTS_PointLight* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector);
+void MATERIAL_lighting(TUPLES_Color* dest, const MATERIAL_Material* material, const LIGHTS_PointLight* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector, bool in_shadow);
 
 #endif //DATA_STRUCTURES_MATERIAL_H

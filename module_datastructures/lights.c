@@ -41,3 +41,14 @@ void LIGHTS_copy(LIGHTS_PointLight* dest, const LIGHTS_PointLight* src) {
     TUPLES_copy(&dest->position, &src->position);
     TUPLES_copy(&dest->intensity, &src->intensity);
 }
+
+const TUPLES_Point* LIGHTS_get_origin(const LIGHTS_PointLight* light) {
+    assert(light);
+    return &light->position;
+}
+
+const TUPLES_Color* LIGHTS_get_color(const LIGHTS_PointLight* light) {
+    assert(light);
+    return &light->intensity;
+
+}
