@@ -14,13 +14,12 @@ void test_create_and_query_ray() {
 }
 
 void test_create_and_query_from_tuples() {
-    TUPLES_Point* origin = TUPLES_new_point(1, 2, 3);
-    TUPLES_Vector* direction = TUPLES_new_vector(4, 5, 6);
+    TUPLES_Point origin = TUPLES_point(1, 2, 3);
+    TUPLES_Vector direction = TUPLES_vector(4, 5, 6);
     RAY_Ray* ray = RAY_new_from_tuples(origin, direction);
     TEST_ASSERT_EQUAL_DOUBLE(2, ray->origin.y);
     TEST_ASSERT_EQUAL_DOUBLE(6, ray->direction.z);
     RAY_delete(ray);
-    TUPLES_delete_all(origin, direction);
 }
 
 void test_create_and_query_ray_on_stack() {
@@ -38,27 +37,26 @@ void test_compute_point_from_a_distance() {
     TEST_ASSERT_EQUAL_DOUBLE(2, p.x);
     TEST_ASSERT_EQUAL_DOUBLE(3, p.y);
     TEST_ASSERT_EQUAL_DOUBLE(4, p.z);
-    TEST_ASSERT_TRUE(TUPLES_is_point(&p));
+    TEST_ASSERT_TRUE(TUPLES_is_point(p));
 
     RAY_position(&p, ray, 1);
     TEST_ASSERT_EQUAL_DOUBLE(3, p.x);
     TEST_ASSERT_EQUAL_DOUBLE(3, p.y);
     TEST_ASSERT_EQUAL_DOUBLE(4, p.z);
-    TEST_ASSERT_TRUE(TUPLES_is_point(&p));
+    TEST_ASSERT_TRUE(TUPLES_is_point(p));
 
     RAY_position(&p, ray, -1);
     TEST_ASSERT_EQUAL_DOUBLE(1, p.x);
     TEST_ASSERT_EQUAL_DOUBLE(3, p.y);
     TEST_ASSERT_EQUAL_DOUBLE(4, p.z);
-    TEST_ASSERT_TRUE(TUPLES_is_point(&p));
+    TEST_ASSERT_TRUE(TUPLES_is_point(p));
 
     RAY_position(&p, ray, 2.5);
     TEST_ASSERT_EQUAL_DOUBLE(4.5, p.x);
     TEST_ASSERT_EQUAL_DOUBLE(3, p.y);
     TEST_ASSERT_EQUAL_DOUBLE(4, p.z);
-    TEST_ASSERT_TRUE(TUPLES_is_point(&p));
+    TEST_ASSERT_TRUE(TUPLES_is_point(p));
 
-    TUPLES_destroy(&p);
     RAY_delete(ray);
 }
 

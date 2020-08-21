@@ -10,9 +10,9 @@ typedef struct RAY_Ray {
 } RAY_Ray;
 
 RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z);
-RAY_Ray* RAY_new_from_tuples(const TUPLES_Point* origin, const TUPLES_Vector* direction);
+RAY_Ray* RAY_new_from_tuples(TUPLES_Point origin, TUPLES_Vector direction);
 void RAY_init(RAY_Ray* ray, double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z);
-void RAY_init_from_tuples(RAY_Ray* ray, const TUPLES_Point* origin, const TUPLES_Vector* direction);
+void RAY_init_from_tuples(RAY_Ray* ray, TUPLES_Point origin, TUPLES_Vector direction);
 void RAY_destroy(RAY_Ray* ray);
 #define RAY_destroy_all(...) Fn_apply(RAY_Ray, RAY_destroy, __VA_ARGS__);
 void RAY_delete(RAY_Ray* ray);

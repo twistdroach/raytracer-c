@@ -41,23 +41,15 @@ void CAMERA_delete(CAMERA_Camera* camera) {
     free(camera);
 }
 
-MATRIX_Matrix* CAMERA_view_transform(const TUPLES_Point* from, const TUPLES_Point* to, const TUPLES_Vector* up) {
-    assert(from);
-    assert(to);
-    assert(up);
-    TUPLES_Vector forward;
-    TUPLES_subtract(&forward, to, from);
-    TUPLES_normalize(&forward);
+MATRIX_Matrix* CAMERA_view_transform(const TUPLES_Point from, const TUPLES_Point to, const TUPLES_Vector up) {
+    TUPLES_Vector forward = TUPLES_subtract(to, from);
+    forward = TUPLES_normalize(forward);
 
-    TUPLES_Vector upn;
-    TUPLES_copy(&upn, up);
-    TUPLES_normalize(&upn);
+    TUPLES_Vector upn = TUPLES_normalize(up);
 
-    TUPLES_Vector left;
-    TUPLES_cross(&left, &forward, &upn);
+    TUPLES_Vector left = TUPLES_cross(forward, upn);
 
-    TUPLES_Vector true_up;
-    TUPLES_cross(&true_up, &left, &forward);
+    TUPLES_Vector true_up = TUPLES_cross(left, forward);
 
     MATRIX_Matrix orientation;
     MATRIX_init(&orientation, 4, 4);
@@ -66,7 +58,7 @@ MATRIX_Matrix* CAMERA_view_transform(const TUPLES_Point* from, const TUPLES_Poin
                               -forward.x, -forward.y, -forward.z, 0.0,
                               0.0,        0.0,        0.0,        1.0);
 
-    MATRIX_Matrix* translation = MATRIX_new_translation(-from->x, -from->y, -from->z);
+    MATRIX_Matrix* translation = MATRIX_new_translation(-from.x, -from.y, -from.z);
     MATRIX_Matrix* view = MATRIX_multiply(&orientation, translation);
     MATRIX_delete(translation);
     return view;
@@ -92,18 +84,14 @@ void CAMERA_ray_for_pixel(RAY_Ray* dest, const CAMERA_Camera* camera, unsigned i
     double world_x = camera->half_width - xoffset;
     double world_y = camera->half_height - yoffset;
 
-    TUPLES_Point ptmp, pixel, origin;
-    TUPLES_init_point(&ptmp, world_x, world_y, -1.0);
-    MATRIX_multiply_tuple(&pixel, camera->inv_transform, &ptmp);
+    TUPLES_Point ptmp = TUPLES_point(world_x, world_y, -1.0);
+    TUPLES_Point pixel = MATRIX_multiply_tuple(camera->inv_transform, ptmp);
 
-    TUPLES_init_point(&ptmp, 0, 0, 0);
-    MATRIX_multiply_tuple(&origin, camera->inv_transform, &ptmp);
+    TUPLES_Point origin = MATRIX_multiply_tuple(camera->inv_transform, TUPLES_point(0,0,0));
 
-    TUPLES_Vector direction;
-    TUPLES_subtract(&direction, &pixel, &origin);
-    TUPLES_normalize(&direction);
+    TUPLES_Vector direction = TUPLES_normalize(TUPLES_subtract(pixel, origin));
 
-    RAY_init_from_tuples(dest, &origin, &direction);
+    RAY_init_from_tuples(dest, origin, direction);
 }
 
 CANVAS_Canvas* CAMERA_render(const CAMERA_Camera* camera, const WORLD_World* world) {
@@ -117,7 +105,7 @@ CANVAS_Canvas* CAMERA_render(const CAMERA_Camera* camera, const WORLD_World* wor
 
             CAMERA_ray_for_pixel(&ray, camera, x, y);
             WORLD_color_at(&color, world, &ray);
-            CANVAS_write_pixel(canvas, x, y, &color);
+            CANVAS_write_pixel(canvas, x, y, color);
         }
     }
     return canvas;

@@ -9,12 +9,9 @@ void tearDown() {}
 
 void test_world_creation() {
     LIGHTS_PointLight pl;
-    TUPLES_Point pl_origin;
-    TUPLES_Color pl_color;
-
-    TUPLES_init_point(&pl_origin, -10, 10, -10);
-    TUPLES_init_color(&pl_color, 1, 1, 1);
-    LIGHTS_init_pointlight(&pl, &pl_origin, &pl_color);
+    LIGHTS_init_pointlight(&pl,
+                           TUPLES_point(-10, 10, -10),
+                           TUPLES_color(1, 1, 1) );
 
     WORLD_World* world = WORLD_new(&pl);
     TEST_ASSERT_NOT_NULL(world);
@@ -56,8 +53,7 @@ void test_shading_an_intersection() {
     TUPLES_Color c;
     WORLD_shade_hit(&c, world, comps);
 
-    TUPLES_Color expected;
-    TUPLES_init_color(&expected, 0.38066, 0.47583, 0.2855);
+    TUPLES_Color expected = TUPLES_color(0.38066, 0.47583, 0.2855);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &c));
 
     RAY_delete(ray);
@@ -68,11 +64,9 @@ void test_shading_an_intersection() {
 void test_shading_an_intersection_from_inside() {
     WORLD_World* world = construct_test_world();
 
-    TUPLES_Point light_origin;
-    TUPLES_init_point(&light_origin, 0, 0.25, 0);
-    TUPLES_Color light_color;
-    TUPLES_init_color(&light_color, 1, 1, 1);
-    LIGHTS_PointLight* light = LIGHTS_new_pointlight(&light_origin, &light_color);
+    TUPLES_Point light_origin = TUPLES_point(0, 0.25, 0);
+    TUPLES_Color light_color = TUPLES_color(1, 1, 1);
+    LIGHTS_PointLight* light = LIGHTS_new_pointlight(light_origin, light_color);
     WORLD_set_light(world, light);
 
     RAY_Ray* ray = RAY_new(0, 0, 0, 0, 0, 1);
@@ -87,8 +81,7 @@ void test_shading_an_intersection_from_inside() {
 //    printf("over_point (%s): is shadowed %u\n", TUPLES_to_string(&comps->over_point), WORLD_is_shadowed(world, &comps->over_point));
 //    printf("point (%s): is shadowed %u\n", TUPLES_to_string(&comps->point), WORLD_is_shadowed(world, &comps->point));
 //    printf("Got color: %s\n", TUPLES_to_string(&c));
-    TUPLES_Color expected;
-    TUPLES_init_color(&expected, 0.90498, 0.90498, 0.90498);
+    TUPLES_Color expected = TUPLES_color(0.90498, 0.90498, 0.90498);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &c));
 
     RAY_delete(ray);
@@ -103,8 +96,7 @@ void test_color_when_ray_misses() {
     TUPLES_Color c;
     WORLD_color_at(&c, world, ray);
 
-    TUPLES_Color expected;
-    TUPLES_init_color(&expected, 0, 0,0);
+    TUPLES_Color expected = TUPLES_color(0, 0,0);
     TEST_ASSERT(TUPLES_is_equal(&expected, &c));
 
     RAY_delete(ray);
@@ -117,8 +109,7 @@ void test_color_when_ray_hits() {
     TUPLES_Color c;
     WORLD_color_at(&c, world, ray);
 
-    TUPLES_Color expected;
-    TUPLES_init_color(&expected, 0.38066, 0.47583,0.2855);
+    TUPLES_Color expected = TUPLES_color(0.38066, 0.47583,0.2855);
     TEST_ASSERT(TUPLES_is_equal(&expected, &c));
 
     RAY_delete(ray);
@@ -144,43 +135,37 @@ void test_color_with_intersection_behind_ray() {
 
 void test_no_shadow_when_nothing_collinear_with_point_and_light() {
     WORLD_World* world = construct_test_world();
-    TUPLES_Point p;
-    TUPLES_init_point(&p, 0, 10, 0);
-    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, &p));
+    TUPLES_Point p = TUPLES_point(0, 10, 0);
+    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, p));
     destruct_test_world(world);
 }
 
 void test_shadow_when_object_is_between_point_and_light() {
     WORLD_World* world = construct_test_world();
-    TUPLES_Point p;
-    TUPLES_init_point(&p, 10, -10, 10);
-    TEST_ASSERT_TRUE(WORLD_is_shadowed(world, &p));
+    TUPLES_Point p = TUPLES_point(10, -10, 10);
+    TEST_ASSERT_TRUE(WORLD_is_shadowed(world, p));
     destruct_test_world(world);
 }
 
 void test_shadow_when_object_is_behind_the_light() {
     WORLD_World* world = construct_test_world();
-    TUPLES_Point p;
-    TUPLES_init_point(&p, -20, 20, -20);
-    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, &p));
+    TUPLES_Point p = TUPLES_point(-20, 20, -20);
+    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, p));
     destruct_test_world(world);
 }
 
 void test_shadow_when_object_is_behind_the_point() {
     WORLD_World* world = construct_test_world();
-    TUPLES_Point p;
-    TUPLES_init_point(&p, -2, 2, -2);
-    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, &p));
+    TUPLES_Point p = TUPLES_point(-2, 2, -2);
+    TEST_ASSERT_FALSE(WORLD_is_shadowed(world, p));
     destruct_test_world(world);
 }
 
 void test_shade_hit_with_a_point_in_shadow() {
-    TUPLES_Point light_p;
-    TUPLES_Color light_c;
-    TUPLES_init_point(&light_p, 0, 0, -10);
-    TUPLES_init_color(&light_c, 1, 1, 1);
+    TUPLES_Point light_p = TUPLES_point(0, 0, -10);
+    TUPLES_Color light_c = TUPLES_color(1, 1, 1);
     LIGHTS_PointLight light;
-    LIGHTS_init_pointlight(&light, &light_p, &light_c);
+    LIGHTS_init_pointlight(&light, light_p, light_c);
     WORLD_World* world = WORLD_new(&light);
 
     SPHERE_Sphere* s1 = SPHERE_new();
@@ -202,8 +187,7 @@ void test_shade_hit_with_a_point_in_shadow() {
     INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(&i, &ray);
     TUPLES_Color c;
     WORLD_shade_hit(&c, world, comps);
-    TUPLES_Color expected;
-    TUPLES_init_color(&expected, 0.1, 0.1, 0.1);
+    TUPLES_Color expected = TUPLES_color(0.1, 0.1, 0.1);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &c));
 
     INTERSECTION_delete(comps);

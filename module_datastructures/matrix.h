@@ -97,6 +97,6 @@ void MATRIX_fill(MATRIX_Matrix* matrix, ...);
  * @param matrix
  * @param tuple
  */
-void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple);
+TUPLES_Tuple MATRIX_multiply_tuple(const MATRIX_Matrix* matrix, TUPLES_Tuple tuple);
 
 #endif //DATA_STRUCTURES_MATRIX_H

@@ -28,7 +28,7 @@ void CAMERA_delete(CAMERA_Camera* camera);
  * @param up
  * @return
  */
-MATRIX_Matrix* CAMERA_view_transform(const TUPLES_Point* from, const TUPLES_Point* to, const TUPLES_Vector* up);
+MATRIX_Matrix* CAMERA_view_transform(const TUPLES_Point from, const TUPLES_Point to, const TUPLES_Vector up);
 void CAMERA_set_transform(CAMERA_Camera* camera, MATRIX_Matrix* transform);
 
 void CAMERA_ray_for_pixel(RAY_Ray* dest, const CAMERA_Camera* camera, unsigned int px, unsigned int py);

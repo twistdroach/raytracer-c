@@ -15,7 +15,7 @@ void build_world(WORLD_World* world) {
     WORLD_add_object(world, floor);
     MATRIX_Matrix* floor_transform = MATRIX_new_scaling(10, 0.01, 10);
     MATERIAL_Material* material = MATERIAL_new();
-    TUPLES_init_color(&material->color, 1, 0.9, 0.9);
+    material->color = TUPLES_color(1, 0.9, 0.9);
     material->specular = 0;
     SPHERE_set_material(floor, material);
     SPHERE_set_transform(floor, floor_transform);
@@ -55,7 +55,7 @@ void build_world(WORLD_World* world) {
     SPHERE_set_transform(middle, middle_transform);
     MATRIX_delete(middle_transform);
     MATERIAL_Material* middle_material = MATERIAL_new();
-    TUPLES_init_color(&middle_material->color, 0.1, 1, 0.5);
+    middle_material->color = TUPLES_color(0.1, 1, 0.5);
     middle_material->diffuse = 0.7;
     middle_material->specular = 0.3;
     SPHERE_set_material(middle, middle_material);
@@ -69,7 +69,7 @@ void build_world(WORLD_World* world) {
     SPHERE_set_transform(right, right_transform);
     MATRIX_delete_all(right_translation, right_scaling, right_transform);
     MATERIAL_Material* right_material = MATERIAL_new();
-    TUPLES_init_color(&right_material->color, 0.5, 1, 0.1);
+    right_material->color = TUPLES_color(0.5, 1, 0.1);
     right_material->diffuse = 0.7;
     right_material->specular = 0.3;
     SPHERE_set_material(right, right_material);
@@ -83,7 +83,7 @@ void build_world(WORLD_World* world) {
     SPHERE_set_transform(left, left_transform);
     MATRIX_delete_all(left_translation, left_scaling, left_transform);
     MATERIAL_Material* left_material = MATERIAL_new();
-    TUPLES_init_color(&left_material->color, 1, 0.8, 0.1);
+    left_material->color = TUPLES_color(1, 0.8, 0.1);
     left_material->diffuse = 0.7;
     left_material->specular = 0.3;
     SPHERE_set_material(left, left_material);
@@ -94,18 +94,16 @@ int main(void) {
     CEXCEPTION_T e;
     Try {
                 LOGGER_log(LOGGER_INFO, "Building world...\n");
-                TUPLES_Point* light_position = TUPLES_new_point(-10, 10, -10);
-                TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
+                TUPLES_Point light_position = TUPLES_point(-10, 10, -10);
+                TUPLES_Color light_color = TUPLES_color(1, 1, 1);
                 LIGHTS_PointLight* light = LIGHTS_new_pointlight(light_position, light_color);
-                TUPLES_delete_all(light_position, light_color);
 
                 CAMERA_Camera* camera = CAMERA_new(1000, 500, M_PI / 3.0);
-                TUPLES_Point* from = TUPLES_new_point(0, 1.5, -5);
-                TUPLES_Point* to = TUPLES_new_point(0, 1, 0);
-                TUPLES_Vector* up = TUPLES_new_vector(0, 1, 0);
+                TUPLES_Point from = TUPLES_point(0, 1.5, -5);
+                TUPLES_Point to = TUPLES_point(0, 1, 0);
+                TUPLES_Vector up = TUPLES_vector(0, 1, 0);
                 MATRIX_Matrix* camera_transform = CAMERA_view_transform(from, to, up);
                 CAMERA_set_transform(camera, camera_transform);
-                TUPLES_delete_all(from, to, up);
                 MATRIX_delete(camera_transform);
 
                 WORLD_World* world = WORLD_new(light);

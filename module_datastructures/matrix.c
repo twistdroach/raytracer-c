@@ -214,23 +214,23 @@ static void convert_matrix_to_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* src
 }
 #endif
 
-static double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple, uint row) {
-    return MATRIX_read_cell(matrix, row, 0) * tuple->x +
-            MATRIX_read_cell(matrix, row, 1) * tuple->y +
-            MATRIX_read_cell(matrix, row, 2) * tuple->z +
-            MATRIX_read_cell(matrix, row, 3) * tuple->w;
+static double multiply_row_by_tuple(const MATRIX_Matrix* matrix, TUPLES_Tuple tuple, uint row) {
+    return MATRIX_read_cell(matrix, row, 0) * tuple.x +
+            MATRIX_read_cell(matrix, row, 1) * tuple.y +
+            MATRIX_read_cell(matrix, row, 2) * tuple.z +
+            MATRIX_read_cell(matrix, row, 3) * tuple.w;
 }
 
-void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
+TUPLES_Tuple MATRIX_multiply_tuple(const MATRIX_Matrix* matrix, TUPLES_Tuple tuple) {
     assert(matrix);
-    assert(tuple);
-    assert(dest);
     assert(matrix->height == 4 && matrix->width == 4);
 
-    TUPLES_init_point(dest, multiply_row_by_tuple(matrix, tuple, 0),
-                            multiply_row_by_tuple(matrix, tuple, 1),
-                            multiply_row_by_tuple(matrix, tuple, 2));
-    dest->w = multiply_row_by_tuple(matrix, tuple, 3);
+    return (TUPLES_Tuple) {
+        .x = multiply_row_by_tuple(matrix, tuple, 0),
+        .y = multiply_row_by_tuple(matrix, tuple, 1),
+        .z = multiply_row_by_tuple(matrix, tuple, 2),
+        .w = multiply_row_by_tuple(matrix, tuple, 3)
+    };
 }
 
 static void transpose_cell(MATRIX_Matrix* matrix, uint row, uint column) {

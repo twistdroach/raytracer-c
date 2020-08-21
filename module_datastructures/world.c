@@ -88,14 +88,14 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const INTERSE
     assert(world);
     assert(computation);
 
-    bool shadowed = WORLD_is_shadowed(world, &computation->over_point);
+    bool shadowed = WORLD_is_shadowed(world, computation->over_point);
 
-    MATERIAL_lighting(dest,
+    *dest = MATERIAL_lighting(
                       SPHERE_get_material(computation->object),
                       world->light,
-                      &computation->point,
-                      &computation->eyev,
-                      &computation->normalv,
+                      computation->point,
+                      computation->eyev,
+                      computation->normalv,
                       shadowed);
 }
 
@@ -106,7 +106,7 @@ void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray*
     RAY_Intersections* intersections = WORLD_intersect(world, ray);
     RAY_Xs* hit = RAY_hit(intersections);
     if (!hit) {
-        TUPLES_init_color(dest, 0, 0, 0);
+        *dest = TUPLES_color(0, 0, 0);
     } else {
         INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(hit, ray);
         WORLD_shade_hit(dest, world, comps);
@@ -115,14 +115,13 @@ void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray*
     RAY_delete_intersections(intersections);
 }
 
-bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* point) {
-    TUPLES_Vector direction;
-    TUPLES_subtract(&direction, LIGHTS_get_origin(WORLD_get_light(world)), point);
-    double distance = TUPLES_magnitude(&direction);
-    TUPLES_normalize(&direction);
+bool WORLD_is_shadowed(const WORLD_World* world, TUPLES_Point point) {
+    TUPLES_Vector direction = TUPLES_subtract(LIGHTS_get_origin(WORLD_get_light(world)), point);
+    double distance = TUPLES_magnitude(direction);
+    direction = TUPLES_normalize(direction);
 
     RAY_Ray ray;
-    RAY_init_from_tuples(&ray, point, &direction);
+    RAY_init_from_tuples(&ray, point, direction);
     struct RAY_Intersections* intersections = WORLD_intersect(world, &ray);
     RAY_Xs* hit = RAY_hit(intersections);
     bool is_shadowed = false;

@@ -33,7 +33,7 @@ RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere*, const RAY_Ray*, RAY_In
  * @param point
  * @return
  */
-void SPHERE_normal_at(TUPLES_Vector* dest, const SPHERE_Sphere* sphere, const TUPLES_Point* point);
+TUPLES_Vector SPHERE_normal_at(const SPHERE_Sphere* sphere, TUPLES_Point point);
 void SPHERE_set_transform(SPHERE_Sphere* sphere, const MATRIX_Matrix* matrix);
 const MATRIX_Matrix* SPHERE_get_transform(const SPHERE_Sphere* sphere);
 

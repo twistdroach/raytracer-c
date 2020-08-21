@@ -15,28 +15,31 @@ RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direc
     return ray;
 }
 
-RAY_Ray* RAY_new_from_tuples(const TUPLES_Point* origin, const TUPLES_Vector* direction) {
-    return RAY_new(origin->x, origin->y, origin->z, direction->x, direction->y, direction->z);
+RAY_Ray* RAY_new_from_tuples(TUPLES_Point origin, TUPLES_Vector direction) {
+    RAY_Ray* ray = malloc(sizeof(RAY_Ray));
+    if (!ray)
+        Throw(E_MALLOC_FAILED);
+    ray->origin = origin;
+    ray->direction = direction;
+    return ray;
 }
 
 void RAY_init(RAY_Ray* ray, double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z) {
     assert(ray);
-    TUPLES_init_point(&ray->origin, origin_x, origin_y, origin_z);
-    TUPLES_init_vector(&ray->direction, direction_x, direction_y, direction_z);
+    ray->origin = TUPLES_point(origin_x, origin_y, origin_z);
+    ray->direction = TUPLES_vector(direction_x, direction_y, direction_z);
 }
 
-void RAY_init_from_tuples(RAY_Ray* ray, const TUPLES_Point* origin, const TUPLES_Vector* direction) {
-    RAY_init(ray, origin->x, origin->y, origin->z, direction->x, direction->y, direction->z);
+void RAY_init_from_tuples(RAY_Ray* ray, TUPLES_Point origin, TUPLES_Vector direction) {
+    ray->origin = origin;
+    ray->direction = direction;
 }
 
 void RAY_position(TUPLES_Point* pos, const RAY_Ray* ray, double t) {
     assert(pos);
     assert(ray);
-    TUPLES_Vector direction_t;
-    TUPLES_init_vector(&direction_t, 0, 0, 0);
-    TUPLES_multiply(&direction_t, &ray->direction, t);
-    TUPLES_add(pos, &ray->origin, &direction_t);
-    TUPLES_destroy(&direction_t);
+    TUPLES_Vector direction_t = TUPLES_multiply(ray->direction, t);
+    *pos = TUPLES_add(ray->origin, direction_t);
 }
 
 void RAY_transform(RAY_Ray* dest, const RAY_Ray* orig, const MATRIX_Matrix* matrix) {
@@ -44,14 +47,12 @@ void RAY_transform(RAY_Ray* dest, const RAY_Ray* orig, const MATRIX_Matrix* matr
     assert(orig);
     assert(matrix);
     assert(MATRIX_is_invertible(matrix));
-    MATRIX_multiply_tuple(&dest->origin, matrix, &orig->origin);
-    MATRIX_multiply_tuple(&dest->direction, matrix, &orig->direction);
+    dest->origin = MATRIX_multiply_tuple(matrix, orig->origin);
+    dest->direction = MATRIX_multiply_tuple(matrix, orig->direction);
 }
 
 void RAY_destroy(RAY_Ray* ray) {
     assert(ray);
-    TUPLES_destroy(&ray->origin);
-    TUPLES_destroy(&ray->direction);
 }
 
 void RAY_delete(RAY_Ray* ray) {

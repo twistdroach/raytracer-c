@@ -9,12 +9,9 @@ void setUp() {}
 void tearDown() {}
 
 void test_precompute_the_state_of_an_intersection() {
-    TUPLES_Point expected_point;
-    TUPLES_init_point(&expected_point, 0, 0, -1);
-    TUPLES_Vector expected_eyev;
-    TUPLES_init_vector(&expected_eyev, 0, 0, -1);
-    TUPLES_Vector expected_normalv;
-    TUPLES_init_vector(&expected_normalv, 0, 0, -1);
+    TUPLES_Point expected_point = TUPLES_point(0, 0, -1);
+    TUPLES_Vector expected_eyev = TUPLES_vector(0, 0, -1);
+    TUPLES_Vector expected_normalv = TUPLES_vector(0, 0, -1);
 
     RAY_Ray* ray = RAY_new(0, 0, -5, 0, 0, 1);
     SPHERE_Sphere* s = SPHERE_new();
@@ -46,12 +43,9 @@ void test_hit_when_intersection_occurs_on_outside() {
 }
 
 void test_hit_when_intersection_occurs_on_inside() {
-    TUPLES_Point expected_point;
-    TUPLES_init_point(&expected_point, 0, 0, 1);
-    TUPLES_Vector expected_eyev;
-    TUPLES_init_vector(&expected_eyev, 0, 0, -1);
-    TUPLES_Vector expected_normalv;
-    TUPLES_init_vector(&expected_normalv, 0, 0, -1);
+    TUPLES_Point expected_point = TUPLES_point(0, 0, 1);
+    TUPLES_Vector expected_eyev = TUPLES_vector(0, 0, -1);
+    TUPLES_Vector expected_normalv = TUPLES_vector(0, 0, -1);
 
     RAY_Ray* ray = RAY_new(0, 0, 0, 0, 0, 1);
     SPHERE_Sphere* s = SPHERE_new();

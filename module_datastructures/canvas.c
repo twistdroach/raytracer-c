@@ -28,7 +28,7 @@ void CANVAS_init(CANVAS_Canvas* canvas, uint width, uint height) {
         Throw(E_MALLOC_FAILED);
 
     for (uint i=0; i < width * height; i++) {
-        TUPLES_init_color(&canvas->data[i], 0, 0, 0);
+        canvas->data[i] = TUPLES_color(0, 0, 0);
     }
 }
 
@@ -44,13 +44,12 @@ TUPLES_Color* CANVAS_read_pixel(const CANVAS_Canvas* canvas, uint x, uint y) {
     return &canvas->data[ndx];
 }
 
-void CANVAS_write_pixel(CANVAS_Canvas* canvas, uint x, uint y, const TUPLES_Color* color) {
+void CANVAS_write_pixel(CANVAS_Canvas* canvas, uint x, uint y, TUPLES_Color color) {
     assert(canvas);
-    assert(color);
     assert(x < canvas->width);
     assert(y < canvas->height);
     TUPLES_Color* dest = CANVAS_read_pixel(canvas, x, y);
-    TUPLES_copy(dest, color);
+    *dest = color;
 }
 
 char* CANVAS_get_ppm_header_string(const CANVAS_Canvas* canvas) {

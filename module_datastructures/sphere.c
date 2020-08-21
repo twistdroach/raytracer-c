@@ -13,7 +13,7 @@ SPHERE_Sphere* SPHERE_new() {
 
 void SPHERE_init(SPHERE_Sphere* sphere) {
     assert(sphere);
-    TUPLES_init_point(&sphere->origin, 0, 0 , 0);
+    sphere->origin = TUPLES_point(0, 0 , 0);
     sphere->radius = 1.0;
     sphere->transform = MATRIX_new_identity(4);
     sphere->material = MATERIAL_new();
@@ -21,7 +21,6 @@ void SPHERE_init(SPHERE_Sphere* sphere) {
 
 void SPHERE_destroy(SPHERE_Sphere* sphere) {
     assert(sphere);
-    TUPLES_destroy(&sphere->origin);
     MATRIX_delete(sphere->transform);
     MATERIAL_delete(sphere->material);
 }
@@ -44,13 +43,12 @@ RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere* sphere, const RAY_Ray* 
     if (!other_intersections) {
         other_intersections = RAY_new_intersections();
     }
-    TUPLES_Vector sphere_to_ray;
 
     //compute discriminant
-    TUPLES_subtract(&sphere_to_ray, &ray.origin, &sphere->origin);
-    double a = TUPLES_dot(&ray.direction, &ray.direction);
-    double b = 2 * TUPLES_dot(&ray.direction, &sphere_to_ray);
-    double c = TUPLES_dot(&sphere_to_ray, &sphere_to_ray) - 1.0;
+    TUPLES_Vector sphere_to_ray = TUPLES_subtract(ray.origin, sphere->origin);
+    double a = TUPLES_dot(ray.direction, ray.direction);
+    double b = 2 * TUPLES_dot(ray.direction, sphere_to_ray);
+    double c = TUPLES_dot(sphere_to_ray, sphere_to_ray) - 1.0;
     double discriminant = pow(b, 2.0) - 4.0 * a *c;
     if (discriminant < 0) {
         //no hit
@@ -91,20 +89,16 @@ const MATRIX_Matrix* SPHERE_get_transform(const SPHERE_Sphere* sphere) {
     return  sphere->transform;
 }
 
-void SPHERE_normal_at(TUPLES_Vector* world_normal, const SPHERE_Sphere* sphere, const TUPLES_Point* world_point) {
+TUPLES_Vector SPHERE_normal_at(const SPHERE_Sphere* sphere, TUPLES_Point world_point) {
     assert(sphere);
-    assert(world_point);
-    assert(world_normal);
 
     MATRIX_Matrix inverse;
-    TUPLES_Point object_point;
-    TUPLES_Vector object_normal;
 
     MATRIX_inverse(&inverse, SPHERE_get_transform(sphere));
-    MATRIX_multiply_tuple(&object_point, &inverse, world_point);
-    TUPLES_subtract(&object_normal, &object_point, &sphere->origin);
+    TUPLES_Point object_point = MATRIX_multiply_tuple(&inverse, world_point);
+    TUPLES_Vector object_normal = TUPLES_subtract(object_point, sphere->origin);
     MATRIX_transpose(&inverse);
-    MATRIX_multiply_tuple(world_normal, &inverse, &object_normal);
-    world_normal->w = 0;
-    TUPLES_normalize(world_normal);
+    TUPLES_Vector world_normal = MATRIX_multiply_tuple(&inverse, object_normal);
+    world_normal.w = 0;
+    return TUPLES_normalize(world_normal);
 }
