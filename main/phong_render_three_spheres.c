@@ -111,7 +111,9 @@ int main(void) {
                 WORLD_World* world = WORLD_new(light);
                 build_world(world);
                 LOGGER_log(LOGGER_INFO, "Rendering...\n");
+                UTILITIES_Timer* render_timer = UTILITIES_Timer_start();
                 CANVAS_Canvas* canvas = CAMERA_render(camera, world);
+                UTILITIES_Timer_Results render_results = UTILITIES_Timer_stop(render_timer);
 
                 char *filename = "phong_render_three_spheres.ppm";
                 LOGGER_log(LOGGER_INFO, "Writing file %s...\n", filename);
@@ -124,6 +126,8 @@ int main(void) {
                 LIGHTS_delete_pointlight(light);
                 CAMERA_delete(camera);
                 CANVAS_delete(canvas);
+                LOGGER_log(LOGGER_INFO, "Wall: %.2f User: %.2f System: %.2f\n", render_results.wall_time_seconds,
+                           render_results.user_time_seconds, render_results.system_time_seconds);
             } Catch(e) {
         if (e == E_MALLOC_FAILED)
             printf("Malloc failed.  Exiting\n");

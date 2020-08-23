@@ -34,4 +34,14 @@ bool double_equal(double a, double b);
     fn(list_for_apply[i]);                                        \
 }
 
+typedef struct UTILITIES_Timer UTILITIES_Timer;
+typedef struct UTILITIES_Timer_Results {
+    double user_time_seconds;
+    double system_time_seconds;
+    double wall_time_seconds;
+
+} UTILITIES_Timer_Results;
+UTILITIES_Timer* UTILITIES_Timer_start();
+UTILITIES_Timer_Results UTILITIES_Timer_stop(UTILITIES_Timer* timer);
+
 #endif //UTILITIES_UTILITIES_H
