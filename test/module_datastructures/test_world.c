@@ -1,5 +1,4 @@
 #include <unity.h>
-#include <intersections.h>
 #include "world.h"
 #include "lights.h"
 #include "test_world_utils.h"
@@ -52,7 +51,7 @@ void test_shading_an_intersection() {
     i.t = 4.0;
     i.object = s;
 
-    INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(&i, ray);
+    RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TUPLES_Color c;
     WORLD_shade_hit(&c, world, comps);
 
@@ -62,7 +61,7 @@ void test_shading_an_intersection() {
 
     RAY_delete(ray);
     destruct_test_world(world);
-    INTERSECTION_delete(comps);
+    RAY_delete_computations(comps);
 }
 
 void test_shading_an_intersection_from_inside() {
@@ -81,7 +80,7 @@ void test_shading_an_intersection_from_inside() {
     i.t = 0.5;
     i.object = s;
 
-    INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(&i, ray);
+    RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TUPLES_Color c;
     WORLD_shade_hit(&c, world, comps);
 //    printf("over_point (%s): is shadowed %u\n", TUPLES_to_string(&comps->over_point), WORLD_is_shadowed(world, &comps->over_point));
@@ -94,7 +93,7 @@ void test_shading_an_intersection_from_inside() {
     RAY_delete(ray);
     destruct_test_world(world);
     LIGHTS_delete_pointlight(light);
-    INTERSECTION_delete(comps);
+    RAY_delete_computations(comps);
 }
 
 void test_color_when_ray_misses() {
@@ -199,14 +198,14 @@ void test_shade_hit_with_a_point_in_shadow() {
     i.t = 4.0;
     i.object = s2;
 
-    INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(&i, &ray);
+    RAY_Computations* comps = RAY_prepare_computations(&i, &ray);
     TUPLES_Color c;
     WORLD_shade_hit(&c, world, comps);
     TUPLES_Color expected;
     TUPLES_init_color(&expected, 0.1, 0.1, 0.1);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &c));
 
-    INTERSECTION_delete(comps);
+    RAY_delete_computations(comps);
 }
 
 int main(void)

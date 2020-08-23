@@ -3,7 +3,7 @@
 
 #include "lights.h"
 #include "sphere.h"
-#include "intersections.h"
+#include "ray.h"
 
 typedef struct WORLD_World WORLD_World;
 
@@ -32,7 +32,7 @@ unsigned int WORLD_get_object_count(const WORLD_World* world);
 const LIGHTS_PointLight* WORLD_get_light(const WORLD_World* world);
 void WORLD_set_light(WORLD_World* world, const LIGHTS_PointLight*);
 RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray);
-void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const INTERSECTION_Intersection* computation);
+void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* computation);
 void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray);
 bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* point);
 #endif //DATA_STRUCTURES_WORLD_H

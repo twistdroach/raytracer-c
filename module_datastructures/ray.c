@@ -5,6 +5,7 @@
 #include <CException.h>
 #include <exceptions.h>
 #include "ray.h"
+#include "sphere.h"
 
 RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z) {
     RAY_Ray* ray = malloc(sizeof(RAY_Ray));
@@ -114,4 +115,38 @@ void RAY_delete_intersections(RAY_Intersections* intersections) {
         free(intersections->xs);
     }
     free(intersections);
+}
+
+RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray) {
+    RAY_Computations* comps = malloc(sizeof(RAY_Computations));
+    //keep a handle on the object intersected
+    comps->t = hit->t;
+    comps->object = hit->object;
+
+    //compute the point of intersection
+    RAY_position(&comps->point, ray, comps->t);
+
+    //compute the eye vector
+    TUPLES_copy(&comps->eyev, &ray->direction);
+    TUPLES_negate(&comps->eyev);
+
+    //compute the normal @ the intersection
+    SPHERE_normal_at(&comps->normalv, comps->object, &comps->point);
+
+    //compute the "over_point" to deal with floating point imprecision...
+    TUPLES_multiply(&comps->over_point, &comps->normalv, EPSILON);
+    TUPLES_add(&comps->over_point, &comps->over_point, &comps->point);
+
+    if (TUPLES_dot(&comps->normalv, &comps->eyev) < 0) {
+        comps->inside = true;
+        TUPLES_negate(&comps->normalv);
+    } else {
+        comps->inside = false;
+    }
+
+    return comps;
+}
+
+void RAY_delete_computations(RAY_Computations* comps) {
+    free(comps);
 }

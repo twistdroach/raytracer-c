@@ -46,4 +46,24 @@ void RAY_delete_intersections(RAY_Intersections* intersections);
 RAY_Xs* RAY_hit(RAY_Intersections* intersections);
 void RAY_sort_intersections(RAY_Intersections* intersections);
 
+typedef struct RAY_Computations {
+    double               t;
+    const SPHERE_Sphere* object;
+    TUPLES_Point         point;
+    TUPLES_Point         over_point;
+    TUPLES_Vector        eyev;
+    TUPLES_Vector        normalv;
+    bool                 inside;
+} RAY_Computations;
+
+/**
+ * Allocates and computes some info to be used when rendering
+ * RAY_delete_computations must be called on the returned pointer
+ * @param hit
+ * @param ray
+ * @return
+ */
+RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray);
+void RAY_delete_computations(RAY_Computations* comps);
+
 #endif //DATA_STRUCTURES_RAY_H

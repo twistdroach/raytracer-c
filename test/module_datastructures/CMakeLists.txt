@@ -62,14 +62,6 @@ target_link_libraries(module_datastructures_world
         m)
 add_test(datastructures_world module_datastructures_world)
 
-add_executable(module_datastructures_intersections
-        test_intersections.c)
-target_link_libraries(module_datastructures_intersections
-        module_datastructures
-        Unity
-        m)
-add_test(datastructures_intersections module_datastructures_intersections)
-
 add_executable(module_datastructures_camera
         test_camera.c)
 target_link_libraries(module_datastructures_camera

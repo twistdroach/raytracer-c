@@ -7,7 +7,6 @@ add_library(module_datastructures STATIC
         lights.c lights.h
         material.c material.h
         world.c world.h
-        intersections.c intersections.h
         camera.c camera.h)
 
 target_include_directories(module_datastructures PUBLIC

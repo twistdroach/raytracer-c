@@ -84,7 +84,7 @@ RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray)
     return intersections;
 }
 
-void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const INTERSECTION_Intersection* computation) {
+void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* computation) {
     assert(world);
     assert(computation);
 
@@ -108,9 +108,9 @@ void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray*
     if (!hit) {
         TUPLES_init_color(dest, 0, 0, 0);
     } else {
-        INTERSECTION_Intersection* comps = INTERSECTION_prepare_computations(hit, ray);
+        RAY_Computations* comps = RAY_prepare_computations(hit, ray);
         WORLD_shade_hit(dest, world, comps);
-        INTERSECTION_delete(comps);
+        RAY_delete_computations(comps);
     }
     RAY_delete_intersections(intersections);
 }
