@@ -24,15 +24,15 @@ WORLD_World* construct_test_world() {
     TUPLES_init_color(&s1_material->color, 0.8, 1.0, 0.6);
     s1_material->diffuse = 0.7;
     s1_material->specular = 0.2;
-    SPHERE_set_material(s1, s1_material);
+    SHAPE_set_material(&s1->parent, s1_material);
     MATERIAL_delete(s1_material);
-    WORLD_add_object(world, s1);
+    WORLD_add_object(world, s1, SHAPEHOLDER_SPHERE);
 
     s2 = SPHERE_new();
     MATRIX_Matrix* s2_transform = MATRIX_new_scaling(0.5, 0.5, 0.5);
-    SPHERE_set_transform(s2, s2_transform);
+    SHAPE_set_transform(&s2->parent, s2_transform);
     MATRIX_delete(s2_transform);
-    WORLD_add_object(world, s2);
+    WORLD_add_object(world, s2, SHAPEHOLDER_SPHERE);
 
     return world;
 }
@@ -41,8 +41,8 @@ void destruct_test_world(WORLD_World* world) {
     TEST_ASSERT_NOT_NULL(world);
     LIGHTS_delete_pointlight(pl);
     TEST_ASSERT_EQUAL_UINT(2, WORLD_get_object_count(world));
-    TEST_ASSERT_NOT_NULL(WORLD_get_object(world, 0));
-    TEST_ASSERT_NOT_NULL(WORLD_get_object(world, 1));
+    TEST_ASSERT_NOT_NULL(WORLD_get_object_holder(world, 0));
+    TEST_ASSERT_NOT_NULL(WORLD_get_object_holder(world, 1));
     SPHERE_delete(s1);
     SPHERE_delete(s2);
     WORLD_delete(world);

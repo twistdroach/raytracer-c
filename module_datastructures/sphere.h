@@ -4,12 +4,10 @@
 #include "tuples.h"
 #include "ray.h"
 #include "material.h"
+#include "shape.h"
 
 typedef struct SPHERE_Sphere {
-    TUPLES_Point origin;
-    double radius;
-    MATRIX_Matrix* transform;
-    MATERIAL_Material* material;
+    SHAPE_Shape parent;  /** parent class */
 } SPHERE_Sphere;
 
 SPHERE_Sphere* SPHERE_new();
@@ -17,27 +15,13 @@ void SPHERE_init(SPHERE_Sphere* sphere);
 void SPHERE_destroy(SPHERE_Sphere* sphere);
 void SPHERE_delete(SPHERE_Sphere* sphere);
 
-/**
- * Constructs a set of intersections, must call RAY_delete_intersections() on returned ptr.
- * If other_intersections == NULL, a new RAY_Intersections is allocated
- * Otherwise, additional intersections are added to the other_intersections and no new RAY_Intersections
- * is allocated.
- * @return
- */
-RAY_Intersections* SPHERE_intersect(const SPHERE_Sphere*, const RAY_Ray*, RAY_Intersections* other_intersections);
+void SPHERE_local_intersect(RAY_Intersections* intersections, SPHERE_Sphere* sphere, const RAY_Ray* local_ray);
 
-/**
- * Sets dest to a normal vector at surface of the sphere.
- * @param dest
- * @param sphere
- * @param point
- * @return
- */
-void SPHERE_normal_at(TUPLES_Vector* dest, const SPHERE_Sphere* sphere, const TUPLES_Point* point);
-void SPHERE_set_transform(SPHERE_Sphere* sphere, const MATRIX_Matrix* matrix);
-const MATRIX_Matrix* SPHERE_get_transform(const SPHERE_Sphere* sphere);
+void SPHERE_local_normal_at(TUPLES_Vector* world_normal, const SPHERE_Sphere* sphere, const TUPLES_Point* world_point);
 
-void SPHERE_set_material(SPHERE_Sphere* sphere, const MATERIAL_Material* material);
-const MATERIAL_Material* SPHERE_get_material(const SPHERE_Sphere* sphere);
+//convenience - probably should just refactor
+#define SPHERE_set_material(sphere, material) SHAPE_set_material((SHAPE_Shape*)sphere, material)
+#define SPHERE_set_transform(sphere, transform) SHAPE_set_transform((SHAPE_Shape*)sphere, transform)
+#define SPHERE_get_material(sphere) SHAPE_get_material((SHAPE_Shape*)sphere)
 
 #endif //DATA_STRUCTURES_SPHERE_H

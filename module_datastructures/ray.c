@@ -5,7 +5,7 @@
 #include <CException.h>
 #include <exceptions.h>
 #include "ray.h"
-#include "sphere.h"
+#include "shapeholder.h"
 
 RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z) {
     RAY_Ray* ray = malloc(sizeof(RAY_Ray));
@@ -98,7 +98,23 @@ RAY_Xs* RAY_hit(RAY_Intersections* intersections) {
     return NULL;
 }
 
-void RAY_add_intersection(RAY_Intersections* intersections, double intersection, const void* object) {
+void RAY_iterate_intersections(RAY_Intersections* intersections, void (*intersection_iter)(RAY_Xs* ray, void* state), void* state) {
+    assert(intersections);
+    assert(intersection_iter);
+    for (unsigned int ndx = 0; ndx < intersections->count; ndx++) {
+        intersection_iter(&intersections->xs[ndx], state);
+    }
+}
+
+void RAY_add_intersections(RAY_Intersections* dest_intersection, RAY_Intersections* src_intersections) {
+
+    for (unsigned int ndx = 0; ndx < src_intersections->count; ndx++) {
+        RAY_Xs* xs = &src_intersections->xs[ndx];
+        RAY_add_intersection(dest_intersection, xs->t, xs->object);
+    }
+}
+
+void RAY_add_intersection(RAY_Intersections* intersections, double intersection, void* object) {
     RAY_Xs* tmpptr = reallocarray(intersections->xs, sizeof(RAY_Xs), intersections->count + 1);
     if (!tmpptr) {
         Throw(E_MALLOC_FAILED);
@@ -131,7 +147,7 @@ RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray
     TUPLES_negate(&comps->eyev);
 
     //compute the normal @ the intersection
-    SPHERE_normal_at(&comps->normalv, comps->object, &comps->point);
+    SHAPEHOLDER_normal_at(&comps->normalv, comps->object, &comps->point);
 
     //compute the "over_point" to deal with floating point imprecision...
     TUPLES_multiply(&comps->over_point, &comps->normalv, EPSILON);

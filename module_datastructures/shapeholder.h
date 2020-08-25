@@ -1,8 +1,7 @@
 #ifndef DATA_STRUCTURES_SHAPEHOLDER_H
 #define DATA_STRUCTURES_SHAPEHOLDER_H
 
-#include "sphere.h"
-#include "testshape.h"
+#include "ray.h"
 
 typedef enum SHAPEHOLDER_Type {
     SHAPEHOLDER_BASE = 0,

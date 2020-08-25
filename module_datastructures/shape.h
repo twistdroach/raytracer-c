@@ -3,7 +3,8 @@
 
 #include "matrix.h"
 #include "material.h"
-#include "ray.h"
+//#include "ray.h"
+typedef struct RAY_Ray RAY_Ray;
 
 typedef struct SHAPE_Shape {
     MATRIX_Matrix* transform;
@@ -14,6 +15,7 @@ void SHAPE_init(SHAPE_Shape* shape);
 void SHAPE_destroy(SHAPE_Shape* shape);
 void SHAPE_set_transform(SHAPE_Shape* shape, MATRIX_Matrix* transformation);
 void SHAPE_set_material(SHAPE_Shape* shape, MATERIAL_Material* material);
+MATERIAL_Material* SHAPE_get_material(SHAPE_Shape* shape);
 
 /**
  * Calculates ray in object coordinates to that shape can handle intersection code locally.
@@ -21,7 +23,7 @@ void SHAPE_set_material(SHAPE_Shape* shape, MATERIAL_Material* material);
  * @param ray ray in world coordinates
  * @param shape
  */
-void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, const SHAPE_Shape* shape);
+void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, SHAPE_Shape* shape);
 
 /**
  * Calculates local point in object coordinates given a point in world coords
@@ -29,7 +31,7 @@ void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, const SHAPE_Sh
  * @param point
  * @param point
  */
-void SHAPE_calc_local_point(TUPLES_Point* local_point, const SHAPE_Shape* shape, const TUPLES_Point* point);
+void SHAPE_calc_local_point(TUPLES_Point* local_point, SHAPE_Shape* shape, const TUPLES_Point* point);
 
-void SHAPE_calc_world_normal(TUPLES_Vector* world_normal, const SHAPE_Shape* shape, const TUPLES_Vector* local_normal);
+void SHAPE_calc_world_normal(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Vector* local_normal);
 #endif //DATA_STRUCTURES_SHAPE_H

@@ -23,7 +23,7 @@ void TESTSHAPE_delete(TESTSHAPE_TestShape* testshape) {
     free(testshape);
 }
 
-void TESTSHAPE_local_intercept(RAY_Intersections* dest, TESTSHAPE_TestShape* shape, const RAY_Ray* local_ray) {
+void TESTSHAPE_local_intersect(RAY_Intersections* dest, TESTSHAPE_TestShape* shape, const RAY_Ray* local_ray) {
     assert(dest);
     assert(shape);
     assert(local_ray);

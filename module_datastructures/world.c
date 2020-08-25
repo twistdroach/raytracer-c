@@ -1,10 +1,12 @@
 #include <assert.h>
 #include "exceptions.h"
 #include "world.h"
+#include "shapeholder.h"
+#include "shape.h"
 
 typedef struct WORLD_World {
     const LIGHTS_PointLight* light;
-    SPHERE_Sphere**  objects;
+    SHAPEHOLDER_Shapeholder*  objects;
     unsigned int object_count;
 } WORLD_World;
 
@@ -49,23 +51,23 @@ inline const LIGHTS_PointLight* WORLD_get_light(const WORLD_World* world) {
     return world->light;
 }
 
-void WORLD_add_object(WORLD_World* world, SPHERE_Sphere* sphere) {
+void WORLD_add_object(WORLD_World* world, void* shape, SHAPEHOLDER_Type type) {
     assert(world);
-    assert(sphere);
-    SPHERE_Sphere** tmpptr = reallocarray(world->objects, sizeof(SPHERE_Sphere*), world->object_count + 1);
+    assert(shape);
+    SHAPEHOLDER_Shapeholder* tmpptr = reallocarray(world->objects, sizeof(SHAPEHOLDER_Shapeholder), world->object_count + 1);
     if (!tmpptr) {
         Throw(E_MALLOC_FAILED);
     } else {
         world->objects = tmpptr;
     }
-    world->objects[world->object_count] = sphere;
+    SHAPEHOLDER_init(&world->objects[world->object_count], shape, type);
     world->object_count++;
 }
 
-inline SPHERE_Sphere* WORLD_get_object(const WORLD_World* world, unsigned int index) {
+inline SHAPEHOLDER_Shapeholder* WORLD_get_object_holder(const WORLD_World* world, unsigned int index) {
     assert(world);
     assert(index < world->object_count);
-    return world->objects[index];
+    return &world->objects[index];
 }
 
 inline unsigned int WORLD_get_object_count(const WORLD_World* world) {
@@ -78,7 +80,7 @@ RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray)
     assert(ray);
     RAY_Intersections* intersections = RAY_new_intersections();
     for (unsigned int i=0; i<world->object_count; i++) {
-        SPHERE_intersect(WORLD_get_object(world, i), ray, intersections);
+        SHAPEHOLDER_intersect(intersections, WORLD_get_object_holder(world, i), ray);
     }
     RAY_sort_intersections(intersections);
     return intersections;
@@ -91,7 +93,7 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
     bool shadowed = WORLD_is_shadowed(world, &computation->over_point);
 
     MATERIAL_lighting(dest,
-                      SPHERE_get_material(computation->object),
+                      SHAPE_get_material((SHAPE_Shape*)computation->object->shape),
                       world->light,
                       &computation->point,
                       &computation->eyev,

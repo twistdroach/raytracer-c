@@ -12,7 +12,7 @@
 
 void build_world(WORLD_World* world) {
     SPHERE_Sphere* floor = SPHERE_new();
-    WORLD_add_object(world, floor);
+    WORLD_add_object(world, floor, SHAPEHOLDER_SPHERE);
     MATRIX_Matrix* floor_transform = MATRIX_new_scaling(10, 0.01, 10);
     MATERIAL_Material* material = MATERIAL_new();
     TUPLES_init_color(&material->color, 1, 0.9, 0.9);
@@ -22,7 +22,7 @@ void build_world(WORLD_World* world) {
     MATRIX_delete(floor_transform);
 
     SPHERE_Sphere* left_wall = SPHERE_new();
-    WORLD_add_object(world, left_wall);
+    WORLD_add_object(world, left_wall, SHAPEHOLDER_SPHERE);
     MATRIX_Matrix* lwtranslation = MATRIX_new_translation(0, 0, 5);
     MATRIX_Matrix* lwroty = MATRIX_new_rotation_y(-M_PI_4);
     MATRIX_Matrix* lwrotx = MATRIX_new_rotation_x(M_PI_2);
@@ -35,7 +35,7 @@ void build_world(WORLD_World* world) {
     SPHERE_set_material(left_wall, material);
 
     SPHERE_Sphere* right_wall = SPHERE_new();
-    WORLD_add_object(world, right_wall);
+    WORLD_add_object(world, right_wall, SHAPEHOLDER_SPHERE);
     MATRIX_Matrix* rwtranslation = MATRIX_new_translation(0, 0, 5);
     MATRIX_Matrix* rwroty = MATRIX_new_rotation_y(M_PI_4);
     MATRIX_Matrix* rwrotx = MATRIX_new_rotation_x(M_PI_2);
@@ -50,7 +50,7 @@ void build_world(WORLD_World* world) {
     MATERIAL_delete(material);
 
     SPHERE_Sphere* middle = SPHERE_new();
-    WORLD_add_object(world, middle);
+    WORLD_add_object(world, middle, SHAPEHOLDER_SPHERE);
     MATRIX_Matrix* middle_transform = MATRIX_new_translation(-0.5, 1, 0.5);
     SPHERE_set_transform(middle, middle_transform);
     MATRIX_delete(middle_transform);
@@ -62,7 +62,7 @@ void build_world(WORLD_World* world) {
     MATERIAL_delete(middle_material);
 
     SPHERE_Sphere* right = SPHERE_new();
-    WORLD_add_object(world, right);
+    WORLD_add_object(world, right, SHAPEHOLDER_SPHERE);
     MATRIX_Matrix* right_translation = MATRIX_new_translation(1.5, 0.5, -0.5);
     MATRIX_Matrix* right_scaling = MATRIX_new_scaling(0.5, 0.5, 0.5);
     MATRIX_Matrix* right_transform = MATRIX_multiply(right_translation, right_scaling);
@@ -76,7 +76,7 @@ void build_world(WORLD_World* world) {
     MATERIAL_delete(right_material);
 
     SPHERE_Sphere* left = SPHERE_new();
-    WORLD_add_object(world, left);
+    WORLD_add_object(world, left, SHAPEHOLDER_SPHERE);
     MATRIX_Matrix* left_translation = MATRIX_new_translation(-1.5, 0.33, -0.75);
     MATRIX_Matrix* left_scaling = MATRIX_new_scaling(0.33, 0.33, 0.33);
     MATRIX_Matrix* left_transform = MATRIX_multiply(left_translation, left_scaling);
@@ -120,7 +120,8 @@ int main(void) {
                 CANVAS_write_to_file(canvas, filename);
                 LOGGER_log(LOGGER_INFO, "Cleaning up...\n");
                 for (unsigned int ndx = 0; ndx < WORLD_get_object_count(world); ndx++) {
-                    SPHERE_delete(WORLD_get_object(world, ndx));
+                    SHAPEHOLDER_Shapeholder* holder = WORLD_get_object_holder(world, ndx);
+                    SPHERE_delete(holder->shape);
                 }
                 WORLD_delete(world);
                 LIGHTS_delete_pointlight(light);

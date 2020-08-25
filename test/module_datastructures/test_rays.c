@@ -2,6 +2,7 @@
 #include <ray.h>
 #include <sphere.h>
 #include <matrix.h>
+#include "shapeholder.h"
 
 void setUp() {}
 void tearDown() {}
@@ -171,12 +172,14 @@ void test_precompute_the_state_of_an_intersection() {
 
     RAY_Ray* ray = RAY_new(0, 0, -5, 0, 0, 1);
     SPHERE_Sphere* s = SPHERE_new();
+    SHAPEHOLDER_Shapeholder h;
+    SHAPEHOLDER_init(&h, s, SHAPEHOLDER_SPHERE);
     RAY_Xs i;
     i.t = 4.0;
-    i.object = s;
+    i.object = &h;
     RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TEST_ASSERT_EQUAL_DOUBLE(i.t, comps->t);
-    TEST_ASSERT_EQUAL_PTR(s, comps->object);
+    TEST_ASSERT_EQUAL_PTR(s, comps->object->shape);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected_point, &comps->point));
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected_eyev, &comps->eyev));
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected_normalv, &comps->normalv));
@@ -188,9 +191,11 @@ void test_precompute_the_state_of_an_intersection() {
 void test_hit_when_intersection_occurs_on_outside() {
     RAY_Ray* ray = RAY_new(0, 0, -5, 0, 0, 1);
     SPHERE_Sphere* s = SPHERE_new();
+    SHAPEHOLDER_Shapeholder h;
+    SHAPEHOLDER_init(&h, s, SHAPEHOLDER_SPHERE);
     RAY_Xs i;
     i.t = 4.0;
-    i.object = s;
+    i.object = &h;
     RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TEST_ASSERT_FALSE(comps->inside);
     RAY_delete_computations(comps);
@@ -208,9 +213,11 @@ void test_hit_when_intersection_occurs_on_inside() {
 
     RAY_Ray* ray = RAY_new(0, 0, 0, 0, 0, 1);
     SPHERE_Sphere* s = SPHERE_new();
+    SHAPEHOLDER_Shapeholder h;
+    SHAPEHOLDER_init(&h, s, SHAPEHOLDER_SPHERE);
     RAY_Xs i;
     i.t = 1.0;
-    i.object = s;
+    i.object = &h;
     RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TEST_ASSERT_TRUE(comps->inside);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected_point, &comps->point));
@@ -227,12 +234,14 @@ void test_hit_should_offset_the_point() {
 
     SPHERE_Sphere* sphere = SPHERE_new();
     MATRIX_Matrix* transform = MATRIX_new_translation(0, 0, 1);
-    SPHERE_set_transform(sphere, transform);
+    SHAPE_set_transform((SHAPE_Shape*)sphere, transform);
     MATRIX_delete(transform);
 
+    SHAPEHOLDER_Shapeholder h;
+    SHAPEHOLDER_init(&h, sphere, SHAPEHOLDER_SPHERE);
     RAY_Xs i;
     i.t = 5.0;
-    i.object = sphere;
+    i.object = &h;
 
     RAY_Computations* comps = RAY_prepare_computations(&i, &ray);
     TEST_ASSERT_TRUE(comps->over_point.z < -EPSILON/2);

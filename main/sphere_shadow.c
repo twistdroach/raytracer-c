@@ -29,7 +29,8 @@ int main(void) {
                 TUPLES_normalize(&v_tmp);
                 RAY_Ray r;
                 RAY_init_from_tuples(&r, &position, &v_tmp);
-                RAY_Intersections* xs = SPHERE_intersect(sphere, &r, NULL);
+                RAY_Intersections* xs = RAY_new_intersections();
+                SPHERE_local_intersect(xs, sphere, &r);
                 if (RAY_hit(xs)) {
                     CANVAS_write_pixel(canvas, x, y, red);
                 }

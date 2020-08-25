@@ -4,6 +4,7 @@
 #include "lights.h"
 #include "sphere.h"
 #include "ray.h"
+#include "shapeholder.h"
 
 typedef struct WORLD_World WORLD_World;
 
@@ -19,15 +20,15 @@ void WORLD_delete(WORLD_World* world);
  * @param world
  * @param sphere
  */
-void WORLD_add_object(WORLD_World* world, SPHERE_Sphere* sphere);
+void WORLD_add_object(WORLD_World* world, void* shape, SHAPEHOLDER_Type type);
 
 /**
- * Gets a point to an object in the world
+ * Gets a pointer to an object in the world
  * @param world
  * @param index
  * @return
  */
-SPHERE_Sphere* WORLD_get_object(const WORLD_World* world, unsigned int index);
+SHAPEHOLDER_Shapeholder* WORLD_get_object_holder(const WORLD_World* world, unsigned int index);
 unsigned int WORLD_get_object_count(const WORLD_World* world);
 const LIGHTS_PointLight* WORLD_get_light(const WORLD_World* world);
 void WORLD_set_light(WORLD_World* world, const LIGHTS_PointLight*);

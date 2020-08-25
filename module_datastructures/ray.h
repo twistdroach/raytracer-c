@@ -4,6 +4,7 @@
 #include "tuples.h"
 #include "matrix.h"
 
+typedef struct SHAPEHOLDER_Shapeholder SHAPEHOLDER_Shapeholder;
 typedef struct RAY_Ray {
     TUPLES_Point  origin;
     TUPLES_Vector direction;
@@ -21,11 +22,9 @@ void RAY_transform(RAY_Ray* dest, const RAY_Ray* orig, const MATRIX_Matrix* matr
 void RAY_position(TUPLES_Point* pos, const RAY_Ray* ray, double t);
 
 
-//forward declare temporarily until we generalize
-typedef struct SPHERE_Sphere SPHERE_Sphere;
 typedef struct RAY_Xs {
     double t;
-    const SPHERE_Sphere* object;
+    void* object; /** generally holds SHAPEHOLDER_Holder() */
 } RAY_Xs;
 
 typedef struct RAY_Intersections {
@@ -34,7 +33,9 @@ typedef struct RAY_Intersections {
 } RAY_Intersections;
 
 RAY_Intersections* RAY_new_intersections();
-void RAY_add_intersection(RAY_Intersections* intersections, double intersection, const void* object);
+void RAY_add_intersection(RAY_Intersections* intersections, double intersection, void* object);
+void RAY_add_intersections(RAY_Intersections* dest_intersections, RAY_Intersections* src_intersections);
+void RAY_iterate_intersections(RAY_Intersections* intersections, void (*intersection_iter)(RAY_Xs* xs, void* state), void* state);
 void RAY_delete_intersections(RAY_Intersections* intersections);
 
 /**
@@ -47,13 +48,13 @@ RAY_Xs* RAY_hit(RAY_Intersections* intersections);
 void RAY_sort_intersections(RAY_Intersections* intersections);
 
 typedef struct RAY_Computations {
-    double               t;
-    const SPHERE_Sphere* object;
-    TUPLES_Point         point;
-    TUPLES_Point         over_point;
-    TUPLES_Vector        eyev;
-    TUPLES_Vector        normalv;
-    bool                 inside;
+    double                         t;
+    SHAPEHOLDER_Shapeholder*       object;
+    TUPLES_Point                   point;
+    TUPLES_Point                   over_point;
+    TUPLES_Vector                  eyev;
+    TUPLES_Vector                  normalv;
+    bool                           inside;
 } RAY_Computations;
 
 /**

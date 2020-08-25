@@ -3,6 +3,7 @@
 #include "ray.h"
 #include <stdio.h>
 #include <sphere.h>
+#include "shapeholder.h"
 
 int main(void) {
     CEXCEPTION_T e;
@@ -41,7 +42,10 @@ int main(void) {
                         TUPLES_normalize(&v_tmp);
                         RAY_init_from_tuples(&r, ray_origin, &v_tmp);
 
-                        RAY_Intersections* xs = SPHERE_intersect(sphere, &r, NULL);
+                        RAY_Ray local_ray;
+                        SHAPE_calc_local_ray(&local_ray, &r, (SHAPE_Shape*) sphere);
+                        RAY_Intersections* xs = RAY_new_intersections();
+                        SPHERE_local_intersect(xs, sphere, &local_ray);
                         RAY_Xs* hit = RAY_hit(xs);
 
                         if (hit) {
@@ -49,15 +53,18 @@ int main(void) {
                             TUPLES_Vector normal;
                             TUPLES_Vector eyev;
                             TUPLES_Color color;
+                            TUPLES_Point local_point;
+                            TUPLES_Vector world_normal;
 
                             RAY_position(&point_of_intersection, &r, hit->t);
-
-                            SPHERE_normal_at(&normal, (SPHERE_Sphere*)hit->object, &point_of_intersection);
+                            SHAPE_calc_local_point(&local_point, (SHAPE_Shape*) sphere, &point_of_intersection);
+                            SPHERE_local_normal_at(&normal, sphere, &local_point);
+                            SHAPE_calc_world_normal(&world_normal, (SHAPE_Shape*) sphere, &normal);
 
                             TUPLES_copy(&eyev, &r.direction);
                             TUPLES_negate(&eyev);
 
-                            MATERIAL_lighting(&color, SPHERE_get_material((SPHERE_Sphere*)hit->object), light, &point_of_intersection, &eyev, &normal, false);
+                            MATERIAL_lighting(&color, SPHERE_get_material(sphere), light, &point_of_intersection, &eyev, &world_normal, false);
                             CANVAS_write_pixel(canvas, x, y, &color);
                         }
                         RAY_delete_intersections(xs);
