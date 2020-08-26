@@ -30,6 +30,12 @@ void WORLD_add_object(WORLD_World* world, void* shape, SHAPEHOLDER_Type type);
  */
 SHAPEHOLDER_Shapeholder* WORLD_get_object_holder(const WORLD_World* world, unsigned int index);
 unsigned int WORLD_get_object_count(const WORLD_World* world);
+/**
+ * Will call *_delete on each shape held by the world.
+ * This is purely for convenience...
+ * @param world
+ */
+void WORLD_delete_all_objects(WORLD_World* world);
 const LIGHTS_PointLight* WORLD_get_light(const WORLD_World* world);
 void WORLD_set_light(WORLD_World* world, const LIGHTS_PointLight*);
 RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray);

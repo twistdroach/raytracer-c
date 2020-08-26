@@ -43,8 +43,7 @@ void destruct_test_world(WORLD_World* world) {
     TEST_ASSERT_EQUAL_UINT(2, WORLD_get_object_count(world));
     TEST_ASSERT_NOT_NULL(WORLD_get_object_holder(world, 0));
     TEST_ASSERT_NOT_NULL(WORLD_get_object_holder(world, 1));
-    SPHERE_delete(s1);
-    SPHERE_delete(s2);
+    WORLD_delete_all_objects(world);
     WORLD_delete(world);
 }
 

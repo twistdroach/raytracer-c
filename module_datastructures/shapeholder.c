@@ -63,3 +63,13 @@ void SHAPEHOLDER_normal_at(TUPLES_Vector* world_normal, SHAPEHOLDER_Shapeholder*
     }
     SHAPE_calc_world_normal(world_normal, (SHAPE_Shape*) shape->shape, &local_normal);
 }
+
+void SHAPEHOLDER_delete(SHAPEHOLDER_Shapeholder* holder) {
+    assert(holder);
+    switch (holder->type) {
+        case SHAPEHOLDER_TESTSHAPE: TESTSHAPE_delete(holder->shape); break;
+        case SHAPEHOLDER_SPHERE:    SPHERE_delete(holder->shape); break;
+        case SHAPEHOLDER_PLANE:     PLANE_delete(holder->shape); break;
+        default: assert(0);
+    }
+}

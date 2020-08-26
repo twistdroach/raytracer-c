@@ -136,3 +136,10 @@ bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* point) {
 
     return is_shadowed;
 }
+
+void WORLD_delete_all_objects(WORLD_World* world) {
+    assert(world);
+    for (unsigned int ndx = 0; ndx < world->object_count; ndx++) {
+        SHAPEHOLDER_delete(&world->objects[ndx]);
+    }
+}

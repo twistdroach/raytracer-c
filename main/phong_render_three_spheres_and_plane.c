@@ -89,10 +89,7 @@ int main(void) {
                 LOGGER_log(LOGGER_INFO, "Writing file %s...\n", filename);
                 CANVAS_write_to_file(canvas, filename);
                 LOGGER_log(LOGGER_INFO, "Cleaning up...\n");
-                for (unsigned int ndx = 0; ndx < WORLD_get_object_count(world); ndx++) {
-                    SHAPEHOLDER_Shapeholder* holder = WORLD_get_object_holder(world, ndx);
-                    SHAPE_delete(holder->shape);
-                }
+                WORLD_delete_all_objects(world);
                 WORLD_delete(world);
                 LIGHTS_delete_pointlight(light);
                 CAMERA_delete(camera);
