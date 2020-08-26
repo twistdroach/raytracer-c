@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <plane.h>
 #include "shapeholder.h"
 #include "shape.h"
 #include "sphere.h"
@@ -39,6 +40,7 @@ void SHAPEHOLDER_intersect(RAY_Intersections* intersections, const SHAPEHOLDER_S
     switch (shape->type) {
         case SHAPEHOLDER_TESTSHAPE: TESTSHAPE_local_intersect(local_intersections, (TESTSHAPE_TestShape*) shape->shape, &local_ray); break;
         case SHAPEHOLDER_SPHERE:    SPHERE_local_intersect(local_intersections, (SPHERE_Sphere*) shape->shape, &local_ray); break;
+        case SHAPEHOLDER_PLANE:     PLANE_local_intersect(local_intersections, (PLANE_Plane*) shape->shape, &local_ray); break;
         default: assert(0);
     }
     //TODO - do this without copying the intersections
@@ -56,6 +58,7 @@ void SHAPEHOLDER_normal_at(TUPLES_Vector* world_normal, SHAPEHOLDER_Shapeholder*
     switch (shape->type) {
         case SHAPEHOLDER_TESTSHAPE: TESTSHAPE_local_normal_at(&local_normal, (TESTSHAPE_TestShape*) shape->shape, &local_point); break;
         case SHAPEHOLDER_SPHERE:    SPHERE_local_normal_at(&local_normal, (SPHERE_Sphere*) shape->shape, &local_point); break;
+        case SHAPEHOLDER_PLANE:     PLANE_local_normal_at(&local_normal, (PLANE_Plane*) shape->shape, &local_point); break;
         default: assert(0);
     }
     SHAPE_calc_world_normal(world_normal, (SHAPE_Shape*) shape->shape, &local_normal);

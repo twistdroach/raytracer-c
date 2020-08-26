@@ -14,7 +14,7 @@ typedef SHAPE_Shape SPHERE_Sphere;
 
 void SPHERE_local_intersect(RAY_Intersections* intersections, SPHERE_Sphere* sphere, const RAY_Ray* local_ray);
 
-void SPHERE_local_normal_at(TUPLES_Vector* world_normal, const SPHERE_Sphere* sphere, const TUPLES_Point* world_point);
+void SPHERE_local_normal_at(TUPLES_Vector* local_normal, const SPHERE_Sphere* sphere, const TUPLES_Point* local_point);
 
 #define SPHERE_set_material(sphere, material) SHAPE_set_material((SHAPE_Shape*)sphere, material)
 #define SPHERE_get_material(sphere) SHAPE_get_material((SHAPE_Shape*)sphere)

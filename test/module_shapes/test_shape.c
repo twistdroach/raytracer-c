@@ -4,6 +4,8 @@
 #include "shape.h"
 #include "testshape.h"
 
+#include "testutils.h"
+
 void setUp() {}
 void tearDown() {}
 
@@ -46,13 +48,6 @@ void test_shape_may_be_assigned_material() {
     TEST_ASSERT_TRUE(MATERIAL_is_equal(m, ((SHAPE_Shape*)s)->material));
     TESTSHAPE_delete(s);
     MATERIAL_delete(m);
-}
-
-void test_tuples(const TUPLES_Tuple* t1, const TUPLES_Tuple* t2) {
-    if (!TUPLES_is_equal(t1, t2)) {
-        printf("Expected: %s\nBut got: %s\n", TUPLES_to_string(t1), TUPLES_to_string(t2));
-        TEST_FAIL();
-    }
 }
 
 void test_shapeholder_intersect_scaled_shape_with_ray() {

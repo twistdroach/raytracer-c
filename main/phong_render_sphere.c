@@ -3,7 +3,6 @@
 #include "ray.h"
 #include <stdio.h>
 #include <sphere.h>
-#include "shapeholder.h"
 
 int main(void) {
     CEXCEPTION_T e;

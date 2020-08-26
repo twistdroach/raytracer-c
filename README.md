@@ -32,3 +32,8 @@ Same executable but now shadows are added...
 
 ![](images/phong_render_three_spheres_with_shadows.png)
 
+## main/phone_render_three_sphere_and_plane
+
+Slightly newer executable but now with a plane instead of "squashed spheres"
+
+![](images/phong_render_three_spheres_and_plane.png)

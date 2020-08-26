@@ -14,3 +14,11 @@ target_link_libraries(module_datastructures_shape
         Unity
         m)
 add_test(datastructures_shape module_datastructures_shape)
+
+add_executable(module_datastructures_plane
+        test_plane.c)
+target_link_libraries(module_datastructures_plane
+        module_datastructures
+        Unity
+        m)
+add_test(datastructures_plane module_datastructures_plane)
