@@ -1,6 +1,15 @@
 #include <assert.h>
+#include <exceptions.h>
 #include "shape.h"
 #include "ray.h"
+
+SHAPE_Shape* SHAPE_new() {
+    SHAPE_Shape* s = malloc(sizeof(SHAPE_Shape));
+    if (!s)
+        Throw(E_MALLOC_FAILED);
+    SHAPE_init(s);
+    return s;
+}
 
 void SHAPE_init(SHAPE_Shape* shape) {
     assert(shape);
@@ -12,6 +21,12 @@ void SHAPE_destroy(SHAPE_Shape* shape) {
     assert(shape);
     MATRIX_delete(shape->transform);
     MATERIAL_delete(shape->material);
+}
+
+void SHAPE_delete(SHAPE_Shape* shape) {
+    assert(shape);
+    SHAPE_destroy(shape);
+    free(shape);
 }
 
 void SHAPE_set_transform(SHAPE_Shape* shape, MATRIX_Matrix* transformation) {
@@ -31,9 +46,14 @@ void SHAPE_set_material(SHAPE_Shape* shape, MATERIAL_Material* material) {
     MATERIAL_copy(shape->material, material);
 }
 
-MATERIAL_Material* SHAPE_get_material(SHAPE_Shape* shape) {
+MATERIAL_Material* SHAPE_get_material(const SHAPE_Shape* shape) {
     assert(shape);
     return shape->material;
+}
+
+MATRIX_Matrix* SHAPE_get_transform(const SHAPE_Shape* shape) {
+    assert(shape);
+    return shape->transform;
 }
 
 void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, SHAPE_Shape* shape) {

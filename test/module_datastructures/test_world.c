@@ -185,7 +185,7 @@ void test_shade_hit_with_a_point_in_shadow() {
     SPHERE_Sphere* s2 = SPHERE_new();
     WORLD_add_object(world, s2, SHAPEHOLDER_SPHERE);
     MATRIX_Matrix* transform = MATRIX_new_translation(0, 0, 10);
-    SHAPE_set_transform(&s2->parent, transform);
+    SPHERE_set_transform(s2, transform);
     MATRIX_delete(transform);
 
     RAY_Ray ray;

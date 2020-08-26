@@ -11,12 +11,22 @@ typedef struct SHAPE_Shape {
     MATERIAL_Material* material;
 } SHAPE_Shape;
 
+/**
+ * Should be used by subclasses only...
+ * @return
+ */
+SHAPE_Shape* SHAPE_new();
 void SHAPE_init(SHAPE_Shape* shape);
 void SHAPE_destroy(SHAPE_Shape* shape);
+/**
+ * Should be used by subclasses only...
+ * @return
+ */
+void SHAPE_delete(SHAPE_Shape* shape);
 void SHAPE_set_transform(SHAPE_Shape* shape, MATRIX_Matrix* transformation);
 void SHAPE_set_material(SHAPE_Shape* shape, MATERIAL_Material* material);
-MATERIAL_Material* SHAPE_get_material(SHAPE_Shape* shape);
-
+MATERIAL_Material* SHAPE_get_material(const SHAPE_Shape* shape);
+MATRIX_Matrix* SHAPE_get_transform(const SHAPE_Shape* shape);
 /**
  * Calculates ray in object coordinates to that shape can handle intersection code locally.
  * @param local_ray The local ray to be calculated

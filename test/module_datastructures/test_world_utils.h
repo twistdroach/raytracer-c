@@ -24,13 +24,13 @@ WORLD_World* construct_test_world() {
     TUPLES_init_color(&s1_material->color, 0.8, 1.0, 0.6);
     s1_material->diffuse = 0.7;
     s1_material->specular = 0.2;
-    SHAPE_set_material(&s1->parent, s1_material);
+    SPHERE_set_material(s1, s1_material);
     MATERIAL_delete(s1_material);
     WORLD_add_object(world, s1, SHAPEHOLDER_SPHERE);
 
     s2 = SPHERE_new();
     MATRIX_Matrix* s2_transform = MATRIX_new_scaling(0.5, 0.5, 0.5);
-    SHAPE_set_transform(&s2->parent, s2_transform);
+    SPHERE_set_transform(s2, s2_transform);
     MATRIX_delete(s2_transform);
     WORLD_add_object(world, s2, SHAPEHOLDER_SPHERE);
 
