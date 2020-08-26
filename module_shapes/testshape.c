@@ -5,7 +5,7 @@
 void TESTSHAPE_init(TESTSHAPE_TestShape* shape) {
     assert(shape);
     shape->size = 5.0;
-    SHAPE_init(&shape->parent);
+    SHAPE_init(&shape->parent, SHAPE_TESTSHAPE);
 }
 
 TESTSHAPE_TestShape* TESTSHAPE_new() {

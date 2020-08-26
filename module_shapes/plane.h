@@ -6,8 +6,8 @@
 
 typedef SHAPE_Shape PLANE_Plane;
 
-#define PLANE_new() (PLANE_Plane*)SHAPE_new()
-#define PLANE_init(plane) SHAPE_init((SHAPE_Shape*)plane)
+#define PLANE_new() (PLANE_Plane*)SHAPE_new(SHAPE_PLANE)
+#define PLANE_init(plane) SHAPE_init((SHAPE_Shape*)plane, SHAPE_PLANE)
 #define PLANE_destroy(plane) SHAPE_destroy((SHAPE_Shape*)plane)
 #define PLANE_delete(plane) SHAPE_delete((SHAPE_Shape*)plane)
 

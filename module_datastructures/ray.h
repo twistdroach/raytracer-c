@@ -4,7 +4,6 @@
 #include "tuples.h"
 #include "matrix.h"
 
-typedef struct SHAPEHOLDER_Shapeholder SHAPEHOLDER_Shapeholder;
 typedef struct RAY_Ray {
     TUPLES_Point  origin;
     TUPLES_Vector direction;
@@ -24,7 +23,7 @@ void RAY_position(TUPLES_Point* pos, const RAY_Ray* ray, double t);
 
 typedef struct RAY_Xs {
     double t;
-    void* object; /** generally holds SHAPEHOLDER_Holder() */
+    void* object; /** holds SHAPE_Shape derivatives */
 } RAY_Xs;
 
 typedef struct RAY_Intersections {
@@ -49,7 +48,7 @@ void RAY_sort_intersections(RAY_Intersections* intersections);
 
 typedef struct RAY_Computations {
     double                         t;
-    SHAPEHOLDER_Shapeholder*       object;
+    void*                          object; /* holds SHAPE_Shape derivatives */
     TUPLES_Point                   point;
     TUPLES_Point                   over_point;
     TUPLES_Vector                  eyev;

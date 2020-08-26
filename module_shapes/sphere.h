@@ -7,8 +7,8 @@
 
 typedef SHAPE_Shape SPHERE_Sphere;
 
-#define SPHERE_new() (SPHERE_Sphere*)SHAPE_new()
-#define SPHERE_init(sphere) SHAPE_init((SHAPE_Shape*)sphere)
+#define SPHERE_new() (SPHERE_Sphere*)SHAPE_new(SHAPE_SPHERE)
+#define SPHERE_init(sphere) SHAPE_init((SHAPE_Shape*)sphere, SHAPE_SPHERE)
 #define SPHERE_destroy(sphere) SHAPE_destroy((SHAPE_Shape*)sphere)
 #define SPHERE_delete(sphere) SHAPE_delete((SHAPE_Shape*)sphere)
 

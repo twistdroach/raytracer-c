@@ -5,7 +5,7 @@
 #include <CException.h>
 #include <exceptions.h>
 #include "ray.h"
-#include "shapeholder.h"
+#include <shape.h>
 
 RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z) {
     RAY_Ray* ray = malloc(sizeof(RAY_Ray));
@@ -147,7 +147,7 @@ RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray
     TUPLES_negate(&comps->eyev);
 
     //compute the normal @ the intersection
-    SHAPEHOLDER_normal_at(&comps->normalv, comps->object, &comps->point);
+    SHAPE_normal_at(&comps->normalv, comps->object, &comps->point);
 
     //compute the "over_point" to deal with floating point imprecision...
     TUPLES_multiply(&comps->over_point, &comps->normalv, EPSILON);

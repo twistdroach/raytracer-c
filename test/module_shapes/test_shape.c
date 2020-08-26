@@ -1,5 +1,4 @@
 #include <unity.h>
-#include <shapeholder.h>
 
 #include "shape.h"
 #include "testshape.h"
@@ -57,11 +56,8 @@ void test_shapeholder_intersect_scaled_shape_with_ray() {
     MATRIX_Matrix* transform = MATRIX_new_scaling(2, 2, 2);
     SHAPE_set_transform((SHAPE_Shape*)s, transform);
 
-    SHAPEHOLDER_Shapeholder holder;
-    SHAPEHOLDER_init(&holder, s, SHAPEHOLDER_TESTSHAPE);
-
     RAY_Intersections* intersections = RAY_new_intersections();
-    SHAPEHOLDER_intersect(intersections, &holder, r);
+    SHAPE_intersect(intersections, (SHAPE_Shape*)s, r);
     RAY_delete_intersections(intersections);
 
     TUPLES_Point* expected_origin = TUPLES_new_point(0, 0, -2.5);
@@ -83,11 +79,8 @@ void test_shapeholder_intersect_translated_shape_with_ray() {
     SHAPE_set_transform((SHAPE_Shape*)s, transform);
     MATRIX_delete(transform);
 
-    SHAPEHOLDER_Shapeholder holder;
-    SHAPEHOLDER_init(&holder, s, SHAPEHOLDER_TESTSHAPE);
-
     RAY_Intersections* intersections = RAY_new_intersections();
-    SHAPEHOLDER_intersect(intersections, &holder, r);
+    SHAPE_intersect(intersections,(SHAPE_Shape*) s, r);
     RAY_delete_intersections(intersections);
 
     TUPLES_Point* expected_origin = TUPLES_new_point(-5, 0, -5);
@@ -106,14 +99,11 @@ void test_compute_normal_on_translated_shape() {
     SHAPE_set_transform((SHAPE_Shape*)s, transform);
     MATRIX_delete(transform);
 
-    SHAPEHOLDER_Shapeholder holder;
-    SHAPEHOLDER_init(&holder, s, SHAPEHOLDER_TESTSHAPE);
-
     TUPLES_Point hitpoint;
     TUPLES_init_point(&hitpoint, 0, 1.70711, -0.70711);
 
     TUPLES_Vector world_normal;
-    SHAPEHOLDER_normal_at(&world_normal, &holder, &hitpoint);
+    SHAPE_normal_at(&world_normal, (SHAPE_Shape*)s, &hitpoint);
 
     TUPLES_Vector expected;
     TUPLES_init_vector(&expected, 0, 0.70711, -0.70711);
@@ -130,14 +120,11 @@ void test_compute_normal_on_transformed_shape() {
     SHAPE_set_transform((SHAPE_Shape*)s, transform);
     MATRIX_delete_all(transform, rotationz, scaling);
 
-    SHAPEHOLDER_Shapeholder holder;
-    SHAPEHOLDER_init(&holder, s, SHAPEHOLDER_TESTSHAPE);
-
     TUPLES_Point hitpoint;
     TUPLES_init_point(&hitpoint, 0, sqrt(2)/2.0, -sqrt(2)/2.0);
 
     TUPLES_Vector world_normal;
-    SHAPEHOLDER_normal_at(&world_normal, &holder, &hitpoint);
+    SHAPE_normal_at(&world_normal, (SHAPE_Shape*)s, &hitpoint);
 
     TUPLES_Vector expected;
     TUPLES_init_vector(&expected, 0, 0.97014, -0.24254);

@@ -12,7 +12,7 @@
 
 void build_world(WORLD_World* world) {
     PLANE_Plane* floor = PLANE_new();
-    WORLD_add_object(world, floor, SHAPEHOLDER_PLANE);
+    WORLD_add_object(world, floor);
     MATERIAL_Material* material = MATERIAL_new();
     TUPLES_init_color(&material->color, 1, 0.9, 0.9);
     material->specular = 0;
@@ -20,7 +20,7 @@ void build_world(WORLD_World* world) {
     MATERIAL_delete(material);
 
     SPHERE_Sphere* middle = SPHERE_new();
-    WORLD_add_object(world, middle, SHAPEHOLDER_SPHERE);
+    WORLD_add_object(world, middle);
     MATRIX_Matrix* middle_transform = MATRIX_new_translation(-0.5, 1, 0.5);
     SPHERE_set_transform(middle, middle_transform);
     MATRIX_delete(middle_transform);
@@ -32,7 +32,7 @@ void build_world(WORLD_World* world) {
     MATERIAL_delete(middle_material);
 
     SPHERE_Sphere* right = SPHERE_new();
-    WORLD_add_object(world, right, SHAPEHOLDER_SPHERE);
+    WORLD_add_object(world, right);
     MATRIX_Matrix* right_translation = MATRIX_new_translation(1.5, 0.5, -0.5);
     MATRIX_Matrix* right_scaling = MATRIX_new_scaling(0.5, 0.5, 0.5);
     MATRIX_Matrix* right_transform = MATRIX_multiply(right_translation, right_scaling);
@@ -46,7 +46,7 @@ void build_world(WORLD_World* world) {
     MATERIAL_delete(right_material);
 
     SPHERE_Sphere* left = SPHERE_new();
-    WORLD_add_object(world, left, SHAPEHOLDER_SPHERE);
+    WORLD_add_object(world, left);
     MATRIX_Matrix* left_translation = MATRIX_new_translation(-1.5, 0.33, -0.75);
     MATRIX_Matrix* left_scaling = MATRIX_new_scaling(0.33, 0.33, 0.33);
     MATRIX_Matrix* left_transform = MATRIX_multiply(left_translation, left_scaling);

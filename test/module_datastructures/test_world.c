@@ -24,8 +24,8 @@ void test_construct_default_world() {
     WORLD_World* world = construct_test_world();
     TEST_ASSERT_EQUAL_PTR(pl, WORLD_get_light(world));
     TEST_ASSERT_EQUAL_UINT(2, WORLD_get_object_count(world));
-    TEST_ASSERT_EQUAL_PTR(s1, WORLD_get_object_holder(world,0)->shape);
-    TEST_ASSERT_EQUAL_PTR(s2, WORLD_get_object_holder(world, 1)->shape);
+    TEST_ASSERT_EQUAL_PTR(s1, WORLD_get_object(world,0));
+    TEST_ASSERT_EQUAL_PTR(s2, WORLD_get_object(world, 1));
     destruct_test_world(world);
 }
 
@@ -48,7 +48,7 @@ void test_shading_an_intersection() {
     RAY_Ray* ray = RAY_new(0, 0, -5, 0, 0, 1);
     RAY_Xs i;
     i.t = 4.0;
-    i.object = WORLD_get_object_holder(world, 0);
+    i.object = WORLD_get_object(world, 0);
 
     RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TUPLES_Color c;
@@ -76,7 +76,7 @@ void test_shading_an_intersection_from_inside() {
     RAY_Ray* ray = RAY_new(0, 0, 0, 0, 0, 1);
     RAY_Xs i;
     i.t = 0.5;
-    i.object = WORLD_get_object_holder(world, 1);
+    i.object = WORLD_get_object(world, 1);
 
     RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TUPLES_Color c;
@@ -124,8 +124,8 @@ void test_color_when_ray_hits() {
 
 void test_color_with_intersection_behind_ray() {
     WORLD_World* world = construct_test_world();
-    SHAPE_get_material(WORLD_get_object_holder(world, 0)->shape)->ambient = 1;
-    MATERIAL_Material* inner_material = SHAPE_get_material(WORLD_get_object_holder(world, 1)->shape);
+    SHAPE_get_material(WORLD_get_object(world, 0))->ambient = 1;
+    MATERIAL_Material* inner_material = SHAPE_get_material(WORLD_get_object(world, 1));
     inner_material->ambient = 1;
 
     RAY_Ray* ray = RAY_new(0, 0, 0.75, 0, 0, -1);
@@ -180,10 +180,10 @@ void test_shade_hit_with_a_point_in_shadow() {
     WORLD_World* world = WORLD_new(&light);
 
     SPHERE_Sphere* s1 = SPHERE_new();
-    WORLD_add_object(world, s1, SHAPEHOLDER_SPHERE);
+    WORLD_add_object(world, s1);
 
     SPHERE_Sphere* s2 = SPHERE_new();
-    WORLD_add_object(world, s2, SHAPEHOLDER_SPHERE);
+    WORLD_add_object(world, s2);
     MATRIX_Matrix* transform = MATRIX_new_translation(0, 0, 10);
     SPHERE_set_transform(s2, transform);
     MATRIX_delete(transform);
@@ -193,7 +193,7 @@ void test_shade_hit_with_a_point_in_shadow() {
 
     RAY_Xs i;
     i.t = 4.0;
-    i.object = WORLD_get_object_holder(world, 1);
+    i.object = WORLD_get_object(world, 1);
 
     RAY_Computations* comps = RAY_prepare_computations(&i, &ray);
     TUPLES_Color c;
