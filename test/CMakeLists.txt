@@ -1,2 +1,3 @@
+add_subdirectory(module_shapes)
 add_subdirectory(module_datastructures)
 add_subdirectory(module_utilities)

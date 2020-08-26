@@ -3,22 +3,21 @@ add_library(module_datastructures STATIC
         canvas.c canvas.h
         matrix.c matrix.h
         ray.c ray.h
-        sphere.c sphere.h
         lights.c lights.h
         material.c material.h
         world.c world.h
         camera.c camera.h
-        shape.c shape.h
-        testshape.c testshape.h
         shapeholder.c shapeholder.h)
 
 target_include_directories(module_datastructures PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
+        module_shapes
         module_utilities
         CException
 )
 
 target_link_libraries(module_datastructures
+        module_shapes
         module_utilities
         CException
         m

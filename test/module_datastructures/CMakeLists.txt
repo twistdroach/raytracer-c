@@ -30,14 +30,6 @@ target_link_libraries(module_datastructures_rays
         m)
 add_test(datastructures_rays module_datastructures_rays)
 
-add_executable(module_datastructures_sphere
-        test_sphere.c)
-target_link_libraries(module_datastructures_sphere
-        module_datastructures
-        Unity
-        m)
-add_test(datastructures_sphere module_datastructures_sphere)
-
 add_executable(module_datastructures_lights
         test_lights.c)
 target_link_libraries(module_datastructures_lights
@@ -70,10 +62,3 @@ target_link_libraries(module_datastructures_camera
         m)
 add_test(datastructures_camera module_datastructures_camera)
 
-add_executable(module_datastructures_shape
-        test_shape.c)
-target_link_libraries(module_datastructures_shape
-        module_datastructures
-        Unity
-        m)
-add_test(datastructures_shape module_datastructures_shape)
