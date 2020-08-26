@@ -27,3 +27,7 @@ elseif(TARGET_GROUP STREQUAL test)
 else()
     message(FATAL_ERROR "Given TARGET_GROUP unknown")
 endif()
+
+add_custom_target(memcheck
+    COMMAND ${CMAKE_CTEST_COMMAND} 
+        --force-new-ctest-process --test-action memcheck)
