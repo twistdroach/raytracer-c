@@ -7,13 +7,12 @@
 typedef struct RAY_Ray RAY_Ray;
 typedef struct RAY_Intersections RAY_Intersections;
 
-typedef enum SHAPE_Type {
-    SHAPE_BASE = 0,
-    SHAPE_TESTSHAPE,
-    SHAPE_SPHERE,
-    SHAPE_PLANE,
-    SHAPE_TYPE_COUNT
-} SHAPE_Type;
+typedef struct SHAPE_Shape SHAPE_Shape;
+typedef struct SHAPE_vtable {
+    void (*local_intersect)(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* ray);
+    void (*delete)(SHAPE_Shape*);
+    void (*local_normal_at)(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point);
+} SHAPE_vtable;
 
 /**
  * Shapes that derive from this struct by including it as it's first member
@@ -22,17 +21,17 @@ typedef enum SHAPE_Type {
  * Be sure to add a new type to SHAPE_Type...
  */
 typedef struct SHAPE_Shape {
-    MATRIX_Matrix*     transform;
-    MATERIAL_Material* material;
-    SHAPE_Type         type;
+    const SHAPE_vtable* vtable;
+    MATRIX_Matrix*      transform;
+    MATERIAL_Material*  material;
 } SHAPE_Shape;
 
 /**
  * Should be used by subclasses only...
  * @return
  */
-SHAPE_Shape* SHAPE_new(SHAPE_Type type);
-void SHAPE_init(SHAPE_Shape* shape, SHAPE_Type type);
+SHAPE_Shape* SHAPE_new(const SHAPE_vtable* vtable);
+void SHAPE_init(SHAPE_Shape* shape, const SHAPE_vtable* vtable);
 void SHAPE_destroy(SHAPE_Shape* shape);
 /**
  * Should be used by subclasses only...

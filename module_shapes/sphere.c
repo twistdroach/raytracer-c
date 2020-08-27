@@ -2,11 +2,17 @@
 #include <math.h>
 #include <assert.h>
 
-void SPHERE_local_intersect(RAY_Intersections* intersections, SPHERE_Sphere* sphere, const RAY_Ray* local_ray) {
-    assert(intersections);
-    assert(sphere);
-    assert(local_ray);
+const SHAPE_vtable SPHERE_vtable = {
+        &SPHERE_local_intersect,
+        &SHAPE_delete,
+        &SPHERE_local_normal_at
+};
 
+void SPHERE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* local_ray) {
+    assert(intersections);
+    assert(shape);
+    assert(local_ray);
+    SPHERE_Sphere* sphere = (SPHERE_Sphere*) shape;
     TUPLES_Point sphere_origin;
     TUPLES_init_point(&sphere_origin, 0, 0, 0);
     TUPLES_Vector sphere_to_ray;
@@ -28,9 +34,9 @@ void SPHERE_local_intersect(RAY_Intersections* intersections, SPHERE_Sphere* sph
     RAY_add_intersection(intersections, t2, sphere);
 }
 
-void SPHERE_local_normal_at(TUPLES_Vector* local_normal, const SPHERE_Sphere* sphere, const TUPLES_Point* local_point) {
+void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point) {
     assert(local_normal);
-    assert(sphere);
+    assert(shape);
     assert(local_point);
 
     TUPLES_Point sphere_origin;
