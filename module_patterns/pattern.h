@@ -20,8 +20,12 @@ PATTERN_Pattern* PATTERN_new_test();
  * @param b
  * @return
  */
-PATTERN_Pattern* PATTERN_new_stripe(TUPLES_Color* a, TUPLES_Color* b);
+PATTERN_Pattern* PATTERN_new_stripe(const TUPLES_Color* a, const TUPLES_Color* b);
 
+PATTERN_Pattern* PATTERN_new_gradient(const TUPLES_Color* a, const TUPLES_Color* b);
+PATTERN_Pattern* PATTERN_new_ring(const TUPLES_Color* a, const TUPLES_Color* b);
+PATTERN_Pattern* PATTERN_new_checkers(const TUPLES_Color* a, const TUPLES_Color* b);
+PATTERN_Pattern* PATTERN_new_solid(const TUPLES_Color* a);
 
 const TUPLES_Color* PATTERN_get_color_a(const PATTERN_Pattern* pattern);
 const TUPLES_Color* PATTERN_get_color_b(const PATTERN_Pattern* pattern);

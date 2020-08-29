@@ -90,7 +90,7 @@ static void stripe_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const 
     }
 }
 
-PATTERN_Pattern* PATTERN_new_stripe(TUPLES_Color* a, TUPLES_Color* b) {
+PATTERN_Pattern* PATTERN_new_stripe(const TUPLES_Color* a, const TUPLES_Color* b) {
     assert(a);
     assert(b);
     PATTERN_Pattern* pattern = PATTERN_new(a, b);
@@ -111,5 +111,89 @@ PATTERN_Pattern* PATTERN_new_test() {
     TUPLES_init_color(&black, 0, 0, 0);
     PATTERN_Pattern* pattern = PATTERN_new(&black, &black);
     pattern->at = &test_at;
+    return pattern;
+}
+
+// ------ gradient pattern
+
+void gradient_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_Point* point) {
+    assert(dest);
+    assert(pattern);
+    assert(point);
+
+    // simple linear interpolation
+    TUPLES_Color distance;
+    TUPLES_subtract(&distance, &pattern->b, &pattern->a);
+    double fraction = point->x - floor(point->x);
+    TUPLES_multiply(&distance, &distance, fraction);
+    TUPLES_add(dest, &pattern->a, &distance);
+}
+
+PATTERN_Pattern* PATTERN_new_gradient(const TUPLES_Color* a, const TUPLES_Color* b) {
+    assert(a);
+    assert(b);
+    PATTERN_Pattern* pattern = PATTERN_new(a, b);
+    pattern->at = &gradient_at;
+    return pattern;
+}
+
+// ------ ring pattern
+
+void ring_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_Point* point) {
+    assert(dest);
+    assert(pattern);
+    assert(point);
+
+    //stripe in 2 dimensions
+    if ((int)floor(sqrt(pow(point->x, 2) + pow(point->z, 2))) % 2 == 0) {
+        TUPLES_copy(dest, &pattern->a);
+    } else {
+        TUPLES_copy(dest, &pattern->b);
+    }
+}
+
+PATTERN_Pattern* PATTERN_new_ring(const TUPLES_Color* a, const TUPLES_Color* b) {
+    assert(a);
+    assert(b);
+    PATTERN_Pattern* pattern = PATTERN_new(a, b);
+    pattern->at = &ring_at;
+    return pattern;
+}
+
+// ------ ring pattern
+
+void checkers_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_Point* point) {
+    assert(dest);
+    assert(pattern);
+    assert(point);
+
+    if (((int)(fabs(point->x) + fabs(point->y) + fabs(point->z))) % 2 == 0) {
+        TUPLES_copy(dest, &pattern->a);
+    } else {
+        TUPLES_copy(dest, &pattern->b);
+    }
+}
+
+PATTERN_Pattern* PATTERN_new_checkers(const TUPLES_Color* a, const TUPLES_Color* b) {
+    assert(a);
+    assert(b);
+    PATTERN_Pattern* pattern = PATTERN_new(a, b);
+    pattern->at = &checkers_at;
+    return pattern;
+}
+
+// ------ solid pattern
+
+void solid_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_Point* point) {
+    assert(dest);
+    assert(pattern);
+    assert(point);
+    TUPLES_copy(dest, &pattern->a);
+}
+
+PATTERN_Pattern* PATTERN_new_solid(const TUPLES_Color* a) {
+    assert(a);
+    PATTERN_Pattern* pattern = PATTERN_new(a, a);
+    pattern->at = &solid_at;
     return pattern;
 }

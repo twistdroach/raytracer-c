@@ -195,9 +195,70 @@ void test_pattern_with_pattern_and_object_transformation() {
     TUPLES_Point p;
     TUPLES_init_point(&p, 2.5, 3, 3.5);
     PATTERN_color_at_shape(&got, test_pattern, s, &p);
+    test_tuples(&expected, &got);
 
     SPHERE_delete(s);
     PATTERN_delete(test_pattern);
+}
+
+void check_color_at_point(const PATTERN_Pattern* pattern, double color_r, double color_g, double color_b,
+                                                          double point_x, double point_y, double point_z) {
+    TUPLES_Point testp;
+    TUPLES_Color expected, got;
+    TUPLES_init_point(&testp, point_x, point_y, point_z);
+    TUPLES_init_color(&expected, color_r, color_g, color_b);
+    PATTERN_color_at(&got, pattern, &testp);
+    test_tuples(&expected, &got);
+}
+
+void test_gradient_linearly_interpolates_between_colors() {
+    PATTERN_Pattern* pattern = PATTERN_new_gradient(white, black);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0, 0);
+    check_color_at_point(pattern, 0.75, 0.75, 0.75, 0.25, 0, 0);
+    check_color_at_point(pattern, 0.5, 0.5, 0.5, 0.5, 0, 0);
+    check_color_at_point(pattern, 0.25, 0.25, 0.25, 0.75, 0, 0);
+    PATTERN_delete(pattern);
+}
+
+void test_ring_extends_in_x_and_z() {
+    PATTERN_Pattern* pattern = PATTERN_new_ring(white, black);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0, 0);
+    check_color_at_point(pattern, 0, 0, 0, 1, 0, 0);
+    check_color_at_point(pattern, 0, 0, 0, 0, 0, 1);
+    check_color_at_point(pattern, 0, 0, 0, 0.708, 0, 0.708);
+    PATTERN_delete(pattern);
+}
+
+void test_checkers_repeat_in_x() {
+    PATTERN_Pattern* pattern = PATTERN_new_checkers(white, black);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0, 0);
+    check_color_at_point(pattern, 1, 1, 1, 0.99, 0, 0);
+    check_color_at_point(pattern, 0, 0, 0, 1.01, 0, 0);
+    PATTERN_delete(pattern);
+}
+
+void test_checkers_repeat_in_y() {
+    PATTERN_Pattern* pattern = PATTERN_new_checkers(white, black);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0, 0);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0.99, 0);
+    check_color_at_point(pattern, 0, 0, 0, 0, 1.01, 0);
+    PATTERN_delete(pattern);
+}
+
+void test_checkers_repeat_in_z() {
+    PATTERN_Pattern* pattern = PATTERN_new_checkers(white, black);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0, 0);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0, 0.99);
+    check_color_at_point(pattern, 0, 0, 0, 0, 0, 1.01);
+    PATTERN_delete(pattern);
+}
+
+void test_solid_pattern_is_always_same() {
+    PATTERN_Pattern* pattern = PATTERN_new_solid(white);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0, 0);
+    check_color_at_point(pattern, 1, 1, 1, 0, 0.5, 0.99);
+    check_color_at_point(pattern, 1, 1, 1, 22, 0, 1.01);
+    PATTERN_delete(pattern);
 }
 
 int main(void)
@@ -213,5 +274,11 @@ int main(void)
     RUN_TEST(test_pattern_with_an_object_transformation);
     RUN_TEST(test_pattern_with_pattern_transformation);
     RUN_TEST(test_pattern_with_pattern_and_object_transformation);
+    RUN_TEST(test_gradient_linearly_interpolates_between_colors);
+    RUN_TEST(test_ring_extends_in_x_and_z);
+    RUN_TEST(test_checkers_repeat_in_x);
+    RUN_TEST(test_checkers_repeat_in_y);
+    RUN_TEST(test_checkers_repeat_in_z);
+    RUN_TEST(test_solid_pattern_is_always_same);
     return UNITY_END();
 }
