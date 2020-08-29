@@ -92,7 +92,7 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
     bool shadowed = WORLD_is_shadowed(world, &computation->over_point);
 
     MATERIAL_lighting(dest,
-                      SHAPE_get_material((SHAPE_Shape*)computation->object),
+                      (SHAPE_Shape*)computation->object,
                       world->light,
                       &computation->point,
                       &computation->eyev,

@@ -31,3 +31,11 @@ add_executable(phong_render_three_spheres_and_plane
 target_link_libraries(phong_render_three_spheres_and_plane PRIVATE
         module_datastructures
         module_shapes)
+
+add_executable(phong_render_three_spheres_and_striped_plane
+        phong_render_three_spheres_and_striped_plane.c)
+
+target_link_libraries(phong_render_three_spheres_and_striped_plane PRIVATE
+        module_patterns
+        module_datastructures
+        module_shapes)

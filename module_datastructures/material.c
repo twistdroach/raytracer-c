@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <math.h>
 #include "material.h"
+#include "pattern.h"
 
 MATERIAL_Material* MATERIAL_new() {
     MATERIAL_Material* m = malloc(sizeof(MATERIAL_Material));
@@ -9,11 +10,15 @@ MATERIAL_Material* MATERIAL_new() {
     m->diffuse = 0.9;
     m->specular = 0.9;
     m->shininess = 200.0;
+    m->pattern = NULL;
     return m;
 }
 void MATERIAL_delete(MATERIAL_Material* m) {
     assert(m);
     TUPLES_destroy(&m->color);
+    if (m->pattern) {
+        PATTERN_delete(m->pattern);
+    }
     free(m);
 }
 
@@ -25,14 +30,34 @@ bool MATERIAL_is_equal(const MATERIAL_Material* m1, const MATERIAL_Material* m2)
             double_equal(m1->specular, m2->specular);
 }
 
-void MATERIAL_copy(MATERIAL_Material* dest, const MATERIAL_Material* src) {
-    //this assumes we don't really need to init dest->color, we can just copy the struct
+MATERIAL_Material* MATERIAL_new_copy(const MATERIAL_Material* src) {
+    assert(src);
+    MATERIAL_Material* dest = MATERIAL_new();
     *dest = *src;
+    if (src->pattern) {
+        dest->pattern = PATTERN_new_copy(src->pattern);
+    }
+    return dest;
 }
 
-void MATERIAL_lighting(TUPLES_Color* dest, const MATERIAL_Material* material, const LIGHTS_PointLight* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector, bool in_shadow) {
+void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHTS_PointLight* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector, bool in_shadow) {
+    assert(dest);
+    assert(shape);
+    assert(light);
+    assert(position);
+    assert(eye_vector);
+    assert(normal_vector);
+    assert(shape->material);
+    TUPLES_Color color_or_pattern;
+    MATERIAL_Material* material = shape->material;
+    if (material->pattern) {
+        PATTERN_color_at_shape(&color_or_pattern, material->pattern, shape, position);
+    } else {
+        TUPLES_copy(&color_or_pattern, &shape->material->color);
+    }
+
     TUPLES_Color effective_color;
-    TUPLES_multiply_colors(&effective_color, &material->color, &light->intensity);
+    TUPLES_multiply_colors(&effective_color, &color_or_pattern, &light->intensity);
 
     TUPLES_Vector lightv;
     TUPLES_subtract(&lightv, &light->position, position);
@@ -71,4 +96,13 @@ void MATERIAL_lighting(TUPLES_Color* dest, const MATERIAL_Material* material, co
         TUPLES_add(dest, &ambient, &diffuse);
         TUPLES_add(dest, dest, &specular);
     }
+}
+
+void MATERIAL_set_pattern(MATERIAL_Material* material, const PATTERN_Pattern* pattern) {
+    assert(material);
+    assert(pattern);
+    if (material->pattern) {
+        PATTERN_delete(material->pattern);
+    }
+    material->pattern = PATTERN_new_copy(pattern);
 }

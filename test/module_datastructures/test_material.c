@@ -1,10 +1,17 @@
 
+#include <unity.h>
+#include <sphere.h>
 #include "material.h"
 #include "lights.h"
-#include <unity.h>
+#include "pattern.h"
 
-void setUp() {}
-void tearDown() {}
+SPHERE_Sphere* sphere;
+void setUp() {
+    sphere = SPHERE_new();
+}
+void tearDown() {
+    SPHERE_delete(sphere);
+}
 
 void test_default_material() {
     MATERIAL_Material* m = MATERIAL_new();
@@ -28,8 +35,9 @@ void test_lighting_with_eye_between_light_and_surface_in_shadow() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
+    SPHERE_set_material(sphere, material);
     TUPLES_Color result;
-    MATERIAL_lighting(&result, material, pl, position, eyev, normalv, true);
+    MATERIAL_lighting(&result, sphere, pl, position, eyev, normalv, true);
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.1, 0.1, 0.1);
     TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
@@ -40,6 +48,7 @@ void test_lighting_with_eye_between_light_and_surface_in_shadow() {
 
 void test_lighting_with_eye_between_light_and_surface() {
     MATERIAL_Material* material = MATERIAL_new();
+    SPHERE_set_material(sphere, material);
     TUPLES_Point* position = TUPLES_new_point(0, 0, 0);
     TUPLES_Vector* eyev = TUPLES_new_vector(0, 0, -1);
     TUPLES_Vector* normalv = TUPLES_new_vector(0, 0, -1);
@@ -49,7 +58,7 @@ void test_lighting_with_eye_between_light_and_surface() {
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     TUPLES_Color result;
-    MATERIAL_lighting(&result, material, pl, position, eyev, normalv, false);
+    MATERIAL_lighting(&result, sphere, pl, position, eyev, normalv, false);
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.9, 1.9, 1.9);
     TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
@@ -68,8 +77,9 @@ void test_lighting_with_eye_between_light_and_surface_eye_offset_45_deg() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
+    SPHERE_set_material(sphere, material);
     TUPLES_Color result;
-    MATERIAL_lighting(&result, material, pl, position, eyev, normalv, false);
+    MATERIAL_lighting(&result, sphere, pl, position, eyev, normalv, false);
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.0, 1.0, 1.0);
     TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
@@ -88,8 +98,9 @@ void test_lighting_with_eye_opposite_surface_light_offset_45_deg() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
+    SPHERE_set_material(sphere, material);
     TUPLES_Color result;
-    MATERIAL_lighting(&result, material, pl, position, eyev, normalv, false);
+    MATERIAL_lighting(&result, sphere, pl, position, eyev, normalv, false);
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.7364, 0.7364, 0.7364);
     TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
@@ -108,8 +119,9 @@ void test_lighting_with_eye_in_path_of_reflection_vector() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
+    SPHERE_set_material(sphere, material);
     TUPLES_Color result;
-    MATERIAL_lighting(&result, material, pl, position, eyev, normalv, false);
+    MATERIAL_lighting(&result, sphere, pl, position, eyev, normalv, false);
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.6364, 1.6364, 1.6364);
     TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
@@ -128,8 +140,9 @@ void test_lighting_with_light_behind_surface() {
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
     LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
 
+    SPHERE_set_material(sphere, material);
     TUPLES_Color result;
-    MATERIAL_lighting(&result, material, pl, position, eyev, normalv, false);
+    MATERIAL_lighting(&result, sphere, pl, position, eyev, normalv, false);
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.1, 0.1, 0.1);
     TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
@@ -138,6 +151,38 @@ void test_lighting_with_light_behind_surface() {
     TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
 
+void test_lighting_with_a_pattern() {
+    MATERIAL_Material* material = MATERIAL_new();
+    TUPLES_Color* white = TUPLES_new_color(1, 1, 1);
+    TUPLES_Color* black = TUPLES_new_color(0, 0, 0);
+    PATTERN_Pattern* pattern = PATTERN_new_stripe(white, black);
+    MATERIAL_set_pattern(material, pattern);
+    material->ambient = 1;
+    material->diffuse = 0;
+    material->specular = 0;
+    TUPLES_Vector* eyev = TUPLES_new_vector(0, 0, -1);
+    TUPLES_Vector* normalv = TUPLES_new_vector(0, 0, -1);
+
+    TUPLES_Point* light_position = TUPLES_new_point(0, 0, 10);
+    TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
+    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+
+    TUPLES_Point* p1 = TUPLES_new_point(0.9, 0, 0);
+    TUPLES_Color c1;
+    SPHERE_set_material(sphere, material);
+    MATERIAL_lighting(&c1, sphere, pl, p1, eyev, normalv, false);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(white, &c1));
+
+    TUPLES_Point* p2 = TUPLES_new_point(1.1, 0, 0);
+    TUPLES_Color c2;
+    MATERIAL_lighting(&c2, sphere, pl, p2, eyev, normalv, false);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(black, &c2));
+
+    TUPLES_delete_all(white, black, eyev, normalv, light_color, light_position, p1, p2);
+    PATTERN_delete(pattern);
+    MATERIAL_delete(material);
+    LIGHTS_delete_pointlight(pl);
+}
 
 int main(void)
 {
@@ -149,5 +194,6 @@ int main(void)
     RUN_TEST(test_lighting_with_eye_in_path_of_reflection_vector);
     RUN_TEST(test_lighting_with_light_behind_surface);
     RUN_TEST(test_lighting_with_eye_between_light_and_surface_in_shadow);
+    RUN_TEST(test_lighting_with_a_pattern);
     return UNITY_END();
 }

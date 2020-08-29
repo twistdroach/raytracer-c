@@ -2,6 +2,7 @@
 #include <exceptions.h>
 #include "shape.h"
 #include "ray.h"
+#include "material.h"
 
 SHAPE_Shape* SHAPE_new(const SHAPE_vtable* vtable) {
     assert(vtable);
@@ -32,7 +33,7 @@ void SHAPE_delete(SHAPE_Shape* shape) {
     free(shape);
 }
 
-void SHAPE_set_transform(SHAPE_Shape* shape, MATRIX_Matrix* transformation) {
+void SHAPE_set_transform(SHAPE_Shape* shape, const MATRIX_Matrix* transformation) {
     assert(shape);
     assert(shape->transform);
     assert(transformation);
@@ -42,11 +43,12 @@ void SHAPE_set_transform(SHAPE_Shape* shape, MATRIX_Matrix* transformation) {
     MATRIX_copy(shape->transform, transformation);
 }
 
-void SHAPE_set_material(SHAPE_Shape* shape, MATERIAL_Material* material) {
+void SHAPE_set_material(SHAPE_Shape* shape, const MATERIAL_Material* material) {
     assert(shape);
     assert(shape->material);
     assert(material);
-    MATERIAL_copy(shape->material, material);
+    MATERIAL_delete(shape->material);
+    shape->material = MATERIAL_new_copy(material);
 }
 
 MATERIAL_Material* SHAPE_get_material(const SHAPE_Shape* shape) {

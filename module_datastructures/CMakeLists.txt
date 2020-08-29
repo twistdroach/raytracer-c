@@ -11,12 +11,14 @@ add_library(module_datastructures STATIC
 target_include_directories(module_datastructures PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         module_shapes
+        module_patterns
         module_utilities
         CException
 )
 
 target_link_libraries(module_datastructures
         module_shapes
+        module_patterns
         module_utilities
         CException
         m

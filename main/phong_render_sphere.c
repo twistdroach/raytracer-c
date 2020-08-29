@@ -63,7 +63,7 @@ int main(void) {
                             TUPLES_copy(&eyev, &r.direction);
                             TUPLES_negate(&eyev);
 
-                            MATERIAL_lighting(&color, SPHERE_get_material(sphere), light, &point_of_intersection, &eyev, &world_normal, false);
+                            MATERIAL_lighting(&color, sphere, light, &point_of_intersection, &eyev, &world_normal, false);
                             CANVAS_write_pixel(canvas, x, y, &color);
                         }
                         RAY_delete_intersections(xs);

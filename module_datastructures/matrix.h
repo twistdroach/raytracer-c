@@ -79,7 +79,7 @@ MATRIX_Matrix* MATRIX_multiply(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2)
 
 /**
  * (deep) Copy a matrix
- * @param dest  - must be uninitialized (or previously destroyed if was initialized)
+ * @param dest - must be allocated
  * @param source
  */
 void MATRIX_copy(MATRIX_Matrix* dest, const MATRIX_Matrix* source);

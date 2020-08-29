@@ -37,3 +37,9 @@ Same executable but now shadows are added...
 Slightly newer executable but now with a plane instead of "squashed spheres"
 
 ![](images/phong_render_three_spheres_and_plane.png)
+
+## main/phong_render_three_spheres_and_striped_plane.png
+
+Very similar but now the plane has stripes.
+
+![](images/phong_render_three_spheres_and_striped_plane.png)

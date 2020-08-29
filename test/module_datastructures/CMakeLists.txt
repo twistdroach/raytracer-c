@@ -42,6 +42,7 @@ add_executable(module_datastructures_material
         test_material.c)
 target_link_libraries(module_datastructures_material
         module_datastructures
+        module_patterns
         Unity
         m)
 

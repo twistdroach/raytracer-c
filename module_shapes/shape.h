@@ -1,11 +1,13 @@
 #ifndef DATA_STRUCTURES_SHAPE_H
 #define DATA_STRUCTURES_SHAPE_H
 
+#include <material.h>
 #include "matrix.h"
 #include "material.h"
-//#include "ray.h"
-typedef struct RAY_Ray RAY_Ray;
-typedef struct RAY_Intersections RAY_Intersections;
+#include "ray.h"
+//typedef struct RAY_Ray RAY_Ray;
+//typedef struct RAY_Intersections RAY_Intersections;
+//typedef struct MATERIAL_Material MATERIAL_Material;
 
 typedef struct SHAPE_Shape SHAPE_Shape;
 typedef struct SHAPE_vtable {
@@ -38,8 +40,8 @@ void SHAPE_destroy(SHAPE_Shape* shape);
  * @return
  */
 void SHAPE_delete(SHAPE_Shape* shape);
-void SHAPE_set_transform(SHAPE_Shape* shape, MATRIX_Matrix* transformation);
-void SHAPE_set_material(SHAPE_Shape* shape, MATERIAL_Material* material);
+void SHAPE_set_transform(SHAPE_Shape* shape, const MATRIX_Matrix* transformation);
+void SHAPE_set_material(SHAPE_Shape* shape, const MATERIAL_Material* material);
 MATERIAL_Material* SHAPE_get_material(const SHAPE_Shape* shape);
 MATRIX_Matrix* SHAPE_get_transform(const SHAPE_Shape* shape);
 /**

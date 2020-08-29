@@ -11,6 +11,7 @@ set(TARGET_GROUP test CACHE STRING "Group to build")
 add_compile_options(-Wall -g -O0 -Wextra -pedantic -Werror)
 
 add_subdirectory(module_shapes)
+add_subdirectory(module_patterns)
 add_subdirectory(module_datastructures)
 add_subdirectory(module_utilities)
 
