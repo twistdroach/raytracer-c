@@ -49,7 +49,7 @@ void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHT
     assert(normal_vector);
     assert(shape->material);
     TUPLES_Color color_or_pattern;
-    MATERIAL_Material* material = shape->material;
+    const MATERIAL_Material* material = shape->material;
     if (material->pattern) {
         PATTERN_color_at_shape(&color_or_pattern, material->pattern, shape, position);
     } else {

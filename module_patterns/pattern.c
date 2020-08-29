@@ -160,14 +160,14 @@ PATTERN_Pattern* PATTERN_new_ring(const TUPLES_Color* a, const TUPLES_Color* b) 
     return pattern;
 }
 
-// ------ ring pattern
+// ------ checkers pattern
 
 void checkers_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_Point* point) {
     assert(dest);
     assert(pattern);
     assert(point);
 
-    if (((int)(fabs(point->x) + fabs(point->y) + fabs(point->z))) % 2 == 0) {
+    if (((int)(floor(point->x) + floor(point->y) + floor(point->z))) % 2 == 0) {
         TUPLES_copy(dest, &pattern->a);
     } else {
         TUPLES_copy(dest, &pattern->b);
