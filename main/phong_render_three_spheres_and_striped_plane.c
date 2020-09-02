@@ -11,13 +11,13 @@
 #include <math.h>
 
 void build_world(WORLD_World* world) {
-    TUPLES_Color red, green;
+    TUPLES_Color red, green, blue;
     TUPLES_init_color(&red, 1, 0, 0);
     TUPLES_init_color(&green, 0, 1, 0);
+    TUPLES_init_color(&blue, 0, 0, 1);
     PLANE_Plane* floor = PLANE_new();
     WORLD_add_object(world, floor);
     MATERIAL_Material* material = MATERIAL_new();
-    TUPLES_init_color(&material->color, 1, 0.9, 0.9);
     material->specular = 0;
     PATTERN_Pattern* floor_pattern = PATTERN_new_stripe(&red, &green);
     MATRIX_Matrix* pattern_transform = MATRIX_new_rotation_y(-M_PI / 5);
@@ -34,7 +34,14 @@ void build_world(WORLD_World* world) {
     SPHERE_set_transform(middle, middle_transform);
     MATRIX_delete(middle_transform);
     MATERIAL_Material* middle_material = MATERIAL_new();
-    TUPLES_init_color(&middle_material->color, 0.1, 1, 0.5);
+    PATTERN_Pattern* middle_pattern = PATTERN_new_gradient(&red, &blue);
+    MATRIX_Matrix* middle_pattern_translate = MATRIX_new_translation(0.5, 0, 0);
+    MATRIX_Matrix* middle_pattern_scale = MATRIX_new_scaling(2, 2, 2);
+    MATRIX_Matrix* middle_pattern_transform = MATRIX_multiply(middle_pattern_scale, middle_pattern_translate);
+    PATTERN_set_transform(middle_pattern, middle_pattern_transform);
+    MATRIX_delete_all(middle_pattern_scale, middle_pattern_transform, middle_pattern_translate);
+    MATERIAL_set_pattern(middle_material, middle_pattern);
+    PATTERN_delete(middle_pattern);
     middle_material->diffuse = 0.7;
     middle_material->specular = 0.3;
     SPHERE_set_material(middle, middle_material);
@@ -48,7 +55,12 @@ void build_world(WORLD_World* world) {
     SPHERE_set_transform(right, right_transform);
     MATRIX_delete_all(right_translation, right_scaling, right_transform);
     MATERIAL_Material* right_material = MATERIAL_new();
-    TUPLES_init_color(&right_material->color, 0.5, 1, 0.1);
+    PATTERN_Pattern* right_pattern = PATTERN_new_stripe(&red, &green);
+    MATRIX_Matrix* right_pattern_scale = MATRIX_new_scaling(0.1, 0.1, 0.1);
+    PATTERN_set_transform(right_pattern, right_pattern_scale);
+    MATRIX_delete(right_pattern_scale);
+    MATERIAL_set_pattern(right_material, right_pattern);
+    PATTERN_delete(right_pattern);
     right_material->diffuse = 0.7;
     right_material->specular = 0.3;
     SPHERE_set_material(right, right_material);
@@ -62,7 +74,12 @@ void build_world(WORLD_World* world) {
     SPHERE_set_transform(left, left_transform);
     MATRIX_delete_all(left_translation, left_scaling, left_transform);
     MATERIAL_Material* left_material = MATERIAL_new();
-    TUPLES_init_color(&left_material->color, 1, 0.8, 0.1);
+    PATTERN_Pattern* left_pattern = PATTERN_new_checkers(&red, &green);
+    MATRIX_Matrix* left_pattern_scale = MATRIX_new_scaling(0.25, 0.25, 0.25);
+    PATTERN_set_transform(left_pattern, left_pattern_scale);
+    MATRIX_delete(left_pattern_scale);
+    MATERIAL_set_pattern(left_material, left_pattern);
+    PATTERN_delete(left_pattern);
     left_material->diffuse = 0.7;
     left_material->specular = 0.3;
     SPHERE_set_material(left, left_material);
