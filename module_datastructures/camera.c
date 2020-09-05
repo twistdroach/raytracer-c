@@ -116,7 +116,7 @@ CANVAS_Canvas* CAMERA_render(const CAMERA_Camera* camera, const WORLD_World* wor
             TUPLES_Color color;
 
             CAMERA_ray_for_pixel(&ray, camera, x, y);
-            WORLD_color_at(&color, world, &ray);
+            WORLD_color_at(&color, world, &ray, WORLD_default_ttl);
             CANVAS_write_pixel(canvas, x, y, &color);
         }
     }

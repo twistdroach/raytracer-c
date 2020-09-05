@@ -54,7 +54,7 @@ void test_shading_an_intersection() {
 
     RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TUPLES_Color c;
-    WORLD_shade_hit(&c, world, comps);
+    WORLD_shade_hit(&c, world, comps, WORLD_default_ttl);
 
     TUPLES_Color expected;
     TUPLES_init_color(&expected, 0.38066, 0.47583, 0.2855);
@@ -84,7 +84,7 @@ void test_shading_an_intersection_from_inside() {
 
     RAY_Computations* comps = RAY_prepare_computations(&i, ray);
     TUPLES_Color c;
-    WORLD_shade_hit(&c, world, comps);
+    WORLD_shade_hit(&c, world, comps, WORLD_default_ttl);
     TUPLES_Color expected;
     TUPLES_init_color(&expected, 0.90498, 0.90498, 0.90498);
     test_tuples(&expected, &c);
@@ -99,7 +99,7 @@ void test_color_when_ray_misses() {
     WORLD_World* world = construct_test_world();
     RAY_Ray* ray = RAY_new(0, 0, -5, 0, 1, 0);
     TUPLES_Color c;
-    WORLD_color_at(&c, world, ray);
+    WORLD_color_at(&c, world, ray, WORLD_default_ttl);
 
     TUPLES_Color expected;
     TUPLES_init_color(&expected, 0, 0,0);
@@ -113,7 +113,7 @@ void test_color_when_ray_hits() {
     WORLD_World* world = construct_test_world();
     RAY_Ray* ray = RAY_new(0, 0, -5, 0, 0, 1);
     TUPLES_Color c;
-    WORLD_color_at(&c, world, ray);
+    WORLD_color_at(&c, world, ray, WORLD_default_ttl);
 
     TUPLES_Color expected;
     TUPLES_init_color(&expected, 0.38066, 0.47583,0.2855);
@@ -131,7 +131,7 @@ void test_color_with_intersection_behind_ray() {
 
     RAY_Ray* ray = RAY_new(0, 0, 0.75, 0, 0, -1);
     TUPLES_Color c;
-    WORLD_color_at(&c, world, ray);
+    WORLD_color_at(&c, world, ray, WORLD_default_ttl);
 
     TEST_ASSERT_TRUE(TUPLES_is_equal(&inner_material->color, &c));
 
@@ -198,7 +198,7 @@ void test_shade_hit_with_a_point_in_shadow() {
 
     RAY_Computations* comps = RAY_prepare_computations(&i, &ray);
     TUPLES_Color c;
-    WORLD_shade_hit(&c, world, comps);
+    WORLD_shade_hit(&c, world, comps, WORLD_default_ttl);
     TUPLES_Color expected;
     TUPLES_init_color(&expected, 0.1, 0.1, 0.1);
     test_tuples(&expected, &c);
@@ -222,7 +222,7 @@ void test_reflected_color_for_nonreflective_material() {
 
     TUPLES_Color expected, got;
     TUPLES_init_color(&expected, 0, 0, 0);
-    WORLD_reflected_color(&got, world, comps);
+    WORLD_reflected_color(&got, world, comps, WORLD_default_ttl);
     test_tuples(&expected, &got);
     RAY_delete_computations(comps);
     destruct_test_world(world);
@@ -247,7 +247,7 @@ void test_reflected_color_for_reflective_material() {
 
     TUPLES_Color expected, got;
     TUPLES_init_color(&expected, 0.19032, 0.2379, 0.14274);
-    WORLD_reflected_color(&got, world, comps);
+    WORLD_reflected_color(&got, world, comps, WORLD_default_ttl);
     test_tuples(&expected, &got);
 
     RAY_delete_computations(comps);
@@ -273,7 +273,7 @@ void test_shade_hit_for_reflective_material() {
 
     TUPLES_Color expected, got;
     TUPLES_init_color(&expected, 0.87677, 0.92436, 0.82918);
-    WORLD_shade_hit(&got, world, comps);
+    WORLD_shade_hit(&got, world, comps, WORLD_default_ttl);
     test_tuples(&expected, &got);
 
     RAY_delete_computations(comps);
@@ -308,11 +308,38 @@ void test_color_at_with_mutually_reflective_surfaces() {
     RAY_init(&ray, 0, 0, 0, 0, 1, 0);
 
     TUPLES_Color dest;
-    WORLD_color_at(&dest, world, &ray);
+    WORLD_color_at(&dest, world, &ray, WORLD_default_ttl);
 
     WORLD_delete_all_objects(world);
     WORLD_delete(world);
     LIGHTS_delete_pointlight(light);
+}
+
+void test_reflected_color_at_max_recursion_depth() {
+    WORLD_World* world = construct_test_world();
+    PLANE_Plane* plane = PLANE_new();
+    PLANE_get_material(plane)->reflective = 0.5;
+    MATRIX_Matrix* transform = MATRIX_new_translation(0, -1, 0);
+    PLANE_set_transform(plane, transform);
+    MATRIX_delete(transform);
+    WORLD_add_object(world, plane);
+
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0, -3, 0, -sqrt(2)/2.0, sqrt(2)/2.0);
+    RAY_Xs i;
+    i.object = plane;
+    i.t = sqrt(2);
+
+    RAY_Computations* comps = RAY_prepare_computations(&i, &ray);
+
+    TUPLES_Color reflected_color, black;
+    TUPLES_init_color(&black, 0, 0, 0);
+    WORLD_reflected_color(&reflected_color, world, comps, 0);
+
+    test_tuples(&black, &reflected_color);
+
+    RAY_delete_computations(comps);
+    destruct_test_world(world);
 }
 
 int main(void)
@@ -335,5 +362,6 @@ int main(void)
     RUN_TEST(test_reflected_color_for_nonreflective_material);
     RUN_TEST(test_reflected_color_for_reflective_material);
     RUN_TEST(test_color_at_with_mutually_reflective_surfaces);
+    RUN_TEST(test_reflected_color_at_max_recursion_depth);
     return UNITY_END();
 }

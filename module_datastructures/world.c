@@ -9,6 +9,8 @@ typedef struct WORLD_World {
     unsigned int object_count;
 } WORLD_World;
 
+unsigned int WORLD_default_ttl = 5;
+
 void WORLD_init(WORLD_World* world, const LIGHTS_PointLight* light) {
     assert(world);
     assert(light);
@@ -85,7 +87,7 @@ RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray)
     return intersections;
 }
 
-void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* computation) {
+void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* computation, unsigned int ttl) {
     assert(world);
     assert(computation);
 
@@ -100,11 +102,11 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
                       shadowed);
 
     TUPLES_Color reflected;
-    WORLD_reflected_color(&reflected, world, computation);
+    WORLD_reflected_color(&reflected, world, computation, ttl);
     TUPLES_add(dest, dest, &reflected);
 }
 
-void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray) {
+void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray, unsigned int ttl) {
     assert(dest);
     assert(world);
     assert(ray);
@@ -114,7 +116,7 @@ void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray*
         TUPLES_init_color(dest, 0, 0, 0);
     } else {
         RAY_Computations* comps = RAY_prepare_computations(hit, ray);
-        WORLD_shade_hit(dest, world, comps);
+        WORLD_shade_hit(dest, world, comps, ttl);
         RAY_delete_computations(comps);
     }
     RAY_delete_intersections(intersections);
@@ -147,17 +149,17 @@ void WORLD_delete_all_objects(WORLD_World* world) {
     }
 }
 
-void WORLD_reflected_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps) {
+void WORLD_reflected_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps, unsigned int ttl) {
     assert(dest);
     assert(world);
     assert(comps);
     const MATERIAL_Material* material = SHAPE_get_material(comps->object);
-    if (double_equal(0.0, material->reflective)) {
+    if (ttl < 1 || double_equal(0.0, material->reflective)) {
         TUPLES_init_color(dest, 0, 0, 0);
     } else {
         RAY_Ray reflect_ray;
         RAY_init_from_tuples(&reflect_ray, &comps->over_point, &comps->reflectv);
-        WORLD_color_at(dest, world, &reflect_ray);
+        WORLD_color_at(dest, world, &reflect_ray, ttl - 1);
         TUPLES_multiply(dest, dest, material->reflective);
     }
 }
