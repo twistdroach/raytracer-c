@@ -91,7 +91,8 @@ void RAY_sort_intersections(RAY_Intersections* intersections) {
 RAY_Xs* RAY_hit(RAY_Intersections* intersections) {
     //TODO - improve this by just keeping a ptr to the smallest positive value on insertion
     for (uint ndx=0; ndx < intersections->count; ndx++) {
-        if (intersections->xs[ndx].t > 0) {
+        //TODO double_equal because our epsilon is less accurate than >, need to not detect small t values as hits
+        if (intersections->xs[ndx].t > 0 && !double_equal(intersections->xs[ndx].t, 0.0)) {
             return &intersections->xs[ndx];
         }
     }
@@ -159,6 +160,8 @@ RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray
     } else {
         comps->inside = false;
     }
+
+    TUPLES_reflect(&comps->reflectv, &ray->direction, &comps->normalv);
 
     return comps;
 }

@@ -184,6 +184,12 @@ void test_lighting_with_a_pattern() {
     LIGHTS_delete_pointlight(pl);
 }
 
+void test_material_default_reflective_property() {
+    MATERIAL_Material* mat = MATERIAL_new();
+    TEST_ASSERT_EQUAL_DOUBLE(0.0, mat->reflective);
+    MATERIAL_delete(mat);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -195,5 +201,6 @@ int main(void)
     RUN_TEST(test_lighting_with_light_behind_surface);
     RUN_TEST(test_lighting_with_eye_between_light_and_surface_in_shadow);
     RUN_TEST(test_lighting_with_a_pattern);
+    RUN_TEST(test_material_default_reflective_property);
     return UNITY_END();
 }

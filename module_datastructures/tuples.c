@@ -92,14 +92,11 @@ void TUPLES_negate(TUPLES_Vector* vec)  {
     vec->z = 0.0 - vec->z;
 }
 
-TUPLES_Vector* TUPLES_reflect(const TUPLES_Vector* v, const TUPLES_Vector* normal) {
+void TUPLES_reflect(TUPLES_Vector* dest, const TUPLES_Vector* v, const TUPLES_Vector* normal) {
     // v - normal * 2 * dot(v, normal)
     TUPLES_Vector intermediate;
     TUPLES_multiply(&intermediate, normal, 2 * TUPLES_dot(v, normal));
-    TUPLES_Vector* r = TUPLES_new_vector(0, 0, 0);
-    TUPLES_subtract(r, v, &intermediate);
-    TUPLES_destroy(&intermediate);
-    return r;
+    TUPLES_subtract(dest, v, &intermediate);
 }
 
 void TUPLES_multiply(TUPLES_Tuple* dest, const TUPLES_Tuple* t1, const double mult) {

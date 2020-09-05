@@ -53,6 +53,7 @@ typedef struct RAY_Computations {
     TUPLES_Point                   over_point;
     TUPLES_Vector                  eyev;
     TUPLES_Vector                  normalv;
+    TUPLES_Vector                  reflectv;
     bool                           inside;
 } RAY_Computations;
 

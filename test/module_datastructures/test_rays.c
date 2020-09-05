@@ -1,6 +1,7 @@
 #include <unity.h>
 #include <ray.h>
 #include <sphere.h>
+#include <plane.h>
 #include <matrix.h>
 
 void setUp() {}
@@ -241,6 +242,24 @@ void test_hit_should_offset_the_point() {
     SPHERE_delete(sphere);
 }
 
+void test_precompute_the_reflection_vector() {
+    PLANE_Plane* plane = PLANE_new();
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 1, -1, 0, -sqrt(2)/2.0, sqrt(2)/2.0);
+    RAY_Xs i;
+    i.t = sqrt(2);
+    i.object = plane;
+
+    RAY_Computations* comps = RAY_prepare_computations(&i, &ray);
+
+    TUPLES_Vector expected;
+    TUPLES_init_vector(&expected, 0, sqrt(2)/2.0, sqrt(2)/2.0);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &comps->reflectv));
+
+    RAY_delete_computations(comps);
+    PLANE_delete(plane);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -259,5 +278,6 @@ int main(void)
     RUN_TEST(test_hit_when_intersection_occurs_on_outside);
     RUN_TEST(test_hit_when_intersection_occurs_on_inside);
     RUN_TEST(test_hit_should_offset_the_point);
+    RUN_TEST(test_precompute_the_reflection_vector);
     return UNITY_END();
 }

@@ -5,7 +5,7 @@
 #include <stdlib.h>  //for asprintf
 #include <stdio.h>   //for free
 
-#define EPSILON 0.00001
+#define EPSILON 0.0001
 
 bool double_equal(double a, double b);
 

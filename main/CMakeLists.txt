@@ -39,3 +39,11 @@ target_link_libraries(phong_render_three_spheres_and_striped_plane PRIVATE
         module_patterns
         module_datastructures
         module_shapes)
+
+add_executable(reflection
+        reflection.c)
+
+target_link_libraries(reflection PRIVATE
+        module_patterns
+        module_datastructures
+        module_shapes)

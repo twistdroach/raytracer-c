@@ -10,6 +10,7 @@ MATERIAL_Material* MATERIAL_new() {
     m->diffuse = 0.9;
     m->specular = 0.9;
     m->shininess = 200.0;
+    m->reflective = 0.0;
     m->pattern = NULL;
     return m;
 }
@@ -80,11 +81,11 @@ void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHT
             TUPLES_multiply(&diffuse, &effective_color, material->diffuse * light_dot_normal);
 
             TUPLES_negate(&lightv);
-            TUPLES_Vector *reflectv = TUPLES_reflect(&lightv, normal_vector);
-            double reflect_dot_eye = TUPLES_dot(reflectv, eye_vector);
-            TUPLES_delete(reflectv);
+            TUPLES_Vector reflectv;
+            TUPLES_reflect(&reflectv, &lightv, normal_vector);
+            double reflect_dot_eye = TUPLES_dot(&reflectv, eye_vector);
 
-            if (reflect_dot_eye <= 0) {
+            if (reflect_dot_eye < 0 || double_equal(0.0, reflect_dot_eye)) {
                 // light is reflecting away
                 TUPLES_init_color(&specular, 0, 0, 0);
             } else {

@@ -273,23 +273,25 @@ void test_tuple_copy()
 void test_reflect_vector_approaching_at_45_deg() {
     TUPLES_Vector* v = TUPLES_new_vector(1, -1, 0);
     TUPLES_Vector* n = TUPLES_new_vector(0, 1, 0);
-    TUPLES_Vector* r = TUPLES_reflect(v, n);
-    TEST_ASSERT_EQUAL_DOUBLE(1, r->x);
-    TEST_ASSERT_EQUAL_DOUBLE(1, r->y);
-    TEST_ASSERT_EQUAL_DOUBLE(0, r->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(r));
-    TUPLES_delete_all(v, n, r);
+    TUPLES_Vector r;
+    TUPLES_reflect(&r, v, n);
+    TEST_ASSERT_EQUAL_DOUBLE(1, r.x);
+    TEST_ASSERT_EQUAL_DOUBLE(1, r.y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, r.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&r));
+    TUPLES_delete_all(v, n);
 }
 
 void test_reflect_vector_approaching_at_slanted_surface() {
     TUPLES_Vector* v = TUPLES_new_vector(0, -1, 0);
     TUPLES_Vector* n = TUPLES_new_vector(sqrt(2.0)/2.0, sqrt(2.0)/2.0, 0);
-    TUPLES_Vector* r = TUPLES_reflect(v, n);
-    TEST_ASSERT_EQUAL_DOUBLE(1, r->x);
-    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, r->y);
-    TEST_ASSERT_EQUAL_DOUBLE(0, r->z);
-    TEST_ASSERT_TRUE(TUPLES_is_vector(r));
-    TUPLES_delete_all(v, n, r);
+    TUPLES_Vector r;
+    TUPLES_reflect(&r, v, n);
+    TEST_ASSERT_EQUAL_DOUBLE(1, r.x);
+    TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, r.y);
+    TEST_ASSERT_EQUAL_DOUBLE(0, r.z);
+    TEST_ASSERT_TRUE(TUPLES_is_vector(&r));
+    TUPLES_delete_all(v, n);
 }
 
 int main(void)

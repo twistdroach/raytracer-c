@@ -94,10 +94,14 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
     MATERIAL_lighting(dest,
                       (SHAPE_Shape*)computation->object,
                       world->light,
-                      &computation->point,
+                      &computation->over_point,
                       &computation->eyev,
                       &computation->normalv,
                       shadowed);
+
+    TUPLES_Color reflected;
+    WORLD_reflected_color(&reflected, world, computation);
+    TUPLES_add(dest, dest, &reflected);
 }
 
 void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray) {
@@ -140,5 +144,20 @@ void WORLD_delete_all_objects(WORLD_World* world) {
     assert(world);
     for (unsigned int ndx = 0; ndx < world->object_count; ndx++) {
         SHAPE_delete_any_type(world->objects[ndx]);
+    }
+}
+
+void WORLD_reflected_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps) {
+    assert(dest);
+    assert(world);
+    assert(comps);
+    const MATERIAL_Material* material = SHAPE_get_material(comps->object);
+    if (double_equal(0.0, material->reflective)) {
+        TUPLES_init_color(dest, 0, 0, 0);
+    } else {
+        RAY_Ray reflect_ray;
+        RAY_init_from_tuples(&reflect_ray, &comps->over_point, &comps->reflectv);
+        WORLD_color_at(dest, world, &reflect_ray);
+        TUPLES_multiply(dest, dest, material->reflective);
     }
 }
