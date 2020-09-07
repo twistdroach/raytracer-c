@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <math.h>
+
 #include "exceptions.h"
 #include "world.h"
 #include "shape.h"
@@ -101,9 +103,11 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
                       &computation->normalv,
                       shadowed);
 
-    TUPLES_Color reflected;
+    TUPLES_Color reflected, refracted;
     WORLD_reflected_color(&reflected, world, computation, ttl);
+    WORLD_refracted_color(&refracted, world, computation, ttl);
     TUPLES_add(dest, dest, &reflected);
+    TUPLES_add(dest, dest, &refracted);
 }
 
 void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray, unsigned int ttl) {
@@ -115,7 +119,7 @@ void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray*
     if (!hit) {
         TUPLES_init_color(dest, 0, 0, 0);
     } else {
-        RAY_Computations* comps = RAY_prepare_computations(hit, ray);
+        RAY_Computations* comps = RAY_prepare_computations(hit, ray, intersections);
         WORLD_shade_hit(dest, world, comps, ttl);
         RAY_delete_computations(comps);
     }
@@ -161,5 +165,36 @@ void WORLD_reflected_color(TUPLES_Color* dest, const WORLD_World* world, const R
         RAY_init_from_tuples(&reflect_ray, &comps->over_point, &comps->reflectv);
         WORLD_color_at(dest, world, &reflect_ray, ttl - 1);
         TUPLES_multiply(dest, dest, material->reflective);
+    }
+}
+
+void WORLD_refracted_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps, unsigned int ttl) {
+    assert(dest);
+    assert(world);
+    assert(comps);
+    const MATERIAL_Material* material = SHAPE_get_material(comps->object);
+    if (ttl < 1 || double_equal(0.0, material->transparency)) {
+        TUPLES_init_color(dest, 0, 0, 0);
+    } else {
+        double n_ratio = comps->n1 / comps->n2;
+        double cos_i = TUPLES_dot(&comps->eyev, &comps->normalv);
+        double sin2_t = pow(n_ratio, 2) * (1 - pow(cos_i, 2));
+        if (sin2_t > 1.0) {
+            //total internal reflection
+            TUPLES_init_color(dest, 0, 0, 0);
+        } else {
+            //calculate actual color
+            double cos_t = sqrt(1.0 - sin2_t);
+            TUPLES_Vector normalv_calc, eyev_calc, direction;
+            TUPLES_multiply(&normalv_calc, &comps->normalv, n_ratio * cos_i - cos_t);
+            TUPLES_multiply(&eyev_calc, &comps->eyev, n_ratio);
+            TUPLES_subtract(&direction, &normalv_calc, &eyev_calc);
+
+            RAY_Ray refract_ray;
+            RAY_init_from_tuples(&refract_ray, &comps->under_point, &direction);
+
+            WORLD_color_at(dest, world, &refract_ray, ttl - 1);
+            TUPLES_multiply(dest, dest, material->transparency);
+        }
     }
 }

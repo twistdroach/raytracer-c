@@ -51,10 +51,12 @@ typedef struct RAY_Computations {
     void*                          object; /* holds SHAPE_Shape derivatives */
     TUPLES_Point                   point;
     TUPLES_Point                   over_point;
+    TUPLES_Point                   under_point;
     TUPLES_Vector                  eyev;
     TUPLES_Vector                  normalv;
     TUPLES_Vector                  reflectv;
     bool                           inside;
+    double                         n1, n2; /* refractive index of incoming/outgoing material */
 } RAY_Computations;
 
 /**
@@ -64,7 +66,7 @@ typedef struct RAY_Computations {
  * @param ray
  * @return
  */
-RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray);
+RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray, const RAY_Intersections* xs);
 void RAY_delete_computations(RAY_Computations* comps);
 
 #endif //DATA_STRUCTURES_RAY_H

@@ -9,7 +9,7 @@ typedef struct SHAPE_Shape SHAPE_Shape;
 
 typedef struct MATERIAL_Material {
     TUPLES_Color color;
-    double ambient, diffuse, specular, shininess, reflective;
+    double ambient, diffuse, specular, shininess, reflective, transparency, refractive_index;
     PATTERN_Pattern* pattern;
 } MATERIAL_Material;
 

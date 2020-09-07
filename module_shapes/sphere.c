@@ -45,3 +45,11 @@ void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, con
     TUPLES_subtract(local_normal, local_point, &sphere_origin);
 }
 
+SPHERE_Sphere* SPHERE_make_glassy(SPHERE_Sphere* sphere) {
+    assert(sphere);
+    MATERIAL_Material* material = SPHERE_get_material(sphere);
+    material->transparency = 1.0;
+    material->refractive_index = 1.5;
+    return sphere;
+}
+

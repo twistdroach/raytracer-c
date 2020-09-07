@@ -43,4 +43,5 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
 void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray, unsigned int ttl);
 bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* point);
 void WORLD_reflected_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps, unsigned int ttl);
+void WORLD_refracted_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps, unsigned int ttl);
 #endif //DATA_STRUCTURES_WORLD_H

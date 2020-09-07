@@ -20,4 +20,6 @@ void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, con
 #define SPHERE_get_material(sphere) SHAPE_get_material((SHAPE_Shape*)sphere)
 #define SPHERE_set_transform(sphere, transform) SHAPE_set_transform((SHAPE_Shape*)sphere, transform)
 #define SPHERE_get_transform(sphere) SHAPE_get_transform((SHAPE_Shape*)sphere)
+
+SPHERE_Sphere* SPHERE_make_glassy(SPHERE_Sphere* sphere);
 #endif //DATA_STRUCTURES_SPHERE_H

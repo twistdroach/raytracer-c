@@ -11,6 +11,8 @@ MATERIAL_Material* MATERIAL_new() {
     m->specular = 0.9;
     m->shininess = 200.0;
     m->reflective = 0.0;
+    m->transparency = 0.0;
+    m->refractive_index = 1.0;
     m->pattern = NULL;
     return m;
 }
@@ -74,6 +76,7 @@ void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHT
         TUPLES_Color specular;
         double light_dot_normal = TUPLES_dot(&lightv, normal_vector);
         if (light_dot_normal < 0) {
+//        if (light_dot_normal < 0 && !double_equal(0.0, light_dot_normal)) {
             // negative means light is on other side of surface
             TUPLES_init_color(&diffuse, 0, 0, 0);
             TUPLES_init_color(&specular, 0, 0, 0);

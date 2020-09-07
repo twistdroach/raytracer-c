@@ -190,6 +190,13 @@ void test_material_default_reflective_property() {
     MATERIAL_delete(mat);
 }
 
+void test_material_default_transparency_and_refractive_index() {
+    MATERIAL_Material* mat = MATERIAL_new();
+    TEST_ASSERT_EQUAL_DOUBLE(0.0, mat->transparency);
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, mat->refractive_index);
+    MATERIAL_delete(mat);
+}
+
 int main(void)
 {
     UNITY_BEGIN();

@@ -261,6 +261,13 @@ void test_compute_normal_on_transformed_sphere() {
     TUPLES_delete_all(p);
 }
 
+void test_helper_to_produce_sphere_with_glassy_material() {
+    SPHERE_Sphere* sphere = SPHERE_make_glassy(SPHERE_new());
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, SPHERE_get_material(sphere)->transparency);
+    TEST_ASSERT_EQUAL_DOUBLE(1.5, SPHERE_get_material(sphere)->refractive_index);
+    SPHERE_delete(sphere);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -281,5 +288,6 @@ int main(void)
     RUN_TEST(test_normal_should_be_normalized_vector);
     RUN_TEST(test_compute_normal_on_translated_sphere);
     RUN_TEST(test_compute_normal_on_transformed_sphere);
+    RUN_TEST(test_helper_to_produce_sphere_with_glassy_material);
     return UNITY_END();
 }

@@ -5,6 +5,7 @@
 #include <CException.h>
 #include <exceptions.h>
 #include "ray.h"
+#include "arrlist.h"
 #include <shape.h>
 
 RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z) {
@@ -93,6 +94,7 @@ RAY_Xs* RAY_hit(RAY_Intersections* intersections) {
     for (uint ndx=0; ndx < intersections->count; ndx++) {
         //TODO double_equal because our epsilon is less accurate than >, need to not detect small t values as hits
         if (intersections->xs[ndx].t > 0 && !double_equal(intersections->xs[ndx].t, 0.0)) {
+//        if (intersections->xs[ndx].t > 0 ) {
             return &intersections->xs[ndx];
         }
     }
@@ -108,7 +110,8 @@ void RAY_iterate_intersections(RAY_Intersections* intersections, void (*intersec
 }
 
 void RAY_add_intersections(RAY_Intersections* dest_intersection, RAY_Intersections* src_intersections) {
-
+    assert(dest_intersection);
+    assert(src_intersections);
     for (unsigned int ndx = 0; ndx < src_intersections->count; ndx++) {
         RAY_Xs* xs = &src_intersections->xs[ndx];
         RAY_add_intersection(dest_intersection, xs->t, xs->object);
@@ -116,6 +119,8 @@ void RAY_add_intersections(RAY_Intersections* dest_intersection, RAY_Intersectio
 }
 
 void RAY_add_intersection(RAY_Intersections* intersections, double intersection, void* object) {
+    assert(intersections);
+    assert(object);
     RAY_Xs* tmpptr = reallocarray(intersections->xs, sizeof(RAY_Xs), intersections->count + 1);
     if (!tmpptr) {
         Throw(E_MALLOC_FAILED);
@@ -128,13 +133,17 @@ void RAY_add_intersection(RAY_Intersections* intersections, double intersection,
 }
 
 void RAY_delete_intersections(RAY_Intersections* intersections) {
+    assert(intersections);
     if (intersections->count > 0 && intersections->xs) {
         free(intersections->xs);
     }
     free(intersections);
 }
 
-RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray) {
+RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray, const RAY_Intersections* xs) {
+    assert(hit);
+    assert(ray);
+    assert(xs);
     RAY_Computations* comps = malloc(sizeof(RAY_Computations));
     //keep a handle on the object intersected
     comps->t = hit->t;
@@ -150,10 +159,7 @@ RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray
     //compute the normal @ the intersection
     SHAPE_normal_at(&comps->normalv, comps->object, &comps->point);
 
-    //compute the "over_point" to deal with floating point imprecision...
-    TUPLES_multiply(&comps->over_point, &comps->normalv, EPSILON);
-    TUPLES_add(&comps->over_point, &comps->over_point, &comps->point);
-
+    //Invert normal if inside
     if (TUPLES_dot(&comps->normalv, &comps->eyev) < 0) {
         comps->inside = true;
         TUPLES_negate(&comps->normalv);
@@ -161,7 +167,44 @@ RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray
         comps->inside = false;
     }
 
+    //compute the "over_point" to deal with floating point imprecision...
+    TUPLES_multiply(&comps->over_point, &comps->normalv, EPSILON);
+    TUPLES_add(&comps->over_point, &comps->over_point, &comps->point);
+
+    //compute the "under_point"
+    TUPLES_multiply(&comps->under_point, &comps->normalv, EPSILON);
+    TUPLES_subtract(&comps->under_point, &comps->point, &comps->under_point);
+
+
     TUPLES_reflect(&comps->reflectv, &ray->direction, &comps->normalv);
+
+    // Find
+    ARRLIST_List* object_list = ARRLIST_new();
+    for (unsigned int ndx = 0; ndx < xs->count; ndx++) {
+        if (&xs->xs[ndx] == hit) {
+            if (ARRLIST_is_empty(object_list)) {
+                comps->n1 = 1.0;
+            } else {
+                comps->n1 = SHAPE_get_material((SHAPE_Shape*)ARRLIST_last(object_list))->refractive_index;
+            }
+        }
+
+        if (ARRLIST_contains(object_list, xs->xs[ndx].object)) {
+            ARRLIST_remove(object_list, xs->xs[ndx].object);
+        } else {
+            ARRLIST_add(object_list, xs->xs[ndx].object);
+        }
+
+        if (&xs->xs[ndx] == hit) {
+            if (ARRLIST_is_empty(object_list)) {
+                comps->n2 = 1.0;
+            } else {
+                comps->n2 = SHAPE_get_material((SHAPE_Shape*)ARRLIST_last(object_list))->refractive_index;
+            }
+            break;
+        }
+    }
+    ARRLIST_delete(object_list);
 
     return comps;
 }
