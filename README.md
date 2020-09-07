@@ -38,19 +38,19 @@ Slightly newer executable but now with a plane instead of "squashed spheres"
 
 ![](images/phong_render_three_spheres_and_plane.png)
 
-## main/phong_render_three_spheres_and_striped_plane.png
+## main/phong_render_three_spheres_and_striped_plane
 
 Very similar but now the plane has stripes.
 
 ![](images/phong_render_three_spheres_and_striped_plane.png)
 
-## main/reflection.png
+## main/reflection
 
 Now the central sphere has a reflection...
 
 ![](images/reflection.png)
 
-## main/refraction.png
+## main/refraction
 
 Added a sphere with some refraction.  Need to make a better demo image.
 
