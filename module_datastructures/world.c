@@ -106,6 +106,12 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
     TUPLES_Color reflected, refracted;
     WORLD_reflected_color(&reflected, world, computation, ttl);
     WORLD_refracted_color(&refracted, world, computation, ttl);
+    const MATERIAL_Material* material = SHAPE_get_material(computation->object);
+    if (material->reflective > 0 && material->transparency > 0) {
+        double reflectance = RAY_schlick(computation);
+        TUPLES_multiply(&reflected, &reflected, reflectance);
+        TUPLES_multiply(&refracted, &refracted, 1 - reflectance);
+    }
     TUPLES_add(dest, dest, &reflected);
     TUPLES_add(dest, dest, &refracted);
 }

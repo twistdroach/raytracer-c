@@ -486,6 +486,43 @@ void test_shade_hit_with_transparent_material() {
     destruct_test_world(world);
 }
 
+void test_shade_hit_with_a_reflective_transparent_material() {
+    WORLD_World* world = construct_test_world();
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0, -3, 0, -sqrt(2)/2.0, sqrt(2)/2.0);
+    PLANE_Plane* floor = PLANE_new();
+    MATRIX_Matrix* floor_transform = MATRIX_new_translation(0, -1, 0);
+    PLANE_set_transform(floor, floor_transform);
+    MATRIX_delete(floor_transform);
+    PLANE_get_material(floor)->reflective = 0.5;
+    PLANE_get_material(floor)->transparency = 0.5;
+    PLANE_get_material(floor)->refractive_index = 1.5;
+    WORLD_add_object(world, floor);
+
+    SPHERE_Sphere* ball = SPHERE_new();
+    MATRIX_Matrix* ball_transform = MATRIX_new_translation(0, -3.5, -0.5);
+    SPHERE_set_transform(ball, ball_transform);
+    MATRIX_delete(ball_transform);
+    SPHERE_get_material(ball)->ambient = 0.5;
+    TUPLES_init_color(&SPHERE_get_material(ball)->color, 1, 0, 0);
+    WORLD_add_object(world, ball);
+
+    RAY_Intersections* xs = RAY_new_intersections();
+    RAY_add_intersection(xs, sqrt(2), floor);
+
+    RAY_Computations* comps = RAY_prepare_computations(&xs->xs[0], &ray, xs);
+
+    TUPLES_Color expected, got;
+    TUPLES_init_color(&expected, 0.93391, 0.69643, 0.69243);
+    WORLD_shade_hit(&got, world, comps, 5);
+
+    test_tuples(&expected, &got);
+
+    RAY_delete_computations(comps);
+    RAY_delete_intersections(xs);
+    destruct_test_world(world);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -512,5 +549,6 @@ int main(void)
     RUN_TEST(test_refracted_color_under_total_internal_reflection);
     RUN_TEST(test_refracted_color_with_refracted_ray);
     RUN_TEST(test_shade_hit_with_transparent_material);
+    RUN_TEST(test_shade_hit_with_a_reflective_transparent_material);
     return UNITY_END();
 }

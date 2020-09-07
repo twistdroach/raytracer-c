@@ -94,8 +94,9 @@ void build_world(WORLD_World* world) {
     front_mat->diffuse = 0;
     front_mat->refractive_index = 1.5;
     front_mat->transparency = 1.0;
+    front_mat->reflective = 1.0;
     MATRIX_Matrix* front_translation = MATRIX_new_translation(-0.5, 1, -1.5);
-    MATRIX_Matrix* front_scaling = MATRIX_new_scaling(.75, .5, .5);
+    MATRIX_Matrix* front_scaling = MATRIX_new_scaling(.25, .25, .25);
     MATRIX_Matrix* front_transform = MATRIX_multiply(front_translation, front_scaling);
     SPHERE_set_transform(front, front_transform);
     MATRIX_delete_all(front_translation, front_scaling, front_transform);

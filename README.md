@@ -49,3 +49,9 @@ Very similar but now the plane has stripes.
 Now the central sphere has a reflection...
 
 ![](images/reflection.png)
+
+## main/refraction.png
+
+Added a sphere with some refraction.  Need to make a better demo image.
+
+![](images/refraction.png)

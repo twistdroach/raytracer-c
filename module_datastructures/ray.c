@@ -7,6 +7,7 @@
 #include "ray.h"
 #include "arrlist.h"
 #include <shape.h>
+#include <math.h>
 
 RAY_Ray* RAY_new(double origin_x, double origin_y, double origin_z, double direction_x, double direction_y, double direction_z) {
     RAY_Ray* ray = malloc(sizeof(RAY_Ray));
@@ -211,4 +212,20 @@ RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray
 
 void RAY_delete_computations(RAY_Computations* comps) {
     free(comps);
+}
+
+double RAY_schlick(const RAY_Computations* comps) {
+    assert(comps);
+    double cos = TUPLES_dot(&comps->eyev, &comps->normalv);
+    if (comps->n1 > comps->n2) {
+        double n = comps->n1 / comps->n2;
+        double sin2_t = pow(n, 2) * (1.0 - pow(cos, 2));
+        if (sin2_t > 1.0) {
+            return 1.0;
+        }
+        // when n1>n2 use cos(theta_t) instead
+        cos = sqrt(1.0 - sin2_t);
+    }
+    double r0 = pow((comps->n1 - comps->n2) / (comps->n1 + comps->n2), 2);
+    return r0 + (1 - r0) * pow(1 - cos, 5);
 }

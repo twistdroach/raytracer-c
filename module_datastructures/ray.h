@@ -69,4 +69,6 @@ typedef struct RAY_Computations {
 RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray, const RAY_Intersections* xs);
 void RAY_delete_computations(RAY_Computations* comps);
 
+double RAY_schlick(const RAY_Computations* comps);
+
 #endif //DATA_STRUCTURES_RAY_H

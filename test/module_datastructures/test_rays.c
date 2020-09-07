@@ -331,6 +331,50 @@ void test_under_point_is_offset_below_surface() {
     SPHERE_delete(s);
 }
 
+void test_schlick_approximation_under_total_internal_reflection() {
+    SPHERE_Sphere* shape = SPHERE_make_glassy(SPHERE_new());
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0, sqrt(2)/2.0, 0, 1, 0);
+    RAY_Intersections* xs = RAY_new_intersections();
+    RAY_add_intersection(xs, -sqrt(2)/2.0, shape);
+    RAY_add_intersection(xs, sqrt(2)/2.0, shape);
+    RAY_Computations* comps = RAY_prepare_computations(&xs->xs[1], &ray, xs);
+    double reflectance = RAY_schlick(comps);
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, reflectance);
+    RAY_delete_computations(comps);
+    RAY_delete_intersections(xs);
+    SPHERE_delete(shape);
+}
+
+void test_schlick_approximation_with_perpendicular_angle() {
+    SPHERE_Sphere* shape = SPHERE_make_glassy(SPHERE_new());
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0, 0, 0, 1, 0);
+    RAY_Intersections* xs = RAY_new_intersections();
+    RAY_add_intersection(xs, -1, shape);
+    RAY_add_intersection(xs, 1, shape);
+    RAY_Computations* comps = RAY_prepare_computations(&xs->xs[1], &ray, xs);
+    double reflectance = RAY_schlick(comps);
+    TEST_ASSERT_EQUAL_DOUBLE(0.04, reflectance);
+    RAY_delete_computations(comps);
+    RAY_delete_intersections(xs);
+    SPHERE_delete(shape);
+}
+
+void test_schlick_approximation_with_small_angle_and_n2_greater_than_n1() {
+    SPHERE_Sphere* shape = SPHERE_make_glassy(SPHERE_new());
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0.99, -2.0, 0, 0, 1);
+    RAY_Intersections* xs = RAY_new_intersections();
+    RAY_add_intersection(xs, 1.8589, shape);
+    RAY_Computations* comps = RAY_prepare_computations(&xs->xs[0], &ray, xs);
+    double reflectance = RAY_schlick(comps);
+    TEST_ASSERT_EQUAL_DOUBLE(0.48873, reflectance);
+    RAY_delete_computations(comps);
+    RAY_delete_intersections(xs);
+    SPHERE_delete(shape);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -352,5 +396,8 @@ int main(void)
     RUN_TEST(test_precompute_the_reflection_vector);
     RUN_TEST(test_finding_n1_and_n2_at_various_intersections);
     RUN_TEST(test_under_point_is_offset_below_surface);
+    RUN_TEST(test_schlick_approximation_under_total_internal_reflection);
+    RUN_TEST(test_schlick_approximation_with_perpendicular_angle);
+    RUN_TEST(test_schlick_approximation_with_small_angle_and_n2_greater_than_n1);
     return UNITY_END();
 }
