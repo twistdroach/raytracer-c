@@ -95,7 +95,17 @@ RAY_Xs* RAY_hit(RAY_Intersections* intersections) {
     for (uint ndx=0; ndx < intersections->count; ndx++) {
         //TODO double_equal because our epsilon is less accurate than >, need to not detect small t values as hits
         if (intersections->xs[ndx].t > 0 && !double_equal(intersections->xs[ndx].t, 0.0)) {
-//        if (intersections->xs[ndx].t > 0 ) {
+            return &intersections->xs[ndx];
+        }
+    }
+    return NULL;
+}
+
+RAY_Xs* RAY_shadow_hit(RAY_Intersections* intersections) {
+    for (uint ndx = 0; ndx < intersections->count; ndx++) {
+        if (intersections->xs[ndx].t > 0 &&
+            !double_equal(intersections->xs[ndx].t, 0.0) &&
+            MATERIAL_casts_shadow(SHAPE_get_material(intersections->xs[ndx].object))) {
             return &intersections->xs[ndx];
         }
     }

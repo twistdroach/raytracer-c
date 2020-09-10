@@ -141,7 +141,7 @@ bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* point) {
     RAY_Ray ray;
     RAY_init_from_tuples(&ray, point, &direction);
     struct RAY_Intersections* intersections = WORLD_intersect(world, &ray);
-    RAY_Xs* hit = RAY_hit(intersections);
+    RAY_Xs* hit = RAY_shadow_hit(intersections);
     bool is_shadowed = false;
     if (hit && hit->t < distance) {
         is_shadowed = true;

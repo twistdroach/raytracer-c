@@ -14,6 +14,7 @@ MATERIAL_Material* MATERIAL_new() {
     m->transparency = 0.0;
     m->refractive_index = 1.0;
     m->pattern = NULL;
+    m->shadow_calc = true;
     return m;
 }
 void MATERIAL_delete(MATERIAL_Material* m) {
@@ -109,4 +110,9 @@ void MATERIAL_set_pattern(MATERIAL_Material* material, const PATTERN_Pattern* pa
         PATTERN_delete(material->pattern);
     }
     material->pattern = PATTERN_new_copy(pattern);
+}
+
+bool MATERIAL_casts_shadow(const MATERIAL_Material* m) {
+    assert(m);
+    return m->shadow_calc;
 }

@@ -55,3 +55,9 @@ Now the central sphere has a reflection...
 Added a sphere with some refraction.  Need to make a better demo image.
 
 ![](images/refraction.png)
+
+## main/refraction_cube
+
+Added support for cubes, also allowing an object to opt out of shadow calculation.
+
+![](images/refraction_cube.png)

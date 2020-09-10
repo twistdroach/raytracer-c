@@ -22,3 +22,11 @@ target_link_libraries(module_shapes_plane
         Unity
         m)
 add_test(shapes_plane module_shapes_plane)
+
+add_executable(module_shapes_cube
+        test_cube.c)
+target_link_libraries(module_shapes_cube
+        module_shapes
+        Unity
+        m)
+add_test(shapes_cube module_shapes_cube)

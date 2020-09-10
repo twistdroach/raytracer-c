@@ -76,7 +76,16 @@ void MATRIX_transpose(MATRIX_Matrix* matrix);
  * @param m2
  */
 MATRIX_Matrix* MATRIX_multiply(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2);
+MATRIX_Matrix* MATRIX_multiply_array(const MATRIX_Matrix* matrix[]);
 
+/**
+ * example:
+ * MATRIX_Matrix* m1 = ....
+ * MATRIX_Matrix* m2 = ....
+ * MATRIX_Matrix* m3 = ....
+ * MATRIX_Matrix* result = MATRIX_multiply_many(m1, m2, m3);
+ */
+#define MATRIX_multiply_many(...) MATRIX_multiply_array((const MATRIX_Matrix* []) {__VA_ARGS__, NULL})
 /**
  * (deep) Copy a matrix
  * @param dest - must be allocated

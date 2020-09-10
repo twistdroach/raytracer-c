@@ -56,3 +56,11 @@ target_link_libraries(refraction PRIVATE
         module_datastructures
         module_shapes)
 
+add_executable(refraction_cube
+        refraction_cube.c)
+
+target_link_libraries(refraction_cube PRIVATE
+        module_patterns
+        module_datastructures
+        module_shapes)
+

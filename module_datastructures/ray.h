@@ -44,6 +44,10 @@ void RAY_delete_intersections(RAY_Intersections* intersections);
  * @return
  */
 RAY_Xs* RAY_hit(RAY_Intersections* intersections);
+
+//same as above but only counts objects that cast shadows
+RAY_Xs* RAY_shadow_hit(RAY_Intersections* intersections);
+
 void RAY_sort_intersections(RAY_Intersections* intersections);
 
 typedef struct RAY_Computations {

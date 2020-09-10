@@ -176,6 +176,19 @@ static double compute_dot_product(const MATRIX_Matrix* m1, const MATRIX_Matrix* 
     return total;
 }
 
+MATRIX_Matrix* MATRIX_multiply_array(const MATRIX_Matrix* matrix[]) {
+    MATRIX_Matrix* retmatrix = MATRIX_new_identity(4);
+    for (uint i=0; matrix[i]; i++) {
+        const MATRIX_Matrix* m = matrix[i];
+        assert(m->width == 4);
+        assert(m->height == 4);
+        MATRIX_Matrix* new_retmatrix = MATRIX_multiply(retmatrix, m);
+        MATRIX_delete(retmatrix);
+        retmatrix = new_retmatrix;
+    }
+    return retmatrix;
+}
+
 MATRIX_Matrix* MATRIX_multiply(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2) {
     assert(m1);
     assert(m2);
