@@ -10,9 +10,10 @@ set(TARGET_GROUP test CACHE STRING "Group to build")
 
 add_compile_options(-Wall -g -O0 -Wextra -pedantic -Werror)
 
+add_subdirectory(module_math)
+add_subdirectory(module_datastructures)
 add_subdirectory(module_shapes)
 add_subdirectory(module_patterns)
-add_subdirectory(module_datastructures)
 add_subdirectory(module_utilities)
 
 add_definitions(-DUNITY_INCLUDE_DOUBLE -DUNITY_DOUBLE_PRECISION=0.0001f -DUNITY_INCLUDE_EXEC_TIME)

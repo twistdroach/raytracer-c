@@ -9,12 +9,12 @@ const SHAPE_vtable CUBE_vtable = {
         &CUBE_local_normal_at
 };
 
-inline double max(double x, double y, double z) {
+static double max(double x, double y, double z) {
     double xory = (x > y) ? x : y;
     return (xory > z) ? xory : z;
 }
 
-inline double min(double x, double y, double z) {
+static double min(double x, double y, double z) {
     double xory = (x < y) ? x : y;
     return (xory < z) ? xory : z;
 }

@@ -1,7 +1,5 @@
 add_library(module_datastructures STATIC
-        tuples.c tuples.h
         canvas.c canvas.h
-        matrix.c matrix.h
         ray.c ray.h
         lights.c lights.h
         material.c material.h
