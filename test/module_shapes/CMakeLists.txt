@@ -30,3 +30,11 @@ target_link_libraries(module_shapes_cube
         Unity
         m)
 add_test(shapes_cube module_shapes_cube)
+
+add_executable(module_shapes_cylinder
+        test_cylinder.c)
+target_link_libraries(module_shapes_cylinder
+        module_shapes
+        Unity
+        m)
+add_test(shapes_cylinder module_shapes_cylinder)

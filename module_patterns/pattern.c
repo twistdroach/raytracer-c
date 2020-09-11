@@ -67,12 +67,11 @@ void PATTERN_color_at_shape(TUPLES_Color* dest, const PATTERN_Pattern* pattern, 
     assert(pattern);
     assert(shape);
     assert(point);
-    MATRIX_Matrix inverse_shape_transform, inverse_pattern_transform;
-    MATRIX_inverse(&inverse_shape_transform, SHAPE_get_transform(shape));
+    MATRIX_Matrix inverse_pattern_transform;
     MATRIX_inverse(&inverse_pattern_transform, pattern->transform);
 
     TUPLES_Point shape_point, pattern_point;
-    MATRIX_multiply_tuple(&shape_point, &inverse_shape_transform, point);
+    MATRIX_multiply_tuple(&shape_point, SHAPE_get_inverse_transform(shape), point);
     MATRIX_multiply_tuple(&pattern_point, &inverse_pattern_transform, &shape_point);
 
     PATTERN_color_at(dest, pattern, &pattern_point);

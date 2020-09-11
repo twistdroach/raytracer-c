@@ -17,6 +17,11 @@ void SHAPE_init(SHAPE_Shape* shape, const SHAPE_vtable* vtable) {
     assert(vtable);
     assert(shape);
     shape->transform = MATRIX_new_identity(4);
+    shape->inverse = MATRIX_new_identity(4);
+    shape->inverse_transpose = MATRIX_new_identity(4);
+    MATRIX_inverse(shape->inverse, shape->transform);
+    MATRIX_copy(shape->inverse_transpose, shape->inverse);
+    MATRIX_transpose(shape->inverse_transpose);
     shape->material = MATERIAL_new();
     shape->vtable = vtable;
 }
@@ -24,6 +29,8 @@ void SHAPE_init(SHAPE_Shape* shape, const SHAPE_vtable* vtable) {
 void SHAPE_destroy(SHAPE_Shape* shape) {
     assert(shape);
     MATRIX_delete(shape->transform);
+    MATRIX_delete(shape->inverse);
+    MATRIX_delete(shape->inverse_transpose);
     MATERIAL_delete(shape->material);
 }
 
@@ -39,8 +46,10 @@ void SHAPE_set_transform(SHAPE_Shape* shape, const MATRIX_Matrix* transformation
     assert(transformation);
     assert(transformation->width == 4);
     assert(transformation->height == 4);
-    MATRIX_destroy(shape->transform);
     MATRIX_copy(shape->transform, transformation);
+    MATRIX_inverse(shape->inverse, transformation);
+    MATRIX_copy(shape->inverse_transpose, shape->inverse);
+    MATRIX_transpose(shape->inverse_transpose);
 }
 
 void SHAPE_set_material(SHAPE_Shape* shape, const MATERIAL_Material* material) {
@@ -61,32 +70,35 @@ MATRIX_Matrix* SHAPE_get_transform(const SHAPE_Shape* shape) {
     return shape->transform;
 }
 
+MATRIX_Matrix* SHAPE_get_inverse_transform(const SHAPE_Shape* shape) {
+    assert(shape);
+    return shape->inverse;
+}
+
+MATRIX_Matrix* SHAPE_get_transpose_inverse_transform(const SHAPE_Shape* shape) {
+    assert(shape);
+    return shape->inverse_transpose;
+}
+
 void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, SHAPE_Shape* shape) {
     assert(local_ray);
     assert(ray);
     assert(shape);
-    MATRIX_Matrix inverse;
-    MATRIX_inverse(&inverse, shape->transform);
-    RAY_transform(local_ray, ray, &inverse);
+    RAY_transform(local_ray, ray, shape->inverse);
 }
 
 void SHAPE_calc_local_point(TUPLES_Point* local_point, SHAPE_Shape* shape, const TUPLES_Point* point) {
     assert(local_point);
     assert(shape);
     assert(point);
-    MATRIX_Matrix inverse;
-    MATRIX_inverse(&inverse, shape->transform);
-    MATRIX_multiply_tuple(local_point, &inverse, point);
+    MATRIX_multiply_tuple(local_point, shape->inverse, point);
 }
 
 void SHAPE_calc_world_normal(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Vector* local_normal) {
     assert(world_normal);
     assert(shape);
     assert(local_normal);
-    MATRIX_Matrix inverse;
-    MATRIX_inverse(&inverse, shape->transform);
-    MATRIX_transpose(&inverse);
-    MATRIX_multiply_tuple(world_normal, &inverse, local_normal);
+    MATRIX_multiply_tuple(world_normal, shape->inverse_transpose, local_normal);
     world_normal->w = 0;
     TUPLES_normalize(world_normal);
 }

@@ -25,6 +25,8 @@ typedef struct SHAPE_vtable {
 typedef struct SHAPE_Shape {
     const SHAPE_vtable* vtable;
     MATRIX_Matrix*      transform;
+    MATRIX_Matrix*      inverse;
+    MATRIX_Matrix*      inverse_transpose;
     MATERIAL_Material*  material;
 } SHAPE_Shape;
 
@@ -44,6 +46,8 @@ void SHAPE_set_transform(SHAPE_Shape* shape, const MATRIX_Matrix* transformation
 void SHAPE_set_material(SHAPE_Shape* shape, const MATERIAL_Material* material);
 MATERIAL_Material* SHAPE_get_material(const SHAPE_Shape* shape);
 MATRIX_Matrix* SHAPE_get_transform(const SHAPE_Shape* shape);
+MATRIX_Matrix* SHAPE_get_inverse_transform(const SHAPE_Shape* shape);
+MATRIX_Matrix* SHAPE_get_transpose_inverse_transform(const SHAPE_Shape* shape);
 /**
  * Calculates ray in object coordinates to that shape can handle intersection code locally.
  * @param local_ray The local ray to be calculated

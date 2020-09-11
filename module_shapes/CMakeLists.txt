@@ -3,7 +3,8 @@ add_library(module_shapes STATIC
         shape.c shape.h
         testshape.c testshape.h
         plane.c plane.h
-        cube.c cube.h)
+        cube.c cube.h
+        cylinder.c cylinder.h)
 
 target_include_directories(module_shapes PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
