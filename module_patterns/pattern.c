@@ -9,6 +9,7 @@
 typedef struct PATTERN_Pattern {
     TUPLES_Color a, b;
     MATRIX_Matrix* transform;
+    MATRIX_Matrix* inverse_transform;
     void (*at)(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_Point* point);
 } PATTERN_Pattern;
 
@@ -20,6 +21,8 @@ static PATTERN_Pattern* PATTERN_new(const TUPLES_Color* a, const TUPLES_Color* b
     TUPLES_copy(&pattern->a, a);
     TUPLES_copy(&pattern->b, b);
     pattern->transform = MATRIX_new_identity(4);
+    pattern->inverse_transform = MATRIX_new_identity(4);
+    MATRIX_inverse(pattern->inverse_transform, pattern->transform);
     return pattern;
 }
 
@@ -36,6 +39,7 @@ const TUPLES_Color* PATTERN_get_color_b(const PATTERN_Pattern* pattern) {
 void PATTERN_delete(PATTERN_Pattern* p) {
     assert(p);
     MATRIX_delete(p->transform);
+    MATRIX_delete(p->inverse_transform);
     free(p);
 }
 
@@ -44,6 +48,7 @@ PATTERN_Pattern* PATTERN_new_copy(const PATTERN_Pattern* pattern) {
     assert(pattern->transform);
     PATTERN_Pattern* new_pattern = PATTERN_new(&pattern->a, &pattern->b);
     MATRIX_copy(new_pattern->transform, pattern->transform);
+    MATRIX_copy(new_pattern->inverse_transform, pattern->inverse_transform);
     new_pattern->at = pattern->at;
     return new_pattern;
 }
@@ -53,6 +58,7 @@ void PATTERN_set_transform(PATTERN_Pattern* pattern, const MATRIX_Matrix* transf
     assert(transformation);
     MATRIX_destroy(pattern->transform);
     MATRIX_copy(pattern->transform, transformation);
+    MATRIX_inverse(pattern->inverse_transform, pattern->transform);
 }
 
 void PATTERN_color_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_Point* object_point) {
@@ -67,12 +73,10 @@ void PATTERN_color_at_shape(TUPLES_Color* dest, const PATTERN_Pattern* pattern, 
     assert(pattern);
     assert(shape);
     assert(point);
-    MATRIX_Matrix inverse_pattern_transform;
-    MATRIX_inverse(&inverse_pattern_transform, pattern->transform);
 
     TUPLES_Point shape_point, pattern_point;
     MATRIX_multiply_tuple(&shape_point, SHAPE_get_inverse_transform(shape), point);
-    MATRIX_multiply_tuple(&pattern_point, &inverse_pattern_transform, &shape_point);
+    MATRIX_multiply_tuple(&pattern_point, pattern->inverse_transform, &shape_point);
 
     PATTERN_color_at(dest, pattern, &pattern_point);
 }
