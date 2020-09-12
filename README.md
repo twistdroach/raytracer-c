@@ -61,3 +61,9 @@ Added a sphere with some refraction.  Need to make a better demo image.
 Added support for cubes, also allowing an object to opt out of shadow calculation.
 
 ![](images/refraction_cube.png)
+
+## main/refraction_cylinder
+
+Added support for cylinders...
+
+![](images/refraction_cylinder.png)

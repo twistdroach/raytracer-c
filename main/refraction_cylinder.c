@@ -39,7 +39,7 @@ void build_world(WORLD_World* world) {
     middle_material->reflective = .90;
     PATTERN_Pattern* middle_pattern = PATTERN_new_gradient(&red, &blue);
     MATRIX_Matrix* middle_pattern_translate = MATRIX_new_translation(0.5, 0, 0);
-    MATRIX_Matrix* middle_pattern_scale = MATRIX_new_scaling(1, 1, 1);
+    MATRIX_Matrix* middle_pattern_scale = MATRIX_new_scaling(2, 1, 1);
     MATRIX_Matrix* middle_pattern_transform = MATRIX_multiply(middle_pattern_scale, middle_pattern_translate);
     PATTERN_set_transform(middle_pattern, middle_pattern_transform);
     MATRIX_delete_all(middle_pattern_scale, middle_pattern_transform, middle_pattern_translate);
@@ -50,12 +50,15 @@ void build_world(WORLD_World* world) {
     SPHERE_set_material(middle, middle_material);
     MATERIAL_delete(middle_material);
 
-    SPHERE_Sphere* right = SPHERE_new();
+    CYLINDER_Cylinder* right = CYLINDER_new();
+    right->minimum = 0;
+    right->maximum = 1;
+    right->closed = true;
     WORLD_add_object(world, right);
     MATRIX_Matrix* right_translation = MATRIX_new_translation(1.5, 0.5, -0.5);
     MATRIX_Matrix* right_scaling = MATRIX_new_scaling(0.5, 0.5, 0.5);
     MATRIX_Matrix* right_transform = MATRIX_multiply(right_translation, right_scaling);
-    SPHERE_set_transform(right, right_transform);
+    CYLINDER_set_transform(right, right_transform);
     MATRIX_delete_all(right_translation, right_scaling, right_transform);
     MATERIAL_Material* right_material = MATERIAL_new();
     PATTERN_Pattern* right_pattern = PATTERN_new_stripe(&red, &green);
@@ -66,7 +69,7 @@ void build_world(WORLD_World* world) {
     PATTERN_delete(right_pattern);
     right_material->diffuse = 0.7;
     right_material->specular = 0.3;
-    SPHERE_set_material(right, right_material);
+    CYLINDER_set_material(right, right_material);
     MATERIAL_delete(right_material);
 
     SPHERE_Sphere* left = SPHERE_new();
@@ -89,10 +92,13 @@ void build_world(WORLD_World* world) {
     MATERIAL_delete(left_material);
 
     CYLINDER_Cylinder* front = CYLINDER_new();
+    front->minimum = -1.25;
+    front->maximum = 1.25;
+    front->closed = false;
     WORLD_add_object(world, front);
-    MATERIAL_Material* front_mat = SHAPE_get_material(front);
+    MATERIAL_Material* front_mat = CYLINDER_get_material(front);
     front_mat->ambient = 0;
-//    front_mat->specular = 0;
+    front_mat->specular = 0;
     front_mat->diffuse = 0;
     front_mat->refractive_index = 1.5;
     front_mat->transparency = 1.0;

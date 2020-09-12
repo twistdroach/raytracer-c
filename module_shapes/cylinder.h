@@ -4,13 +4,18 @@
 #include "ray.h"
 #include "shape.h"
 
-typedef SHAPE_Shape CYLINDER_Cylinder;
+typedef struct CYLINDER_Cylinder {
+    SHAPE_Shape shape;
+    double minimum, maximum;
+    bool closed;
+} CYLINDER_Cylinder;
+
 const SHAPE_vtable CYLINDER_vtable;
 
-#define CYLINDER_new() (CYLINDER_Cylinder*)SHAPE_new(&CYLINDER_vtable)
-#define CYLINDER_init(cylinder) SHAPE_init((SHAPE_Shape*)cylinder, &CYLINDER_vtable)
-#define CYLINDER_destroy(cylinder) SHAPE_destroy((SHAPE_Shape*)cylinder)
-#define CYLINDER_delete(cylinder) SHAPE_delete((SHAPE_Shape*)cylinder)
+CYLINDER_Cylinder* CYLINDER_new();
+void CYLINDER_init(CYLINDER_Cylinder* cylinder);
+void CYLINDER_destroy(CYLINDER_Cylinder* cylinder);
+void CYLINDER_delete(CYLINDER_Cylinder* cylinder);
 
 void CYLINDER_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cylinder, const TUPLES_Point* local_point);
 void CYLINDER_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* cylinder, const RAY_Ray* local_ray);
