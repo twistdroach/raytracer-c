@@ -60,11 +60,11 @@ void CYLINDER_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, c
     }
 }
 
-static bool check_cap(const RAY_Ray* local_ray, double t) {
+bool CYLINDER_check_cap(const RAY_Ray* local_ray, double t, double radius) {
     double x = local_ray->origin.x + t * local_ray->direction.x;
     double z = local_ray->origin.z + t * local_ray->direction.z;
 
-    return (pow(x, 2) + pow(z,2)) <= 1.0;
+    return (pow(x, 2) + pow(z,2)) <= radius;
 }
 
 static void intersect_caps(RAY_Intersections* intersections, CYLINDER_Cylinder* cylinder, const RAY_Ray* local_ray) {
@@ -75,13 +75,13 @@ static void intersect_caps(RAY_Intersections* intersections, CYLINDER_Cylinder* 
 
     // check bottom cap
     double t = (cylinder->minimum - local_ray->origin.y) / local_ray->direction.y;
-    if (check_cap(local_ray, t)) {
+    if (CYLINDER_check_cap(local_ray, t, 1.0)) {
         RAY_add_intersection(intersections, t, cylinder);
     }
 
     // check top cap
     t = (cylinder->maximum - local_ray->origin.y) / local_ray->direction.y;
-    if (check_cap(local_ray, t)) {
+    if (CYLINDER_check_cap(local_ray, t, 1.0)) {
         RAY_add_intersection(intersections, t, cylinder);
     }
 }

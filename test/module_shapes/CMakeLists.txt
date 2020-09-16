@@ -38,3 +38,11 @@ target_link_libraries(module_shapes_cylinder
         Unity
         m)
 add_test(shapes_cylinder module_shapes_cylinder)
+
+add_executable(module_shapes_cone
+        test_cone.c)
+target_link_libraries(module_shapes_cone
+        module_shapes
+        Unity
+        m)
+add_test(shapes_cone module_shapes_cone)

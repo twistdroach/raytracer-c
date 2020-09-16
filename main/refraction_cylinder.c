@@ -11,6 +11,7 @@
 #include "pattern.h"
 #include <math.h>
 #include <cylinder.h>
+#include <cone.h>
 
 void build_world(WORLD_World* world) {
     TUPLES_Color red, green, blue;
@@ -72,12 +73,15 @@ void build_world(WORLD_World* world) {
     CYLINDER_set_material(right, right_material);
     MATERIAL_delete(right_material);
 
-    SPHERE_Sphere* left = SPHERE_new();
+    CONE_Cone* left = CONE_new();
+    left->maximum = 1.0;
+    left->minimum = 0.0;
+    left->closed = true;
     WORLD_add_object(world, left);
     MATRIX_Matrix* left_translation = MATRIX_new_translation(-1.5, 0.33, -0.75);
     MATRIX_Matrix* left_scaling = MATRIX_new_scaling(0.33, 0.33, 0.33);
     MATRIX_Matrix* left_transform = MATRIX_multiply(left_translation, left_scaling);
-    SPHERE_set_transform(left, left_transform);
+    CONE_set_transform(left, left_transform);
     MATRIX_delete_all(left_translation, left_scaling, left_transform);
     MATERIAL_Material* left_material = MATERIAL_new();
     PATTERN_Pattern* left_pattern = PATTERN_new_checkers(&red, &green);
@@ -88,7 +92,7 @@ void build_world(WORLD_World* world) {
     PATTERN_delete(left_pattern);
     left_material->diffuse = 0.7;
     left_material->specular = 0.3;
-    SPHERE_set_material(left, left_material);
+    CONE_set_material(left, left_material);
     MATERIAL_delete(left_material);
 
     CYLINDER_Cylinder* front = CYLINDER_new();
