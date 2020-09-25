@@ -46,3 +46,11 @@ target_link_libraries(module_shapes_cone
         Unity
         m)
 add_test(shapes_cone module_shapes_cone)
+
+add_executable(module_shapes_group
+        test_group.c)
+target_link_libraries(module_shapes_group
+        module_shapes
+        Unity
+        m)
+add_test(shapes_group module_shapes_group)

@@ -6,7 +6,7 @@
 typedef struct ARRLIST_List ARRLIST_List;
 
 ARRLIST_List* ARRLIST_new();
-void ARRLIST_add(ARRLIST_List* list, const void* object);
+void ARRLIST_add(ARRLIST_List* list, void* object);
 
 /**
  * Removes an item from the list and moves the remaining ptrs up.
@@ -18,8 +18,10 @@ void ARRLIST_remove(ARRLIST_List* list, const void* object);
 
 bool ARRLIST_is_empty(const ARRLIST_List* list);
 
+void ARRLIST_iterator(ARRLIST_List* list, void (*apply_each_ptr)(void* ptr, void* context), void* context);
+
 /**
- * Performs linear search of the list.
+ * Performs linear search of the list.  Comparing only the ptr values!
  * @param list
  * @param object
  * @return
@@ -31,7 +33,7 @@ bool ARRLIST_contains(const ARRLIST_List* list, const void* object);
  * @param ARRLIST_List
  * @return
  */
-const void* ARRLIST_last(const ARRLIST_List* list);
+void* ARRLIST_last(const ARRLIST_List* list);
 
 /**
  * Frees the list and backing array, but doesn't free anything pointed to

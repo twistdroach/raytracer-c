@@ -12,6 +12,7 @@ const SHAPE_vtable SPHERE_vtable;
 #define SPHERE_init(sphere) SHAPE_init((SHAPE_Shape*)sphere, &SPHERE_vtable)
 #define SPHERE_destroy(sphere) SHAPE_destroy((SHAPE_Shape*)sphere)
 #define SPHERE_delete(sphere) SHAPE_delete((SHAPE_Shape*)sphere)
+#define SPHERE_delete_all(...) Fn_apply(SPHERE_Sphere, SPHERE_delete, __VA_ARGS__);
 
 void SPHERE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* local_ray);
 void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point);

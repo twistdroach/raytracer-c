@@ -1,9 +1,13 @@
 #include <unity.h>
+#include <group.h>
+#include <math.h>
+#include <sphere.h>
 
 #include "shape.h"
 #include "testshape.h"
 
 #include "testutils.h"
+
 
 void setUp() {}
 void tearDown() {}
@@ -133,6 +137,103 @@ void test_compute_normal_on_transformed_shape() {
     TESTSHAPE_delete(s);
 }
 
+void test_shape_has_parent_attribute() {
+    TESTSHAPE_TestShape* ts = TESTSHAPE_new();
+    TEST_ASSERT_NULL(SHAPE_get_parent(ts));
+    TESTSHAPE_delete(ts);
+}
+
+void test_convert_point_from_world_to_object_space() {
+    GROUP_Group* g1 = GROUP_new();
+    MATRIX_Matrix* g1_transform = MATRIX_new_rotation_y(M_PI_2);
+    GROUP_set_transform(g1, g1_transform);
+
+    GROUP_Group* g2 = GROUP_new();
+    MATRIX_Matrix* g2_transform = MATRIX_new_scaling(2, 2, 2);
+    GROUP_set_transform(g2, g2_transform);
+
+    GROUP_add_child(g1, g2);
+
+    SPHERE_Sphere* s = SPHERE_new();
+    MATRIX_Matrix* s_transform = MATRIX_new_translation(5, 0, 0);
+    SPHERE_set_transform(s, s_transform);
+
+    GROUP_add_child(g2, s);
+
+    TUPLES_Point world_point, expected, result;
+    TUPLES_init_point(&world_point, -2, 0, -10);
+    SHAPE_world_to_object(&result, s, &world_point);
+
+    TUPLES_init_point(&expected, 0, 0, -1);
+    test_tuples(&expected, &result);
+
+    MATRIX_delete_all(g1_transform, g2_transform, s_transform);
+    GROUP_delete(g1);
+    GROUP_delete(g2);
+    SPHERE_delete(s);
+}
+
+void test_convert_normal_from_object_to_world_space() {
+    GROUP_Group* g1 = GROUP_new();
+    MATRIX_Matrix* g1_transform = MATRIX_new_rotation_y(M_PI_2);
+    GROUP_set_transform(g1, g1_transform);
+
+    GROUP_Group* g2 = GROUP_new();
+    MATRIX_Matrix* g2_transform = MATRIX_new_scaling(1, 2, 3);
+    GROUP_set_transform(g2, g2_transform);
+
+    GROUP_add_child(g1, g2);
+
+    SPHERE_Sphere* s = SPHERE_new();
+    MATRIX_Matrix* s_transform = MATRIX_new_translation(5, 0, 0);
+    SPHERE_set_transform(s, s_transform);
+
+    GROUP_add_child(g2, s);
+
+    TUPLES_Vector world_vector, expected, result;
+    TUPLES_init_vector(&world_vector, sqrt(3)/3, sqrt(3)/3, sqrt(3)/3);
+    TUPLES_init_vector(&expected, 0.2857, 0.4286, -0.8571);
+
+    SHAPE_normal_to_world(&result, s, &world_vector);
+    test_tuples(&expected, &result);
+
+    MATRIX_delete_all(g1_transform, g2_transform, s_transform);
+    GROUP_delete(g1);
+    GROUP_delete(g2);
+    SPHERE_delete(s);
+}
+
+void test_finding_normal_on_child_object() {
+    GROUP_Group* g1 = GROUP_new();
+    MATRIX_Matrix* g1_transform = MATRIX_new_rotation_y(M_PI_2);
+    GROUP_set_transform(g1, g1_transform);
+
+    GROUP_Group* g2 = GROUP_new();
+    MATRIX_Matrix* g2_transform = MATRIX_new_scaling(1, 2, 3);
+    GROUP_set_transform(g2, g2_transform);
+
+    GROUP_add_child(g1, g2);
+
+    SPHERE_Sphere* s = SPHERE_new();
+    MATRIX_Matrix* s_transform = MATRIX_new_translation(5, 0, 0);
+    SPHERE_set_transform(s, s_transform);
+
+    GROUP_add_child(g2, s);
+
+    TUPLES_Point point;
+    TUPLES_init_point(&point, 1.7321, 1.1547, -5.5774);
+    TUPLES_Vector expected, result;
+    TUPLES_init_vector(&expected, 0.2857, 0.4286, -0.8571);
+
+    SHAPE_normal_at(&result, s, &point);
+    test_tuples(&expected, &result);
+
+    MATRIX_delete_all(g1_transform, g2_transform, s_transform);
+    GROUP_delete(g1);
+    GROUP_delete(g2);
+    SPHERE_delete(s);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -145,5 +246,9 @@ int main(void)
     RUN_TEST(test_shapeholder_intersect_translated_shape_with_ray);
     RUN_TEST(test_compute_normal_on_translated_shape);
     RUN_TEST(test_compute_normal_on_transformed_shape);
+    RUN_TEST(test_shape_has_parent_attribute);
+    RUN_TEST(test_convert_point_from_world_to_object_space);
+    RUN_TEST(test_convert_normal_from_object_to_world_space);
+    RUN_TEST(test_finding_normal_on_child_object);
     return UNITY_END();
 }

@@ -225,11 +225,11 @@ void test_compute_normal_on_translated_sphere() {
     SPHERE_set_transform(s, t);
     TUPLES_Point* p = TUPLES_new_point(0, 1.70711, -0.70711);
     TUPLES_Point local_point;
-    SHAPE_calc_local_point(&local_point, (SHAPE_Shape*) s, p);
+    SHAPE_world_to_object(&local_point, (SHAPE_Shape*) s, p);
     TUPLES_Vector normal;
     SPHERE_local_normal_at(&normal, s, &local_point);
     TUPLES_Vector world_normal;
-    SHAPE_calc_world_normal(&world_normal, (SHAPE_Shape*) s, &normal);
+    SHAPE_normal_to_world(&world_normal, (SHAPE_Shape*) s, &normal);
     TEST_ASSERT_EQUAL_DOUBLE(0, world_normal.x);
     TEST_ASSERT_EQUAL_DOUBLE(0.70711, world_normal.y);
     TEST_ASSERT_EQUAL_DOUBLE(-0.70711, world_normal.z);
@@ -247,11 +247,11 @@ void test_compute_normal_on_transformed_sphere() {
     SPHERE_set_transform(s, transform_m);
     TUPLES_Point* p = TUPLES_new_point(0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0);
     TUPLES_Point local_point;
-    SHAPE_calc_local_point(&local_point, (SHAPE_Shape*) s, p);
+    SHAPE_world_to_object(&local_point, (SHAPE_Shape*) s, p);
     TUPLES_Vector normal;
     SPHERE_local_normal_at(&normal, s, &local_point);
     TUPLES_Vector world_normal;
-    SHAPE_calc_world_normal(&world_normal, (SHAPE_Shape*) s, &normal);
+    SHAPE_normal_to_world(&world_normal, (SHAPE_Shape*) s, &normal);
     TEST_ASSERT_DOUBLE_WITHIN(0.000001, 0, world_normal.x);
     TEST_ASSERT_EQUAL_DOUBLE(0.97014, world_normal.y);
     TEST_ASSERT_EQUAL_DOUBLE(-0.242535625, world_normal.z);

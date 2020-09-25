@@ -24,6 +24,7 @@ void SHAPE_init(SHAPE_Shape* shape, const SHAPE_vtable* vtable) {
     MATRIX_transpose(shape->inverse_transpose);
     shape->material = MATERIAL_new();
     shape->vtable = vtable;
+    shape->parent = NULL;
 }
 
 void SHAPE_destroy(SHAPE_Shape* shape) {
@@ -87,31 +88,15 @@ void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, SHAPE_Shape* s
     RAY_transform(local_ray, ray, shape->inverse);
 }
 
-void SHAPE_calc_local_point(TUPLES_Point* local_point, SHAPE_Shape* shape, const TUPLES_Point* point) {
-    assert(local_point);
-    assert(shape);
-    assert(point);
-    MATRIX_multiply_tuple(local_point, shape->inverse, point);
-}
-
-void SHAPE_calc_world_normal(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Vector* local_normal) {
-    assert(world_normal);
-    assert(shape);
-    assert(local_normal);
-    MATRIX_multiply_tuple(world_normal, shape->inverse_transpose, local_normal);
-    world_normal->w = 0;
-    TUPLES_normalize(world_normal);
-}
-
 void SHAPE_normal_at(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Point* point) {
     assert(world_normal);
     assert(shape);
     assert(point);
     TUPLES_Point local_point;
-    SHAPE_calc_local_point(&local_point, shape, point);
+    SHAPE_world_to_object(&local_point, shape, point);
     TUPLES_Vector local_normal;
     shape->vtable->local_normal_at(&local_normal, shape, &local_point);
-    SHAPE_calc_world_normal(world_normal, shape, &local_normal);
+    SHAPE_normal_to_world(world_normal, shape, &local_normal);
 }
 
 void SHAPE_delete_any_type(SHAPE_Shape* shape) {
@@ -131,4 +116,34 @@ void SHAPE_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const
     RAY_Ray local_ray;
     SHAPE_calc_local_ray(&local_ray, ray, shape);
     shape->vtable->local_intersect(intersections, shape, &local_ray);
+}
+
+void SHAPE_world_to_object(TUPLES_Point* result, const SHAPE_Shape* shape, const TUPLES_Point* world_point) {
+    assert(result);
+    assert(shape);
+    assert(world_point);
+
+    const SHAPE_Shape* parent = SHAPE_get_parent(shape);
+    TUPLES_Point tmp_point;
+    if (parent) {
+        SHAPE_world_to_object(&tmp_point, parent, world_point);
+    } else {
+        TUPLES_copy(&tmp_point, world_point);
+    }
+
+    MATRIX_multiply_tuple(result, shape->inverse, &tmp_point);
+}
+
+void SHAPE_normal_to_world(TUPLES_Vector* result, const SHAPE_Shape* shape, const TUPLES_Vector* normal) {
+    assert(result);
+    assert(shape);
+    assert(normal);
+    MATRIX_multiply_tuple(result, shape->inverse_transpose, normal);
+    result->w = 0;
+    TUPLES_normalize(result);
+
+    const SHAPE_Shape* parent = SHAPE_get_parent(shape);
+    if (parent) {
+        SHAPE_normal_to_world(result, parent, result);
+    }
 }

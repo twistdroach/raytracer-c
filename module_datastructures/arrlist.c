@@ -6,7 +6,7 @@
 #include "arrlist.h"
 
 typedef struct ARRLIST_List {
-    const void** items;
+    void** items;
     unsigned int count;
 } ARRLIST_List;
 
@@ -20,10 +20,10 @@ ARRLIST_List* ARRLIST_new() {
     return list;
 }
 
-void ARRLIST_add(ARRLIST_List* list, const void* object) {
+void ARRLIST_add(ARRLIST_List* list, void* object) {
     assert(list);
     assert(object);
-    const void** tmpptr = reallocarray(list->items, sizeof(void*), list->count + 1);
+    void** tmpptr = reallocarray(list->items, sizeof(void*), list->count + 1);
     if (!tmpptr) {
         Throw(E_MALLOC_FAILED);
     } else {
@@ -54,6 +54,14 @@ void ARRLIST_remove(ARRLIST_List* list, const void* object) {
     }
 }
 
+void ARRLIST_iterator(ARRLIST_List* list, void (*apply_each_ptr)(void* ptr, void* context), void* context) {
+    assert(list);
+    assert(apply_each_ptr);
+    for (unsigned int ndx = 0; ndx < list->count; ndx++) {
+        apply_each_ptr(list->items[ndx], context);
+    }
+}
+
 bool ARRLIST_is_empty(const ARRLIST_List* list) {
     assert(list);
     return (list->count == 0);
@@ -70,7 +78,7 @@ bool ARRLIST_contains(const ARRLIST_List* list, const void* object) {
     return false;
 }
 
-const void* ARRLIST_last(const ARRLIST_List* list) {
+void* ARRLIST_last(const ARRLIST_List* list) {
     assert(list);
     return list->items[list->count - 1];
 }

@@ -56,9 +56,9 @@ int main(void) {
                             TUPLES_Vector world_normal;
 
                             RAY_position(&point_of_intersection, &r, hit->t);
-                            SHAPE_calc_local_point(&local_point, (SHAPE_Shape*) sphere, &point_of_intersection);
+                            SHAPE_world_to_object(&local_point, (SHAPE_Shape*) sphere, &point_of_intersection);
                             SPHERE_local_normal_at(&normal, sphere, &local_point);
-                            SHAPE_calc_world_normal(&world_normal, (SHAPE_Shape*) sphere, &normal);
+                            SHAPE_normal_to_world(&world_normal, (SHAPE_Shape*) sphere, &normal);
 
                             TUPLES_copy(&eyev, &r.direction);
                             TUPLES_negate(&eyev);
