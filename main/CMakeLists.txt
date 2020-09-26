@@ -71,3 +71,11 @@ target_link_libraries(refraction_cylinder PRIVATE
         module_patterns
         module_datastructures
         module_shapes)
+
+add_executable(random_spheres
+        random_spheres.c)
+
+target_link_libraries(random_spheres PRIVATE
+        module_patterns
+        module_datastructures
+        module_shapes)

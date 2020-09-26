@@ -10,7 +10,8 @@
 typedef enum {
     E_NO_ERROR,
     E_MALLOC_FAILED,
-    E_FILE_FAILED
+    E_FILE_FAILED,
+    E_INVALID_ARGUMENT
 } EXCEPTIONS_exceptions;
 
 #endif //UTILITIES_PROJ_EXCEPTIONS_H

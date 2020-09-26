@@ -34,6 +34,15 @@ bool double_equal(double a, double b);
     fn(list_for_apply[i]);                                        \
 }
 
+/**
+ * Gets a random number of low precision.  Min must be less than max.
+ * Asserts min < max and/or throws E_INVALID_ARGUMENT if assertions disabled.
+ * @param min
+ * @param max
+ * @return a random double >= min && <= max
+ */
+double UTILITIES_random_double(double min, double max);
+
 typedef struct UTILITIES_Timer UTILITIES_Timer;
 typedef struct UTILITIES_Timer_Results {
     double user_time_seconds;

@@ -2,13 +2,23 @@
 #include <math.h>
 #include <sys/times.h>
 #include <unistd.h>
+#include <assert.h>
+#include <stdlib.h>
 
+#include "exceptions.h"
 #include "utilities.h"
 
 inline bool double_equal(double a, double b)
 {
     //ghetto - but likely close enough, we'll see
     return (fabs(a - b) < EPSILON);
+}
+
+double UTILITIES_random_double(double min, double max) {
+    assert(min <= max);
+    if (min > max) Throw(E_INVALID_ARGUMENT);
+
+    return min + (double)rand() / ((double)RAND_MAX / (max - min));
 }
 
 typedef struct UTILITIES_Timer {
