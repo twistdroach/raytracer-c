@@ -6,7 +6,8 @@ add_library(module_shapes STATIC
         cube.c cube.h
         cylinder.c cylinder.h
         cone.c cone.h
-        group.c group.h)
+        group.c group.h
+        triangle.c triangle.h)
 
 target_include_directories(module_shapes PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

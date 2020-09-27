@@ -54,3 +54,11 @@ target_link_libraries(module_shapes_group
         Unity
         m)
 add_test(shapes_group module_shapes_group)
+
+add_executable(module_shapes_triangle
+        test_triangle.c)
+target_link_libraries(module_shapes_triangle
+        module_shapes
+        Unity
+        m)
+add_test(shapes_triangle module_shapes_triangle)
