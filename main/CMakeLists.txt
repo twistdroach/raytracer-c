@@ -79,3 +79,11 @@ target_link_libraries(random_spheres PRIVATE
         module_patterns
         module_datastructures
         module_shapes)
+
+add_executable(render_obj
+        render_obj.c)
+
+target_link_libraries(render_obj PRIVATE
+        module_patterns
+        module_datastructures
+        module_shapes)

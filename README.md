@@ -67,3 +67,11 @@ Added support for cubes, also allowing an object to opt out of shadow calculatio
 Added support for cylinders...
 
 ![](images/refraction_cylinder.png)
+
+## main/render_obj
+
+Added support for triangles, loading obj files...
+
+Command takes two parameters, the first is the file to load, the second is optional and allows you to scale loaded object.
+
+![](images/render_obj.png)

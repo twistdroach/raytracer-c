@@ -23,7 +23,6 @@ void test_adding_child_to_group() {
     TEST_ASSERT_FALSE(GROUP_is_empty(g));
     TEST_ASSERT_TRUE(GROUP_contains(g, s));
     TEST_ASSERT_EQUAL_PTR(g, SHAPE_get_parent(s));
-    TESTSHAPE_delete(s);
     GROUP_delete(g);
 }
 
@@ -69,7 +68,6 @@ void test_intersect_ray_with_nonempty_group() {
     TEST_ASSERT_EQUAL_PTR(s1, xs->xs[3].object);
 
     RAY_delete_intersections(xs);
-    SPHERE_delete_all(s1, s2, s3);
     GROUP_delete(g);
 }
 
@@ -96,7 +94,6 @@ void test_intersecting_a_transformed_group() {
 
     RAY_delete_intersections(xs);
     GROUP_delete(group);
-    SPHERE_delete(sphere);
 }
 
 int main(void)

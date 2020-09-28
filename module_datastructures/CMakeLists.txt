@@ -5,7 +5,8 @@ add_library(module_datastructures STATIC
         material.c material.h
         world.c world.h
         camera.c camera.h
-        arrlist.c arrlist.h)
+        arrlist.c arrlist.h
+        wavefrontobj.c wavefrontobj.h)
 
 target_include_directories(module_datastructures PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

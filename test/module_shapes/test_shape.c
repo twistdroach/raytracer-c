@@ -169,8 +169,6 @@ void test_convert_point_from_world_to_object_space() {
 
     MATRIX_delete_all(g1_transform, g2_transform, s_transform);
     GROUP_delete(g1);
-    GROUP_delete(g2);
-    SPHERE_delete(s);
 }
 
 void test_convert_normal_from_object_to_world_space() {
@@ -199,8 +197,6 @@ void test_convert_normal_from_object_to_world_space() {
 
     MATRIX_delete_all(g1_transform, g2_transform, s_transform);
     GROUP_delete(g1);
-    GROUP_delete(g2);
-    SPHERE_delete(s);
 }
 
 void test_finding_normal_on_child_object() {
@@ -230,8 +226,6 @@ void test_finding_normal_on_child_object() {
 
     MATRIX_delete_all(g1_transform, g2_transform, s_transform);
     GROUP_delete(g1);
-    GROUP_delete(g2);
-    SPHERE_delete(s);
 }
 
 int main(void)

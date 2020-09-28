@@ -23,9 +23,17 @@ void GROUP_init(GROUP_Group* group) {
     group->list = ARRLIST_new();
 }
 
+void delete_subshape(void* void_shape, void* context) {
+    assert(void_shape);
+    UNUSED(context);
+    SHAPE_Shape* shape = (SHAPE_Shape*) void_shape;
+    SHAPE_delete_any_type(shape);
+}
+
 void GROUP_destroy(GROUP_Group* group) {
     assert(group);
     SHAPE_destroy(&group->shape);
+    ARRLIST_iterator(group->list, delete_subshape, NULL);
     ARRLIST_delete(group->list);
 }
 void GROUP_delete(GROUP_Group* group) {

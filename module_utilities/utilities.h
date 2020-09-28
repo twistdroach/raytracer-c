@@ -6,8 +6,12 @@
 #include <stdio.h>   //for free
 
 #define EPSILON 0.0001
-
 bool double_equal(double a, double b);
+
+/**
+ * Mark a value as unsed and stop the compiler from warning about it.
+ */
+#define UNUSED(x) ((x)=(x))
 
 /**
  * safer asprintf - allows you to take a pointer (initialized to NULL)

@@ -27,12 +27,18 @@ void GROUP_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* group,
 #define GROUP_get_transform(group) SHAPE_get_transform((SHAPE_Shape*)group)
 
 /**
- *
+ * The shape added will be freed when group is deleted...
  * @param group
  * @param shape must be a SHAPE_Shape or derivative thereof
  */
 void GROUP_add_child(GROUP_Group* group, void* shape);
 bool GROUP_is_empty(const GROUP_Group* group);
 bool GROUP_contains(const GROUP_Group* group, const void* shape);
+
+/**
+ * Must cast to appropriate type...likely SHAPE_Shape* unless you know what you put in there.
+ * This is really only used for testing at the moment.
+ */
+#define GROUP_get_child(group, ndx) (ARRLIST_safe_get((group)->list, ndx))
 
 #endif //DATA_STRUCTURES_GROUP_H

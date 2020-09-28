@@ -9,6 +9,15 @@ ARRLIST_List* ARRLIST_new();
 void ARRLIST_add(ARRLIST_List* list, void* object);
 
 /**
+ * gets a point to an item in the list.  throws a E_INDEX_OUT_OF_BOUNDS
+ * when an item that doesn't exist is accessed.
+ * @param list
+ * @param item
+ * @return
+ */
+void* ARRLIST_safe_get(ARRLIST_List* list, unsigned int item);
+
+/**
  * Removes an item from the list and moves the remaining ptrs up.
  * Doesn't bother to resize the array.
  * @param list
