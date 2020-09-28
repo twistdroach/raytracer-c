@@ -21,7 +21,7 @@ void GROUP_delete_shape(SHAPE_Shape* shape);
 void GROUP_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* group, const TUPLES_Point* local_point);
 void GROUP_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* group, const RAY_Ray* local_ray);
 
-#define GROUP_set_material(group, material) SHAPE_set_material((SHAPE_Shape*)group, material)
+void GROUP_set_material(GROUP_Group* group, const MATERIAL_Material* material);
 #define GROUP_get_material(group) SHAPE_get_material((SHAPE_Shape*)group)
 #define GROUP_set_transform(group, transform) SHAPE_set_transform((SHAPE_Shape*)group, transform)
 #define GROUP_get_transform(group) SHAPE_get_transform((SHAPE_Shape*)group)

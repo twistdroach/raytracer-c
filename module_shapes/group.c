@@ -96,3 +96,16 @@ bool GROUP_contains(const GROUP_Group* group, const void* shape) {
     assert(shape);
     return ARRLIST_contains(group->list, shape);
 }
+
+void set_shape_material(void* void_shape, void* void_material) {
+    assert(void_shape);
+    SHAPE_Shape* shape = (SHAPE_Shape*)void_shape;
+    MATERIAL_Material* material = (MATERIAL_Material*)void_material;
+    SHAPE_set_material(shape, material);
+}
+
+void GROUP_set_material(GROUP_Group* group, const MATERIAL_Material* material) {
+    assert(group);
+    assert(material);
+    ARRLIST_iterator(group->list, set_shape_material, (void*)material);
+}
