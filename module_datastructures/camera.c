@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <logger.h>
 
 static void calculate_pixel_size(CAMERA_Camera* camera) {
     assert(camera);
@@ -110,8 +111,16 @@ CANVAS_Canvas* CAMERA_render(const CAMERA_Camera* camera, const WORLD_World* wor
     assert(camera);
     assert(world);
     CANVAS_Canvas* canvas = CANVAS_new(camera->hsize, camera->vsize);
+    uint total_pixels = camera->vsize * camera->hsize;
+    uint one_percent_pixels = total_pixels / 100;
+    uint pixel_num = 0;
     for (uint y = 0; y < camera->vsize - 1; y++) {
         for (uint x = 0; x < camera->hsize - 1; x++) {
+            pixel_num++;
+            if (pixel_num % one_percent_pixels == 0) {
+                uint percent = pixel_num * 100 / total_pixels;
+                LOGGER_log(LOGGER_INFO, "Rendering %u%% complete\n", percent);
+            }
             RAY_Ray ray;
             TUPLES_Color color;
 
