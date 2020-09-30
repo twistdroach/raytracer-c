@@ -1,6 +1,6 @@
 # raytracer-c
 
-[![CI Actions Status](https://github.com/twistdroach/raytracer-c/workflows/CI/badge.svg)](https://github.com/twistdroach/raytracer-c/actions)
+![CI](https://github.com/twistdroach/raytracer-c/workflows/CI/badge.svg?branch=master)
 
 Current executables (and sample output) are:
 
