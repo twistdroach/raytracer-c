@@ -6,9 +6,9 @@ set(TARGET_GROUP test CACHE STRING "Group to build")
 # clang
 #add_compile_options(-Wall -g -Ofast -march=native -DNDEBUG -Wextra -pedantic -Werror -Wno-unused-result)
 # gcc
-#add_compile_options(-Wall -g -Ofast -march=native -DNDEBUG -Wextra -pedantic -Werror -Wno-unused-result -Wno-clobbered -Wno-unused-parameter)
+#add_compile_options(-Wall -g -Ofast -march=native -DNDEBUG -Wextra -pedantic -Werror -Wno-unused-result -Wno-clobbered -Wno-unused-parameter -fno-omit-frame-pointer)
 
-add_compile_options(-Wall -g -O0 -Wextra -pedantic -Werror)
+add_compile_options(-Wall -g3 -O0 -Wextra -pedantic -Werror)
 
 add_subdirectory(module_math)
 add_subdirectory(module_datastructures)
