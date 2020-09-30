@@ -1,10 +1,18 @@
-project("Data Structures" C)
+project("Simple Raytracer" C)
 cmake_minimum_required(VERSION 3.0)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
 
 set(CMAKE_C_STANDARD 11)
 set(TARGET_GROUP test CACHE STRING "Group to build")
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    add_compile_options(--coverage)
+    add_link_options(--coverage)
+endif()
 
 add_subdirectory(module_math)
 add_subdirectory(module_datastructures)

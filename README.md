@@ -1,6 +1,7 @@
 # raytracer-c
 
-![CI](https://github.com/twistdroach/raytracer-c/workflows/CI/badge.svg?branch=master)
+[![CI](https://github.com/twistdroach/raytracer-c/workflows/CI/badge.svg?branch=master)](https://github.com/twistdroach/raytracer-c/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/twistdroach/raytracer-c/branch/master/graph/badge.svg)](https://codecov.io/gh/twistdroach/raytracer-c)
 
 Current executables (and sample output) are:
 

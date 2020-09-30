@@ -1,0 +1,6 @@
+fixes:
+  - "/home/runner/work/raytracer-c/raytracer-c/::"
+  - "raytracer-c/::"
+ignore:
+  - "external/"
+  - "main/"

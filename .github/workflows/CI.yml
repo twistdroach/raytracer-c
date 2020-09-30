@@ -57,3 +57,13 @@ jobs:
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: make NightlyMemCheck
+
+    - name: Check Test Coverage
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: make NightlyCoverage
+
+    - name: Upload test output
+      working-directory: ${{runner.workspace}}
+      shell: bash
+      run: bash <(curl -s https://codecov.io/bash)
