@@ -8,14 +8,17 @@
 typedef struct WAVEFRONTOBJ_Obj {
     unsigned int ignored_lines;
     unsigned int vertex_count;
+    unsigned int normal_count;
     unsigned int triangle_count;
     unsigned int face_count;
     unsigned int group_count;
     ARRLIST_List* vertices;
+    ARRLIST_List* normals;
     GROUP_Group* default_group;
 } WAVEFRONTOBJ_Obj;
 
 #define WAVEFRONTOBJ_get_vertex(obj, ndx) ((TUPLES_Point*)(ARRLIST_safe_get((obj)->vertices, (ndx) - 1)))
+#define WAVEFRONTOBJ_get_normal(obj, ndx) ((TUPLES_Vector*)(ARRLIST_safe_get((obj)->normals, (ndx) - 1)))
 #define WAVEFRONTOBJ_get_default_group(obj) ((obj)->default_group)
 
 /**

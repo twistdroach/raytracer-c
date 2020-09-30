@@ -12,7 +12,7 @@ void CONE_init(CONE_Cone* cone);
 #define CONE_destroy(cone) CYLINDER_destroy(cone)
 #define CONE_delete(cone) CYLINDER_delete(cone)
 
-void CONE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cone, const TUPLES_Point* local_point);
+void CONE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cone, const TUPLES_Point* local_point, const RAY_Xs* hit);
 void CONE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* cone, const RAY_Ray* local_ray);
 
 #define CONE_set_material(cone, material) SHAPE_set_material((SHAPE_Shape*)cone, material)

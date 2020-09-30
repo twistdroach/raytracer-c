@@ -107,7 +107,7 @@ void test_compute_normal_on_translated_shape() {
     TUPLES_init_point(&hitpoint, 0, 1.70711, -0.70711);
 
     TUPLES_Vector world_normal;
-    SHAPE_normal_at(&world_normal, (SHAPE_Shape*)s, &hitpoint);
+    SHAPE_normal_at(&world_normal, (SHAPE_Shape*)s, &hitpoint, NULL);
 
     TUPLES_Vector expected;
     TUPLES_init_vector(&expected, 0, 0.70711, -0.70711);
@@ -128,7 +128,7 @@ void test_compute_normal_on_transformed_shape() {
     TUPLES_init_point(&hitpoint, 0, sqrt(2)/2.0, -sqrt(2)/2.0);
 
     TUPLES_Vector world_normal;
-    SHAPE_normal_at(&world_normal, (SHAPE_Shape*)s, &hitpoint);
+    SHAPE_normal_at(&world_normal, (SHAPE_Shape*)s, &hitpoint, NULL);
 
     TUPLES_Vector expected;
     TUPLES_init_vector(&expected, 0, 0.97014, -0.24254);
@@ -221,7 +221,7 @@ void test_finding_normal_on_child_object() {
     TUPLES_Vector expected, result;
     TUPLES_init_vector(&expected, 0.2857, 0.4286, -0.8571);
 
-    SHAPE_normal_at(&result, s, &point);
+    SHAPE_normal_at(&result, s, &point, NULL);
     test_tuples(&expected, &result);
 
     MATRIX_delete_all(g1_transform, g2_transform, s_transform);

@@ -34,10 +34,11 @@ void SPHERE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape
     RAY_add_intersection(intersections, t2, sphere);
 }
 
-void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point) {
+void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     assert(local_normal);
     assert(shape);
     assert(local_point);
+    UNUSED(hit);
 
     TUPLES_Point sphere_origin;
     TUPLES_init_point(&sphere_origin, 0, 0, 0);

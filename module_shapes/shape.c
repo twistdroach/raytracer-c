@@ -88,14 +88,14 @@ void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, SHAPE_Shape* s
     RAY_transform(local_ray, ray, shape->inverse);
 }
 
-void SHAPE_normal_at(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Point* point) {
+void SHAPE_normal_at(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Point* point, const RAY_Xs* hit) {
     assert(world_normal);
     assert(shape);
     assert(point);
     TUPLES_Point local_point;
     SHAPE_world_to_object(&local_point, shape, point);
     TUPLES_Vector local_normal;
-    shape->vtable->local_normal_at(&local_normal, shape, &local_point);
+    shape->vtable->local_normal_at(&local_normal, shape, &local_point, hit);
     SHAPE_normal_to_world(world_normal, shape, &local_normal);
 }
 

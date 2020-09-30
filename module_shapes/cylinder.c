@@ -44,10 +44,11 @@ void CYLINDER_delete(CYLINDER_Cylinder* cylinder) {
     free(cylinder);
 }
 
-void CYLINDER_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point) {
+void CYLINDER_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     assert(local_normal);
     assert(shape);
     assert(local_point);
+    UNUSED(hit);
 
     CYLINDER_Cylinder* cylinder = (CYLINDER_Cylinder*)shape;
     double dist = pow(local_point->x, 2) + pow(local_point->z, 2);

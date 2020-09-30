@@ -97,7 +97,7 @@ void helper_compute_normal_on_cone(double px, double py, double pz,
     TUPLES_Vector expected, got;
     TUPLES_init_vector(&expected, nx, ny, nz);
 
-    CONE_local_normal_at(&got, (SHAPE_Shape*)c, &p);
+    CONE_local_normal_at(&got, (SHAPE_Shape*)c, &p, NULL);
 
     test_tuples(&expected, &got);
 

@@ -9,10 +9,11 @@ const SHAPE_vtable PLANE_vtable = {
         &PLANE_local_normal_at
 };
 
-void PLANE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point) {
+void PLANE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     assert(local_normal);
     assert(shape);
     assert(local_point);
+    UNUSED(hit);
     TUPLES_init_vector(local_normal, 0, 1, 0);
 }
 

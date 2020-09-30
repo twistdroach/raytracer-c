@@ -16,7 +16,138 @@ typedef struct parse_state {
     char* line;
 } parse_state;
 
+bool check_for_slash_char(char* str) {
+    return (strchr(str, '/') != NULL);
+}
+
+typedef struct entry {
+    unsigned int vertex;
+    unsigned int normal;
+    bool vertex_found;
+    bool normal_found;
+} entry;
+
+static entry parse_face_entry(char* str, parse_state* state) {
+    assert(str);
+    entry e;
+    e.normal_found = false;
+    e.vertex_found = false;
+
+    if (check_for_slash_char(str)) {
+        //should always be three values.  we don't need the second since we don't implement textures yet
+        char* first = strsep(&str, "/");
+        strsep(&str, "/");
+        char* third = strsep(&str, "/");
+
+        char* err = NULL;
+        e.vertex = strtoul(first, &err, 10);
+        if (first == err) {
+            LOGGER_log(LOGGER_ERROR, "Error parsing face vertex, line(%u), err(%s)\n", state->line_number, err);
+        } else {
+            e.vertex_found = true;
+        };
+
+        e.normal = strtoul(third, &err, 10);
+        if (third == err) {
+            LOGGER_log(LOGGER_ERROR, "Error parsing face normal, line(%u), err(%s)\n", state->line_number, err);
+        } else {
+            e.normal_found = true;
+        };
+    } else {
+        char* err = NULL;
+        e.vertex = strtoul(str, &err, 10);
+        if (str == err) {
+            LOGGER_log(LOGGER_ERROR, "Error parsing face vertex (no slashes), line(%u), err(%s)\n", state->line_number, err);
+        } else {
+            e.vertex_found = true;
+        };
+    }
+    return e;
+}
+
 static void parse_face(WAVEFRONTOBJ_Obj* obj, parse_state* state) {
+    assert(obj);
+    assert(state);
+    char* line = state->line;
+    assert(line);
+
+    char* saveptr = NULL;
+    char* delim = " ";
+    strtok_r(line, delim, &saveptr);
+
+    char* first_vertex = strtok_r(NULL, delim, &saveptr);
+    entry first_e = parse_face_entry(first_vertex, state);
+    if (!first_e.vertex_found) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing first vertex on line (%u)\n", state->line_number);
+        return;
+    }
+    unsigned int v1ndx = first_e.vertex;
+    unsigned int n1ndx = 0;
+    if (first_e.normal_found) {
+        n1ndx = first_e.normal;
+    }
+
+    char* second_vertex = strtok_r(NULL, delim, &saveptr);
+    entry second_e = parse_face_entry(second_vertex, state);
+    if (!second_e.vertex_found) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing second vertex on line (%u)\n", state->line_number);
+        return;
+    }
+    unsigned int v2ndx = second_e.vertex;
+    unsigned int n2ndx = 0;
+    if (second_e.normal_found) {
+        n2ndx = second_e.normal;
+    }
+
+    CEXCEPTION_T e;
+    TUPLES_Point *first, *previous, *current;
+    TUPLES_Vector *first_n, *previous_n, *current_n;
+    Try {
+                first = WAVEFRONTOBJ_get_vertex(obj, v1ndx);
+                previous = WAVEFRONTOBJ_get_vertex(obj, v2ndx);
+                if (n1ndx) {
+                    first_n = WAVEFRONTOBJ_get_normal(obj, n1ndx);
+                }
+                if (n2ndx) {
+                    previous_n = WAVEFRONTOBJ_get_normal(obj, n2ndx);
+                }
+
+                char* current_vertex;
+                while ((current_vertex = strtok_r(NULL, delim, &saveptr))) {
+                    entry current_vertex_e = parse_face_entry(current_vertex, state);
+                    if (!current_vertex_e.vertex_found) {
+                        LOGGER_log(LOGGER_ERROR, "Error parsing vertex on line (%u)\n", state->line_number);
+                        return;
+                    }
+
+                    current = WAVEFRONTOBJ_get_vertex(obj, current_vertex_e.vertex);
+                    if (current_vertex_e.normal_found) {
+                      current_n = WAVEFRONTOBJ_get_normal(obj, current_vertex_e.normal);
+                      TRIANGLE_SmoothTriangle* t = TRIANGLE_new_smooth_from_points(first, previous, current,
+                                                                                   first_n, previous_n, current_n);
+                      GROUP_add_child(state->current_group, t);
+                      previous_n = current_n;
+                    } else {
+                      TRIANGLE_Triangle* t = TRIANGLE_new_from_points(first, previous, current);
+                      GROUP_add_child(state->current_group, t);
+                    }
+
+                    obj->triangle_count++;
+                    previous = current;
+                }
+
+    }
+    Catch(e) {
+      if (e == E_INDEX_OUT_OF_BOUNDS) {
+        LOGGER_log(LOGGER_ERROR, "Error retrieving vertex, line(%u)\n");
+      } else {
+        LOGGER_log(LOGGER_ERROR, "Unexpected error %s\n", EXCEPTIONS_strings[e]);
+      }
+    }
+    obj->face_count++;
+}
+
+static void parse_normal(WAVEFRONTOBJ_Obj* obj, parse_state* state) {
     assert(obj);
     assert(state);
     char* line = state->line;
@@ -27,37 +158,20 @@ static void parse_face(WAVEFRONTOBJ_Obj* obj, parse_state* state) {
     char* delim = " ";
     strtok_r(line, delim, &saveptr);
 
-    char* first_vertex = strtok_r(NULL, delim, &saveptr);
-    unsigned int v1ndx = strtoul(first_vertex, &err, 10);
-    if (first_vertex == err) LOGGER_log(LOGGER_ERROR, "Error parsing vertex 1, line(%u), err(%s)\n", state->line_number, err);
+    char* xstr = strtok_r(NULL, delim, &saveptr);
+    double x = strtod(xstr, &err);
+    if (xstr == err) LOGGER_log(LOGGER_ERROR, "Error parsing normal x value, line(%u), err(%s)\n", state->line_number, err);
 
-    char* second_vertex = strtok_r(NULL, delim, &saveptr);
-    unsigned int v2ndx = strtoul(second_vertex, &err, 10);
-    if (second_vertex == err) LOGGER_log(LOGGER_ERROR, "Error parsing vertex 2, line(%u), err(%s)\n", state->line_number, err);
+    char* ystr = strtok_r(NULL, delim, &saveptr);
+    double y = strtod(ystr, &err);
+    if (ystr == err) LOGGER_log(LOGGER_ERROR, "Error parsing normal y value, line(%u), err(%s)\n", state->line_number, err);
 
-    CEXCEPTION_T e;
-    TUPLES_Point *first, *previous, *current;
-    Try {
-                first = WAVEFRONTOBJ_get_vertex(obj, v1ndx);
-                previous = WAVEFRONTOBJ_get_vertex(obj, v2ndx);
-                char* current_vertex;
-                while ((current_vertex = strtok_r(NULL, delim, &saveptr))) {
-                    unsigned int current_vertex_ndx = strtoul(current_vertex, &err, 10);
-                    if (current_vertex == err) {
-                        LOGGER_log(LOGGER_ERROR, "Error parsing vertex, line(%u), err(%s)\n", state->line_number, err);
-                    }
-                    current = WAVEFRONTOBJ_get_vertex(obj, current_vertex_ndx);
-                    TRIANGLE_Triangle* t = TRIANGLE_new_from_points(first, previous, current);
-                    GROUP_add_child(state->current_group, t);
-                    obj->triangle_count++;
-                    previous = current;
-                }
+    char* zstr = strtok_r(NULL, delim, &saveptr);
+    double z = strtod(zstr, &err);
+    if (zstr == err) LOGGER_log(LOGGER_ERROR, "Error parsing normal z value, line(%u), err(%s)\n", state->line_number, err);
 
-    }
-    Catch(e) {
-      LOGGER_log(LOGGER_ERROR, "Error retrieving vertex, line(%u)\n");
-    }
-    obj->face_count++;
+    ARRLIST_add(obj->normals, TUPLES_new_vector(x, y, z));
+    obj->normal_count++;
 }
 
 static void parse_vertex(WAVEFRONTOBJ_Obj* obj, parse_state* state) {
@@ -123,7 +237,11 @@ static void parse_stream(WAVEFRONTOBJ_Obj* obj, FILE* stream) {
                     parse_group(obj, &state);
                     break;
                 case 'v':
-                    parse_vertex(obj, &state);
+                    if (line[1] == 'n') {
+                        parse_normal(obj, &state);
+                    } else {
+                        parse_vertex(obj, &state);
+                    }
                     break;
                 case 'f':
                     parse_face(obj, &state);
@@ -135,7 +253,7 @@ static void parse_stream(WAVEFRONTOBJ_Obj* obj, FILE* stream) {
         }
     }
     free(line);
-    LOGGER_log(LOGGER_INFO, "Found groups(%u) faces(%u) triangles(%u) vertexes(%u)\n", obj->group_count, obj->face_count, obj->triangle_count, obj->vertex_count);
+    LOGGER_log(LOGGER_INFO, "Found groups(%u) faces(%u) triangles(%u) vertexes(%u) normals(%u)\n", obj->group_count, obj->face_count, obj->triangle_count, obj->vertex_count, obj->normal_count);
 }
 
 void WAVEFRONTOBJ_init(WAVEFRONTOBJ_Obj* obj, FILE* file) {
@@ -146,7 +264,9 @@ void WAVEFRONTOBJ_init(WAVEFRONTOBJ_Obj* obj, FILE* file) {
     obj->triangle_count = 0;
     obj->vertex_count = 0;
     obj->face_count = 0;
+    obj->normal_count = 0;
     obj->vertices = ARRLIST_new();
+    obj->normals = ARRLIST_new();
     obj->default_group = GROUP_new();
     parse_stream(obj, file);
 }
@@ -161,7 +281,7 @@ WAVEFRONTOBJ_Obj* WAVEFRONTOBJ_parse_obj_stream(FILE* file) {
     return obj;
 }
 
-static void delete_vertex(void* vertex, void* context) {
+static void delete_tuple(void* vertex, void* context) {
     assert(vertex);
     UNUSED(context);
 
@@ -187,8 +307,10 @@ WAVEFRONTOBJ_Obj* WAVEFRONTOBJ_parse_file_by_name(char* filename) {
 
 void WAVEFRONTOBJ_destroy(WAVEFRONTOBJ_Obj* obj) {
     assert(obj);
-    ARRLIST_iterator(obj->vertices, delete_vertex, NULL);
+    ARRLIST_iterator(obj->vertices, delete_tuple, NULL);
     ARRLIST_delete(obj->vertices);
+    ARRLIST_iterator(obj->normals, delete_tuple, NULL);
+    ARRLIST_delete(obj->normals);
     GROUP_delete(obj->default_group);
 }
 

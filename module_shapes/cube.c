@@ -19,10 +19,11 @@ static double min(double x, double y, double z) {
     return (xory < z) ? xory : z;
 }
 
-void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const TUPLES_Point* local_point) {
+void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     assert(local_normal);
     assert(cube);
     assert(local_point);
+    UNUSED(hit);
     double maxc = max(fabs(local_point->x), fabs(local_point->y), fabs(local_point->z));
 
     if (maxc == fabs(local_point->x)) {

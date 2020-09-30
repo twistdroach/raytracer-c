@@ -57,7 +57,7 @@ void helper_check_normal_at_point(double px, double py, double pz,
     TUPLES_init_point(&p, px, py, pz);
     TUPLES_Vector result;
     RAY_Intersections* intersections = RAY_new_intersections();
-    CUBE_local_normal_at(&result, cube, &p);
+    CUBE_local_normal_at(&result, cube, &p, NULL);
     TEST_ASSERT_EQUAL_DOUBLE(nx, result.x);
     TEST_ASSERT_EQUAL_DOUBLE(ny, result.y);
     TEST_ASSERT_EQUAL_DOUBLE(nz, result.z);

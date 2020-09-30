@@ -48,11 +48,12 @@ void GROUP_delete_shape(SHAPE_Shape* shape) {
     GROUP_delete(group);
 }
 
-void GROUP_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* group, const TUPLES_Point* local_point) {
+void GROUP_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* group, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     //should never get here...
     assert(local_normal);
     assert(group);
     assert(local_point);
+    UNUSED(hit);
     assert(0);
 }
 

@@ -12,7 +12,7 @@ const SHAPE_vtable CUBE_vtable;
 #define CUBE_destroy(cube) SHAPE_destroy((SHAPE_Shape*)cube)
 #define CUBE_delete(cube) SHAPE_delete((SHAPE_Shape*)cube)
 
-void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const TUPLES_Point* local_point);
+void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const TUPLES_Point* local_point, const RAY_Xs* hit);
 void CUBE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* cube, const RAY_Ray* local_ray);
 
 #define CUBE_set_material(cube, material) SHAPE_set_material((SHAPE_Shape*)cube, material)

@@ -13,7 +13,7 @@ typedef struct SHAPE_Shape SHAPE_Shape;
 typedef struct SHAPE_vtable {
     void (*local_intersect)(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* ray);
     void (*delete)(SHAPE_Shape*);
-    void (*local_normal_at)(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point);
+    void (*local_normal_at)(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit);
 } SHAPE_vtable;
 
 /**
@@ -61,7 +61,7 @@ void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, SHAPE_Shape* s
 
 void SHAPE_delete_any_type(SHAPE_Shape* shape);
 void SHAPE_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* ray);
-void SHAPE_normal_at(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Point* point);
+void SHAPE_normal_at(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Point* point, const RAY_Xs* hit);
 void SHAPE_world_to_object(TUPLES_Point* result, const SHAPE_Shape* shape, const TUPLES_Point* world_point);
 void SHAPE_normal_to_world(TUPLES_Vector* result, const SHAPE_Shape* shape, const TUPLES_Vector* normal);
 

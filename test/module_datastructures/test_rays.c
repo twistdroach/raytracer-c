@@ -3,6 +3,7 @@
 #include <sphere.h>
 #include <plane.h>
 #include <matrix.h>
+#include <triangle.h>
 
 void setUp() {}
 void tearDown() {}
@@ -375,6 +376,23 @@ void test_schlick_approximation_with_small_angle_and_n2_greater_than_n1() {
     SPHERE_delete(shape);
 }
 
+void test_intersection_encapsulating_u_and_v() {
+    TUPLES_Point p1, p2, p3;
+    TUPLES_init_point(&p1, 0, 1, 0);
+    TUPLES_init_point(&p2, -1, 0, 0);
+    TUPLES_init_point(&p3, 1, 0, 0);
+    TRIANGLE_Triangle* s = TRIANGLE_new_from_points(&p1, &p2, &p3);
+
+    RAY_Intersections* xs = RAY_new_intersections();
+    RAY_add_intersection_tri(xs, 3.5, s, 0.2, 0.4);
+
+    TEST_ASSERT_EQUAL_DOUBLE(0.2, xs->xs[0].u);
+    TEST_ASSERT_EQUAL_DOUBLE(0.4, xs->xs[0].v);
+
+    RAY_delete_intersections(xs);
+    TRIANGLE_delete(s);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -399,5 +417,6 @@ int main(void)
     RUN_TEST(test_schlick_approximation_under_total_internal_reflection);
     RUN_TEST(test_schlick_approximation_with_perpendicular_angle);
     RUN_TEST(test_schlick_approximation_with_small_angle_and_n2_greater_than_n1);
+    RUN_TEST(test_intersection_encapsulating_u_and_v);
     return UNITY_END();
 }

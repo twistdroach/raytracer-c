@@ -75,3 +75,14 @@ Added support for triangles, loading obj files...
 Command takes two parameters, the first is the file to load, the second is optional and allows you to scale loaded object.
 
 ![](images/render_obj.png)
+
+## main/render_obj
+
+Now with normal interpolation...starting to slow down with lots of triangles/reflection/refraction...
+
+![](images/glass_teapot.png)
+
+An obvious performance improvement would be to add some group bounding, so we don't have to check all triangles for intersections when we aren't even close.
+
+In any event, flamegraphs are a fun way to see what is going on.
+![](images/glass_teapot_flamegraph.svg)

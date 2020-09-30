@@ -8,6 +8,12 @@ const SHAPE_vtable TRIANGLE_vtable = {
         &TRIANGLE_local_normal_at
 };
 
+const SHAPE_vtable TRIANGLE_smooth_vtable = {
+       &TRIANGLE_local_intersect,
+       &TRIANGLE_delete_shape,
+       &TRIANGLE_smooth_local_normal_at
+};
+
 TRIANGLE_Triangle* TRIANGLE_new_from_points(const TUPLES_Point* p1, const TUPLES_Point* p2, const TUPLES_Point* p3) {
     return TRIANGLE_new(p1->x, p1->y, p1->z,
                         p2->x, p2->y, p2->z,
@@ -36,12 +42,11 @@ void TRIANGLE_init_from_points(TRIANGLE_Triangle* triangle,
                   p3->x, p3->y, p3->z);
 }
 
-void TRIANGLE_init(TRIANGLE_Triangle* triangle,
-                   double p1x, double p1y, double p1z,
-                   double p2x, double p2y, double p2z,
-                   double p3x, double p3y, double p3z) {
+static void init_base_triangle_info(TRIANGLE_Triangle* triangle,
+                       double p1x, double p1y, double p1z,
+                       double p2x, double p2y, double p2z,
+                       double p3x, double p3y, double p3z) {
     assert(triangle);
-    SHAPE_init(&triangle->shape, &TRIANGLE_vtable);
     TUPLES_init_point(&triangle->p1, p1x, p1y, p1z);
     TUPLES_init_point(&triangle->p2, p2x, p2y, p2z);
     TUPLES_init_point(&triangle->p3, p3x, p3y, p3z);
@@ -49,6 +54,17 @@ void TRIANGLE_init(TRIANGLE_Triangle* triangle,
     TUPLES_subtract(&triangle->e2, &triangle->p3, &triangle->p1);
     TUPLES_cross(&triangle->normal, &triangle->e2, &triangle->e1);
     TUPLES_normalize(&triangle->normal);
+}
+
+void TRIANGLE_init(TRIANGLE_Triangle* triangle,
+                   double p1x, double p1y, double p1z,
+                   double p2x, double p2y, double p2z,
+                   double p3x, double p3y, double p3z) {
+    assert(triangle);
+    SHAPE_init(&triangle->shape, &TRIANGLE_vtable);
+    init_base_triangle_info(triangle, p1x, p1y, p1z,
+                                      p2x, p2y, p2z,
+                                      p3x, p3y, p3z);
 }
 
 void TRIANGLE_destroy(TRIANGLE_Triangle* triangle) {
@@ -67,12 +83,28 @@ void TRIANGLE_delete_shape(SHAPE_Shape* shape) {
     TRIANGLE_delete((TRIANGLE_Triangle*)shape);
 }
 
-void TRIANGLE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point) {
+void TRIANGLE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     assert(local_normal);
     assert(shape);
     assert(local_point);
+    UNUSED(hit);
     TRIANGLE_Triangle* triangle = (TRIANGLE_Triangle*) shape;
     TUPLES_copy(local_normal, &triangle->normal);
+}
+
+void TRIANGLE_smooth_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit) {
+    assert(local_normal);
+    assert(shape);
+    assert(local_point);
+    TRIANGLE_SmoothTriangle* st = (TRIANGLE_SmoothTriangle*) shape;
+    TUPLES_Vector partial1, partial2, partial3;
+
+    TUPLES_multiply(&partial2, &st->n2, hit->u);
+    TUPLES_multiply(&partial3, &st->n3, hit->v);
+    TUPLES_multiply(&partial1, &st->n1, (1 - hit->u - hit->v));
+
+    TUPLES_add(local_normal, &partial1, &partial2);
+    TUPLES_add(local_normal, local_normal, &partial3);
 }
 
 void TRIANGLE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* local_ray) {
@@ -112,5 +144,38 @@ void TRIANGLE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* sha
     }
 
     double t = f * TUPLES_dot(&triangle->e2, &origin_cross_e1);
-    RAY_add_intersection(intersections, t, triangle);
+    RAY_add_intersection_tri(intersections, t, triangle, u, v);
+}
+
+void TRIANGLE_init_smooth_from_points(TRIANGLE_SmoothTriangle* triangle,
+                                      const TUPLES_Point* p1, const TUPLES_Point* p2, const TUPLES_Point* p3,
+                                      const TUPLES_Vector* v1, const TUPLES_Vector* v2, const TUPLES_Vector* v3) {
+    assert(triangle);
+    assert(p1);
+    assert(p2);
+    assert(p3);
+    assert(v1);
+    assert(v2);
+    assert(v3);
+    SHAPE_init(&triangle->shape, &TRIANGLE_smooth_vtable);
+    init_base_triangle_info(&triangle->tri, p1->x, p1->y, p1->z, p2->x, p2->y, p2->z, p3->x, p3->y, p3->z);
+    TUPLES_copy(&triangle->n1, v1);
+    TUPLES_copy(&triangle->n2, v2);
+    TUPLES_copy(&triangle->n3, v3);
+}
+
+TRIANGLE_SmoothTriangle* TRIANGLE_new_smooth_from_points(const TUPLES_Point* p1, const TUPLES_Point* p2, const TUPLES_Point* p3,
+                                                         const TUPLES_Vector* v1, const TUPLES_Vector* v2, const TUPLES_Vector* v3) {
+    assert(p1);
+    assert(p2);
+    assert(p3);
+    assert(v1);
+    assert(v2);
+    assert(v3);
+    TRIANGLE_SmoothTriangle* st = malloc(sizeof(TRIANGLE_SmoothTriangle));
+    if (!st) {
+        Throw(E_MALLOC_FAILED);
+    }
+    TRIANGLE_init_smooth_from_points(st, p1, p2, p3, v1, v2, v3);
+    return st;
 }

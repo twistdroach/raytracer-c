@@ -15,7 +15,7 @@ const SHAPE_vtable SPHERE_vtable;
 #define SPHERE_delete_all(...) Fn_apply(SPHERE_Sphere, SPHERE_delete, __VA_ARGS__);
 
 void SPHERE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* local_ray);
-void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point);
+void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit);
 
 #define SPHERE_set_material(sphere, material) SHAPE_set_material((SHAPE_Shape*)sphere, material)
 #define SPHERE_get_material(sphere) SHAPE_get_material((SHAPE_Shape*)sphere)

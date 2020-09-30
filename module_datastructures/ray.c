@@ -143,6 +143,12 @@ void RAY_add_intersection(RAY_Intersections* intersections, double intersection,
     intersections->count++;
 }
 
+void RAY_add_intersection_tri(RAY_Intersections* intersections, double intersection, void* object, double u, double v) {
+    RAY_add_intersection(intersections, intersection, object);
+    intersections->xs[intersections->count - 1].u = u;
+    intersections->xs[intersections->count - 1].v = v;
+}
+
 void RAY_delete_intersections(RAY_Intersections* intersections) {
     assert(intersections);
     if (intersections->count > 0 && intersections->xs) {
@@ -168,7 +174,7 @@ RAY_Computations* RAY_prepare_computations(const RAY_Xs* hit, const RAY_Ray* ray
     TUPLES_negate(&comps->eyev);
 
     //compute the normal @ the intersection
-    SHAPE_normal_at(&comps->normalv, comps->object, &comps->point);
+    SHAPE_normal_at(&comps->normalv, comps->object, &comps->point, hit);
 
     //Invert normal if inside
     if (TUPLES_dot(&comps->normalv, &comps->eyev) < 0) {

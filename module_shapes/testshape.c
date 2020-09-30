@@ -37,9 +37,10 @@ void TESTSHAPE_local_intersect(RAY_Intersections* dest, SHAPE_Shape* shape, cons
     testshape->saved_ray = *local_ray;
 }
 
-void TESTSHAPE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Vector* local_point) {
+void TESTSHAPE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Vector* local_point, const RAY_Xs* hit) {
     assert(local_normal);
     assert(shape);
     assert(local_point);
+    UNUSED(hit);
     TUPLES_init_vector(local_normal, local_point->x, local_point->y, local_point->z);
 }

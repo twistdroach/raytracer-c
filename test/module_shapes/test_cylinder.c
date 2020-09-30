@@ -62,7 +62,7 @@ void helper_normal_vector_on_cylinder(double px, double py, double pz,
     TUPLES_Point p;
     TUPLES_init_point(&p, px, py, pz);
     TUPLES_Vector got, expected;
-    CYLINDER_local_normal_at(&got, (SHAPE_Shape*)c, &p);
+    CYLINDER_local_normal_at(&got, (SHAPE_Shape*)c, &p, NULL);
     TUPLES_init_vector(&expected, nx, ny, nz);
     test_tuples(&got, &expected);
     CYLINDER_delete(c);
@@ -171,7 +171,7 @@ void helper_test_normal_vector_on_cylinder_end_caps(double px, double py, double
     TUPLES_Vector expected, got;
     TUPLES_init_vector(&expected, nx, ny, nz);
 
-    CYLINDER_local_normal_at(&got, (SHAPE_Shape*)c, &p);
+    CYLINDER_local_normal_at(&got, (SHAPE_Shape*)c, &p, NULL);
     test_tuples(&expected, &got);
 
     CYLINDER_delete(c);

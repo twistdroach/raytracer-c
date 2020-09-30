@@ -27,10 +27,11 @@ void CONE_init(CONE_Cone* cone) {
     cone->closed = false;
 }
 
-void CONE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point) {
+void CONE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     assert(local_normal);
     assert(shape);
     assert(local_point);
+    UNUSED(hit);
 
     CONE_Cone* cone = (CONE_Cone*)shape;
     double dist = pow(local_point->x, 2) + pow(local_point->z, 2);

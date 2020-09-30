@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
                 LIGHTS_PointLight* light = LIGHTS_new_pointlight(light_position, light_color);
                 TUPLES_delete_all(light_position, light_color);
 
-                CAMERA_Camera* camera = CAMERA_new(1920, 1080, M_PI / 3.0);
+                CAMERA_Camera* camera = CAMERA_new(320, 240, M_PI / 3.0);
                 TUPLES_Point* from = TUPLES_new_point(0, 1.5, -5);
                 TUPLES_Point* to = TUPLES_new_point(0, 1, 0);
                 TUPLES_Vector* up = TUPLES_new_vector(0, 1, 0);
@@ -70,6 +70,16 @@ int main(int argc, char *argv[]) {
                 GROUP_Group* obj_group = WAVEFRONTOBJ_get_default_group(obj);
                 MATRIX_Matrix* obj_group_scale = MATRIX_new_scaling(obj_scale, obj_scale, obj_scale);
                 GROUP_set_transform(obj_group, obj_group_scale);
+                MATRIX_delete(obj_group_scale);
+                MATERIAL_Material* obj_group_material = MATERIAL_new();
+                obj_group_material->refractive_index = 1.5;
+                obj_group_material->ambient = 0;
+                obj_group_material->diffuse = 0;
+                obj_group_material->reflective = 1.0;
+                obj_group_material->transparency = 1.0;
+                obj_group_material->shininess = 400;
+                GROUP_set_material(obj_group, obj_group_material);
+                MATERIAL_delete(obj_group_material);
                 WORLD_add_object(world, obj_group);
                 LOGGER_log(LOGGER_INFO, "Rendering...\n");
                 UTILITIES_Timer* render_timer = UTILITIES_Timer_start();

@@ -28,9 +28,9 @@ void test_normal_of_plane_is_constant_everywhere() {
     TUPLES_init_point(&p1, 0, 0, 0);
     TUPLES_init_point(&p2, 10, 0, -10);
     TUPLES_init_point(&p3, -5, 0, 150);
-    PLANE_local_normal_at(&n1, p, &p1);
-    PLANE_local_normal_at(&n2, p, &p2);
-    PLANE_local_normal_at(&n3, p, &p3);
+    PLANE_local_normal_at(&n1, p, &p1, NULL);
+    PLANE_local_normal_at(&n2, p, &p2, NULL);
+    PLANE_local_normal_at(&n3, p, &p3, NULL);
     test_tuples(&normal, &n1);
     test_tuples(&normal, &n2);
     test_tuples(&normal, &n3);

@@ -24,6 +24,7 @@ void RAY_position(TUPLES_Point* pos, const RAY_Ray* ray, double t);
 typedef struct RAY_Xs {
     double t;
     void* object; /** holds SHAPE_Shape derivatives */
+    double u, v;
 } RAY_Xs;
 
 typedef struct RAY_Intersections {
@@ -33,6 +34,7 @@ typedef struct RAY_Intersections {
 
 RAY_Intersections* RAY_new_intersections();
 void RAY_add_intersection(RAY_Intersections* intersections, double intersection, void* object);
+void RAY_add_intersection_tri(RAY_Intersections* intersections, double intersection, void* object, double u, double v);
 void RAY_add_intersections(RAY_Intersections* dest_intersections, RAY_Intersections* src_intersections);
 void RAY_iterate_intersections(RAY_Intersections* intersections, void (*intersection_iter)(RAY_Xs* xs, void* state), void* state);
 void RAY_delete_intersections(RAY_Intersections* intersections);
