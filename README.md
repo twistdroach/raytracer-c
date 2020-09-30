@@ -1,5 +1,7 @@
 # raytracer-c
 
+[![CI Actions Status](https://github.com/twistdroach/raytracer-c/workflows/CI/badge.svg)](https://github.com/twistdroach/raytracer-c/actions)
+
 Current executables (and sample output) are:
 
 ## main/parabola
