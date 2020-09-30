@@ -2,9 +2,9 @@ name: CI
 
 on: [push]
 
-#env:
+env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  #  BUILD_TYPE: Release
+    BUILD_TYPE: Debug
 
 jobs:
   build:
@@ -49,11 +49,11 @@ jobs:
       shell: bash
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: make ExperimentalTest
+      run: make NightlyTest
 
     - name: Test Memcheck
       working-directory: ${{runner.workspace}}/build
       shell: bash
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: make ExperimentalMemCheck
+      run: make NightlyMemCheck
