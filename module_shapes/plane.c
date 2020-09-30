@@ -14,6 +14,8 @@ void PLANE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, cons
     assert(shape);
     assert(local_point);
     UNUSED(hit);
+    UNUSED(shape);
+    UNUSED(local_point);
     TUPLES_init_vector(local_normal, 0, 1, 0);
 }
 

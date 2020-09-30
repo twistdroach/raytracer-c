@@ -39,6 +39,7 @@ void SPHERE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, con
     assert(shape);
     assert(local_point);
     UNUSED(hit);
+    UNUSED(shape);
 
     TUPLES_Point sphere_origin;
     TUPLES_init_point(&sphere_origin, 0, 0, 0);

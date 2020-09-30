@@ -180,7 +180,7 @@ void TUPLES_copy(TUPLES_Tuple* dest, const TUPLES_Tuple* src) {
 
 void TUPLES_destroy(TUPLES_Tuple* tuple) {
     assert(tuple);
-    // don't need to destroy anything here
+    UNUSED(tuple);
 }
 
 void TUPLES_delete(TUPLES_Tuple* tuple) {

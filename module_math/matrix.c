@@ -362,6 +362,7 @@ void MATRIX_inverse(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix) {
 
 void MATRIX_destroy(MATRIX_Matrix* matrix) {
     assert(matrix);
+    UNUSED(matrix);
 }
 
 void MATRIX_delete(MATRIX_Matrix* matrix) {

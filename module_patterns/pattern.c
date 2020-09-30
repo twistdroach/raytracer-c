@@ -106,6 +106,7 @@ static void test_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TU
     assert(dest);
     assert(pattern);
     assert(point);
+    UNUSED(pattern);
     TUPLES_init_color(dest, point->x, point->y, point->z);
 }
 
@@ -191,6 +192,7 @@ void solid_at(TUPLES_Color* dest, const PATTERN_Pattern* pattern, const TUPLES_P
     assert(dest);
     assert(pattern);
     assert(point);
+    UNUSED(point);
     TUPLES_copy(dest, &pattern->a);
 }
 

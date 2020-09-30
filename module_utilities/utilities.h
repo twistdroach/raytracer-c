@@ -5,6 +5,8 @@
 #include <stdlib.h>  //for asprintf
 #include <stdio.h>   //for free
 
+#include "exceptions.h"
+
 #define EPSILON 0.0001
 bool double_equal(double a, double b);
 
@@ -21,7 +23,9 @@ bool double_equal(double a, double b);
  */
 #define Sasprintf(write_to,  ...) {           \
     char *tmp_string_for_extend = (write_to); \
-    asprintf(&(write_to), __VA_ARGS__);       \
+    if (!asprintf(&(write_to), __VA_ARGS__)) {  \
+      Throw(E_MALLOC_FAILED);                   \
+    }                                          \
     free(tmp_string_for_extend);              \
 }
 

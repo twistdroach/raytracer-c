@@ -88,6 +88,7 @@ void TRIANGLE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, c
     assert(shape);
     assert(local_point);
     UNUSED(hit);
+    UNUSED(local_point);
     TRIANGLE_Triangle* triangle = (TRIANGLE_Triangle*) shape;
     TUPLES_copy(local_normal, &triangle->normal);
 }
@@ -96,6 +97,7 @@ void TRIANGLE_smooth_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* s
     assert(local_normal);
     assert(shape);
     assert(local_point);
+    UNUSED(local_point);
     TRIANGLE_SmoothTriangle* st = (TRIANGLE_SmoothTriangle*) shape;
     TUPLES_Vector partial1, partial2, partial3;
 

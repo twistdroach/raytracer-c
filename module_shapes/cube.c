@@ -23,6 +23,7 @@ void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const 
     assert(local_normal);
     assert(cube);
     assert(local_point);
+    UNUSED(cube);
     UNUSED(hit);
     double maxc = max(fabs(local_point->x), fabs(local_point->y), fabs(local_point->z));
 

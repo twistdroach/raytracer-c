@@ -53,6 +53,9 @@ void GROUP_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* group, cons
     assert(local_normal);
     assert(group);
     assert(local_point);
+    UNUSED(local_normal);
+    UNUSED(group);
+    UNUSED(local_point);
     UNUSED(hit);
     assert(0);
 }
