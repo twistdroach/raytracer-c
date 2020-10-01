@@ -139,7 +139,7 @@ static void parse_face(WAVEFRONTOBJ_Obj* obj, parse_state* state) {
     }
     Catch(e) {
       if (e == E_INDEX_OUT_OF_BOUNDS) {
-        LOGGER_log(LOGGER_ERROR, "Error retrieving vertex, line(%u)\n");
+        LOGGER_log(LOGGER_ERROR, "Error retrieving vertex, line(%u)\n", state->line_number);
       } else {
         LOGGER_log(LOGGER_ERROR, "Unexpected error %s\n", EXCEPTIONS_strings[e]);
       }

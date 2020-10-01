@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/twistdroach/raytracer-c/workflows/CI/badge.svg?branch=master)](https://github.com/twistdroach/raytracer-c/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/twistdroach/raytracer-c/branch/master/graph/badge.svg)](https://codecov.io/gh/twistdroach/raytracer-c)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/twistdroach/raytracer-c.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/twistdroach/raytracer-c/context:cpp)
 
 Current executables (and sample output) are:
 
