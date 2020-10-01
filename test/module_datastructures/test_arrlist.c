@@ -70,6 +70,31 @@ void test_arrlist_last() {
     SPHERE_delete(s2);
 }
 
+void test_arrlist_safe_get() {
+    ARRLIST_List* l = ARRLIST_new();
+    SPHERE_Sphere* s = SPHERE_new();
+    SPHERE_Sphere* s2 = SPHERE_new();
+    ARRLIST_add(l, s);
+    ARRLIST_add(l, s2);
+    TEST_ASSERT_EQUAL_PTR(s, ARRLIST_safe_get(l, 0));
+    ARRLIST_delete(l);
+    SPHERE_delete(s);
+    SPHERE_delete(s2);
+}
+
+void test_arrlist_safe_get_should_throw_on_bad_index() {
+    CEXCEPTION_T e;
+    ARRLIST_List* l = ARRLIST_new();
+    Try {
+       ARRLIST_safe_get(l, 1);
+       TEST_FAIL_MESSAGE("safe get should throw exception when given a bad index");
+    }
+    Catch(e) {
+       TEST_ASSERT_EQUAL(E_INDEX_OUT_OF_BOUNDS, e);
+    }
+    ARRLIST_delete(l);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_arrlist);
@@ -78,5 +103,6 @@ int main(void) {
     RUN_TEST(test_arrlist_contains);
     RUN_TEST(test_arrlist_remove);
     RUN_TEST(test_arrlist_last);
+    RUN_TEST(test_arrlist_safe_get_should_throw_on_bad_index);
     UNITY_END();
 }
