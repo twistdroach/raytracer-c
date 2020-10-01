@@ -11,7 +11,9 @@ void LOGGER_log(LOGGER_LEVEL level, const char* fmt, ...) {
     time_t local_time; /* calendar time */
     local_time=time(NULL); /* get current cal time */
     char timestamp[26];
-    asctime_r(localtime(&local_time), timestamp);
+    struct tm now;
+    localtime_r(&local_time, &now);
+    asctime_r(&now, timestamp);
     printf("%.19s  ", timestamp);
 
     //Bold
