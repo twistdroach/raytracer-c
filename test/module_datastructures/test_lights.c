@@ -41,5 +41,7 @@ int main(void)
 {
     UNITY_BEGIN();
     RUN_TEST(test_pointlight_has_position_and_intensity);
+    RUN_TEST(test_light_copy);
+    RUN_TEST(test_get_color);
     return UNITY_END();
 }

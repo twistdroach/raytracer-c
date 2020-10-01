@@ -26,6 +26,20 @@ void test_adding_child_to_group() {
     GROUP_delete(g);
 }
 
+void test_setting_group_materials() {
+    GROUP_Group* g = GROUP_new();
+    TESTSHAPE_TestShape* s = TESTSHAPE_new();
+    MATERIAL_Material* mat = MATERIAL_new();
+    TUPLES_Color expected;
+    TUPLES_init_color(&expected, 0.2, 0.4, 0.6);
+    TUPLES_copy(&mat->color, &expected);
+    GROUP_add_child(g, s);
+    GROUP_set_material(g, mat);
+    MATERIAL_delete(mat);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&expected, &SHAPE_get_material((SHAPE_Shape*)s)->color));
+    GROUP_delete(g);
+}
+
 void test_intersect_ray_with_an_empty_group() {
     GROUP_Group* g = GROUP_new();
     RAY_Ray ray;
@@ -104,5 +118,6 @@ int main(void)
     RUN_TEST(test_intersect_ray_with_an_empty_group);
     RUN_TEST(test_intersect_ray_with_nonempty_group);
     RUN_TEST(test_intersecting_a_transformed_group);
+    RUN_TEST(test_setting_group_materials);
     return UNITY_END();
 }
