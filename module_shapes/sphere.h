@@ -5,7 +5,11 @@
 #include "material.h"
 #include "shape.h"
 
+/**
+ * \extends SHAPE_Shape
+ */
 typedef SHAPE_Shape SPHERE_Sphere;
+
 const SHAPE_vtable SPHERE_vtable;
 
 #define SPHERE_new() (SPHERE_Sphere*)SHAPE_new(&SPHERE_vtable)

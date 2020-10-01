@@ -4,7 +4,11 @@
 #include <ray.h>
 #include "shape.h"
 
+/**
+ * \extends SHAPE_Shape
+ */
 typedef SHAPE_Shape PLANE_Plane;
+
 const SHAPE_vtable PLANE_vtable;
 
 #define PLANE_new() (PLANE_Plane*)SHAPE_new(&PLANE_vtable)

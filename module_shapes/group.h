@@ -18,6 +18,13 @@ void GROUP_destroy(GROUP_Group* group);
 void GROUP_delete(GROUP_Group* group);
 void GROUP_delete_shape(SHAPE_Shape* shape);
 
+/**
+ * \pure This function should never be called...it should be overridden by the members of the group.
+ * @param local_normal
+ * @param group
+ * @param local_point
+ * @param hit
+ */
 void GROUP_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* group, const TUPLES_Point* local_point, const RAY_Xs* hit);
 void GROUP_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* group, const RAY_Ray* local_ray);
 

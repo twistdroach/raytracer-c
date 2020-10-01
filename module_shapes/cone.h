@@ -3,6 +3,9 @@
 
 #include "cylinder.h"
 
+/**
+ * \extends CYLINDER_Cylinder
+ */
 typedef CYLINDER_Cylinder CONE_Cone;
 
 const SHAPE_vtable CONE_vtable;
