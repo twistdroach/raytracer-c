@@ -23,7 +23,7 @@ CANVAS_Canvas* CANVAS_new(uint width, uint height) {
 void CANVAS_init(CANVAS_Canvas* canvas, uint width, uint height) {
     canvas->width = width;
     canvas->height = height;
-    canvas->data = (TUPLES_Color*) malloc(width * height * sizeof(TUPLES_Color));
+    canvas->data = (TUPLES_Color*) malloc((size_t)width * height * sizeof(TUPLES_Color));
     if (!canvas->data)
         Throw(E_MALLOC_FAILED);
 
