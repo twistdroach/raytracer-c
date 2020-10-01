@@ -4,6 +4,9 @@
 #include "ray.h"
 #include "shape.h"
 
+/**
+ * \extends SHAPE_Shape
+ */
 typedef SHAPE_Shape CUBE_Cube;
 const SHAPE_vtable CUBE_vtable;
 

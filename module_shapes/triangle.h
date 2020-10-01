@@ -3,12 +3,18 @@
 
 #include "shape.h"
 
+/**
+ * \extends SHAPE_Shape
+ */
 typedef struct TRIANGLE_Triangle {
     SHAPE_Shape shape;              /* Superclass */
     TUPLES_Point p1, p2, p3;        /* Corners of the triangle */
     TUPLES_Vector e1, e2, normal;   /* Two edges and the normal vector */
 } TRIANGLE_Triangle;
 
+/**
+ * \extends TRIANGLE_Triangle
+ */
 typedef struct TRIANGLE_SmoothTriangle {
     union {
         TRIANGLE_Triangle tri;

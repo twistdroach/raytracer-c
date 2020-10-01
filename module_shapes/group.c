@@ -23,7 +23,7 @@ void GROUP_init(GROUP_Group* group) {
     group->list = ARRLIST_new();
 }
 
-void delete_subshape(void* void_shape, void* context) {
+static void delete_subshape(void* void_shape, void* context) {
     assert(void_shape);
     UNUSED(context);
     SHAPE_Shape* shape = (SHAPE_Shape*) void_shape;
@@ -65,7 +65,7 @@ typedef struct check_shape_context {
     RAY_Intersections* intersections;
 } check_shape_context;
 
-void check_shape(void* void_shape, void* void_context) {
+static void check_shape(void* void_shape, void* void_context) {
     check_shape_context* c = (check_shape_context*) void_context;
     SHAPE_Shape* shape = (SHAPE_Shape*) void_shape;
     SHAPE_intersect(c->intersections, shape, c->local_ray);

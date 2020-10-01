@@ -5,6 +5,10 @@
 #include "ray.h"
 
 const SHAPE_vtable TESTSHAPE_vtable;
+
+/**
+ * \extends SHAPE_Shape
+ */
 typedef struct TESTSHAPE_TestShape {
     SHAPE_Shape parent;  /** parent class */
     double size;

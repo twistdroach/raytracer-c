@@ -4,6 +4,10 @@
 #include "ray.h"
 #include "shape.h"
 
+
+/**
+ * \extends SHAPE_Shape
+ */
 typedef struct CYLINDER_Cylinder {
     SHAPE_Shape shape;
     double minimum, maximum;
