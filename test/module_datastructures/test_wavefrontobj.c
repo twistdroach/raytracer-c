@@ -55,7 +55,7 @@ void test_parse_vertex() {
                      "v 1 1 0\n"
                      "\n";
     WAVEFRONTOBJ_Obj* obj = from_string(vertexes);
-    CEXCEPTION_T e;
+    volatile CEXCEPTION_T e;
     Try {
         check_point(WAVEFRONTOBJ_get_vertex(obj, 1), -1, 1, 0);
         check_point(WAVEFRONTOBJ_get_vertex(obj, 2), -1, 0.5, 0);
@@ -80,7 +80,7 @@ void test_parse_triangle_face() {
                  "f 1 3 4\n"
                  "\n";
 
-    CEXCEPTION_T e;
+    volatile CEXCEPTION_T e;
     Try {
         WAVEFRONTOBJ_Obj* obj = from_string(data);
         GROUP_Group* g = WAVEFRONTOBJ_get_default_group(obj);
@@ -110,7 +110,7 @@ void test_triangulating_polygons() {
                  "\n"
                  "f 1 2 3 4 5\n"
                  "\n";
-    CEXCEPTION_T e;
+    volatile CEXCEPTION_T e;
     Try {
                 WAVEFRONTOBJ_Obj* obj = from_string(data);
                 GROUP_Group* g = WAVEFRONTOBJ_get_default_group(obj);
@@ -135,8 +135,8 @@ void test_triangulating_polygons() {
 }
 
 void test_parse_from_file() {
-    WAVEFRONTOBJ_Obj* obj;
-    CEXCEPTION_T e;
+    WAVEFRONTOBJ_Obj * volatile obj = NULL;
+    volatile CEXCEPTION_T e;
     Try {
                 obj = WAVEFRONTOBJ_parse_file_by_name("triangles.obj");
     }
@@ -148,8 +148,8 @@ void test_parse_from_file() {
 }
 
 void test_triangles_in_groups() {
-    WAVEFRONTOBJ_Obj* obj;
-    CEXCEPTION_T e;
+    WAVEFRONTOBJ_Obj* volatile obj;
+    volatile CEXCEPTION_T e;
     Try {
         obj = WAVEFRONTOBJ_parse_file_by_name("triangles.obj");
         GROUP_Group* def_group = WAVEFRONTOBJ_get_default_group(obj);
@@ -172,8 +172,8 @@ void test_triangles_in_groups() {
 }
 
 void test_parse_many_poly_teapot() {
-    WAVEFRONTOBJ_Obj* obj;
-    CEXCEPTION_T e;
+    WAVEFRONTOBJ_Obj* volatile obj;
+    volatile CEXCEPTION_T e;
     Try {
                 obj = WAVEFRONTOBJ_parse_file_by_name("teapot.obj");
                 TEST_ASSERT_EQUAL(2256, obj->face_count);
@@ -192,7 +192,7 @@ void test_vertex_normal_records() {
                  "vn 1 2 3\n"
                  "\n";
 
-    CEXCEPTION_T e;
+    volatile CEXCEPTION_T e;
     Try {
                 WAVEFRONTOBJ_Obj *obj = from_string(data);
                 check_vector(WAVEFRONTOBJ_get_normal(obj, 1), 0, 0, 1);
@@ -220,7 +220,7 @@ void test_faces_with_normals() {
                  "f 1/0/3 2/102/1 3/14/2\n"
                  "\n";
 
-    CEXCEPTION_T e;
+    volatile CEXCEPTION_T e;
     Try {
                 WAVEFRONTOBJ_Obj *obj = from_string(data);
                 GROUP_Group* g = WAVEFRONTOBJ_get_default_group(obj);

@@ -10,6 +10,7 @@
 #include "pattern.h"
 #include <math.h>
 
+CEXCEPTION_T e;
 void build_sphere_at(WORLD_World* world, double x, double z) {
     SPHERE_Sphere* s = SPHERE_new();
 
@@ -70,7 +71,6 @@ void build_world(WORLD_World* world) {
 
 int main(void) {
     srand(3);
-    CEXCEPTION_T e;
     Try {
                 LOGGER_log(LOGGER_INFO, "Building world...\n");
                 TUPLES_Point* light_position = TUPLES_new_point(-10, 10, -10);

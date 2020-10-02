@@ -11,6 +11,7 @@
 #include "pattern.h"
 #include <math.h>
 
+CEXCEPTION_T e;
 void build_world(WORLD_World* world) {
     TUPLES_Color red, green, blue;
     TUPLES_init_color(&red, 1, 0, 0);
@@ -108,7 +109,6 @@ void build_world(WORLD_World* world) {
 }
 
 int main(void) {
-    CEXCEPTION_T e;
     Try {
                 LOGGER_log(LOGGER_INFO, "Building world...\n");
                 TUPLES_Point* light_position = TUPLES_new_point(-10, 10, -10);

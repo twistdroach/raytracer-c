@@ -10,6 +10,7 @@
 
 #include <math.h>
 
+CEXCEPTION_T e;
 void build_world(WORLD_World* world) {
     PLANE_Plane* floor = PLANE_new();
     WORLD_add_object(world, floor);
@@ -61,7 +62,6 @@ void build_world(WORLD_World* world) {
 }
 
 int main(void) {
-    CEXCEPTION_T e;
     Try {
                 LOGGER_log(LOGGER_INFO, "Building world...\n");
                 TUPLES_Point* light_position = TUPLES_new_point(-10, 10, -10);

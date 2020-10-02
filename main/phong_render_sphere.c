@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <sphere.h>
 
+CEXCEPTION_T e;
 int main(void) {
-    CEXCEPTION_T e;
     Try {
                 double wall_z = 10;
                 double wall_size = 7;

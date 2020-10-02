@@ -2,8 +2,8 @@
 #include "exceptions.h"
 #include <stdio.h>
 
+CEXCEPTION_T e;
 int main(void) {
-    CEXCEPTION_T e;
     Try {
         CANVAS_Canvas *canvas = CANVAS_new(900, 550);
         TUPLES_Point *p = TUPLES_new_point(0, 1, 0);
