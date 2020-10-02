@@ -80,10 +80,12 @@ MATRIX_Matrix* MATRIX_multiply_array(const MATRIX_Matrix* matrix[]);
 
 /**
  * example:
- * MATRIX_Matrix* m1 = ....
- * MATRIX_Matrix* m2 = ....
- * MATRIX_Matrix* m3 = ....
+ * \code{.c}
+ * MATRIX_Matrix* m1 = MATRIX_new_identity(4);
+ * MATRIX_Matrix* m2 = MATRIX_new_scaling(2, 2, 2);
+ * MATRIX_Matrix* m3 = MATRIX_new_translation(0, 0, 1);
  * MATRIX_Matrix* result = MATRIX_multiply_many(m1, m2, m3);
+ * \endcode
  */
 #define MATRIX_multiply_many(...) MATRIX_multiply_array((const MATRIX_Matrix* []) {__VA_ARGS__, NULL})
 /**
