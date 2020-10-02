@@ -99,9 +99,11 @@ static void parse_face(WAVEFRONTOBJ_Obj* obj, parse_state* state) {
         n2ndx = second_e.normal;
     }
 
-    CEXCEPTION_T e;
+    CEXCEPTION_T e = E_NO_ERROR;
     TUPLES_Point *first, *previous, *current;
-    TUPLES_Vector *first_n, *previous_n, *current_n;
+    TUPLES_Vector *first_n = NULL;
+    TUPLES_Vector *previous_n = NULL;
+    TUPLES_Vector *current_n = NULL;
     Try {
                 first = WAVEFRONTOBJ_get_vertex(obj, v1ndx);
                 previous = WAVEFRONTOBJ_get_vertex(obj, v2ndx);
@@ -186,16 +188,37 @@ static void parse_vertex(WAVEFRONTOBJ_Obj* obj, parse_state* state) {
     strtok_r(line, delim, &saveptr);
 
     char* xstr = strtok_r(NULL, delim, &saveptr);
+    if (!xstr) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing vertex x value - no token found, line(%u), err(%s)\n", state->line_number, err);
+        return;
+    }
     double x = strtod(xstr, &err);
-    if (xstr == err) LOGGER_log(LOGGER_ERROR, "Error parsing vertex x value, line(%u), err(%s)\n", state->line_number, err);
+    if (xstr == err) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing vertex x value, line(%u), err(%s)\n", state->line_number, err);
+        return;
+    }
 
     char* ystr = strtok_r(NULL, delim, &saveptr);
+    if (!ystr) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing vertex y value - no token found, line(%u), err(%s)\n", state->line_number, err);
+        return;
+    }
     double y = strtod(ystr, &err);
-    if (ystr == err) LOGGER_log(LOGGER_ERROR, "Error parsing vertex y value, line(%u), err(%s)\n", state->line_number, err);
+    if (ystr == err) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing vertex y value, line(%u), err(%s)\n", state->line_number, err);
+        return;
+    }
 
     char* zstr = strtok_r(NULL, delim, &saveptr);
+    if (!zstr) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing vertex z value - no token found, line(%u), err(%s)\n", state->line_number, err);
+        return;
+    }
     double z = strtod(zstr, &err);
-    if (zstr == err) LOGGER_log(LOGGER_ERROR, "Error parsing vertex z value, line(%u), err(%s)\n", state->line_number, err);
+    if (zstr == err) {
+        LOGGER_log(LOGGER_ERROR, "Error parsing vertex z value, line(%u), err(%s)\n", state->line_number, err);
+        return;
+    }
 
     ARRLIST_add(obj->vertices, TUPLES_new_point(x, y, z));
     obj->vertex_count++;
@@ -239,7 +262,7 @@ static void parse_stream(WAVEFRONTOBJ_Obj* obj, FILE* stream) {
                 case 'v':
                     if (line[1] == 'n') {
                         parse_normal(obj, &state);
-                    } else {
+                    } else if(line[1] == ' ') {
                         parse_vertex(obj, &state);
                     }
                     break;
