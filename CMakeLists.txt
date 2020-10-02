@@ -1,5 +1,5 @@
 project("Simple Raytracer" C)
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.9)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
@@ -12,6 +12,14 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_compile_options(--coverage)
     add_link_options(--coverage)
 endif()
+
+OPTION (USE_OpenMP "Use OpenMP" ON)
+IF(USE_OpenMP)
+    FIND_PACKAGE(OpenMP)
+    IF(OPENMP_C_FOUND)
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    ENDIF()
+ENDIF()
 
 find_package( Doxygen )
 if ( DOXYGEN_FOUND )

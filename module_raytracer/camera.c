@@ -113,11 +113,15 @@ CANVAS_Canvas* CAMERA_render(const CAMERA_Camera* camera, const WORLD_World* wor
     CANVAS_Canvas* canvas = CANVAS_new(camera->hsize, camera->vsize);
     const uint total_pixels = camera->vsize * camera->hsize;
     const uint one_percent_pixels = total_pixels / 100;
+    uint pixel_count = 0;
+    #pragma omp parallel for collapse(2) schedule(dynamic)
     for (uint y = 0; y < camera->vsize - 1; y++) {
         for (uint x = 0; x < camera->hsize - 1; x++) {
-            const uint pixel_num = (y * camera->hsize) + x;
-            if (pixel_num % one_percent_pixels == 0) {
-                const uint percent = pixel_num * 100 / total_pixels;
+            uint this_pixel_count;
+            #pragma omp atomic capture
+            this_pixel_count = pixel_count++;
+            if (this_pixel_count % one_percent_pixels == 0) {
+                const uint percent = this_pixel_count * 100 / total_pixels;
                 LOGGER_log(LOGGER_INFO, "Rendering %u%% complete\n", percent);
             }
             RAY_Ray ray;
