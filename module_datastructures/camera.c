@@ -113,10 +113,9 @@ CANVAS_Canvas* CAMERA_render(const CAMERA_Camera* camera, const WORLD_World* wor
     CANVAS_Canvas* canvas = CANVAS_new(camera->hsize, camera->vsize);
     uint total_pixels = camera->vsize * camera->hsize;
     uint one_percent_pixels = total_pixels / 100;
-    uint pixel_num = 0;
     for (uint y = 0; y < camera->vsize - 1; y++) {
         for (uint x = 0; x < camera->hsize - 1; x++) {
-            pixel_num++;
+            uint pixel_num = (y * camera->hsize) + x;
             if (pixel_num % one_percent_pixels == 0) {
                 uint percent = pixel_num * 100 / total_pixels;
                 LOGGER_log(LOGGER_INFO, "Rendering %u%% complete\n", percent);
