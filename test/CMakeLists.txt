@@ -1,5 +1,6 @@
 add_subdirectory(module_math)
 add_subdirectory(module_datastructures)
+add_subdirectory(module_raytracer)
 add_subdirectory(module_shapes)
 add_subdirectory(module_patterns)
 add_subdirectory(module_utilities)
