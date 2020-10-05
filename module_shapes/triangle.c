@@ -5,13 +5,15 @@
 const SHAPE_vtable TRIANGLE_vtable = {
         &TRIANGLE_local_intersect,
         &TRIANGLE_delete_shape,
-        &TRIANGLE_local_normal_at
+        &TRIANGLE_local_normal_at,
+        &SHAPE_default_shape_contains
 };
 
 const SHAPE_vtable TRIANGLE_smooth_vtable = {
        &TRIANGLE_local_intersect,
        &TRIANGLE_delete_shape,
-       &TRIANGLE_smooth_local_normal_at
+       &TRIANGLE_smooth_local_normal_at,
+       &SHAPE_default_shape_contains
 };
 
 TRIANGLE_Triangle* TRIANGLE_new_from_points(const TUPLES_Point* p1, const TUPLES_Point* p2, const TUPLES_Point* p3) {

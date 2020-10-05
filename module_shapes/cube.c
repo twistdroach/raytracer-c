@@ -6,7 +6,8 @@
 const SHAPE_vtable CUBE_vtable = {
         &CUBE_local_intersect,
         &SHAPE_delete,
-        &CUBE_local_normal_at
+        &CUBE_local_normal_at,
+        &SHAPE_default_shape_contains
 };
 
 static double max(double x, double y, double z) {

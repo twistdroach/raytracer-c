@@ -147,3 +147,9 @@ void SHAPE_normal_to_world(TUPLES_Vector* result, const SHAPE_Shape* shape, cons
         SHAPE_normal_to_world(result, parent, result);
     }
 }
+
+bool SHAPE_default_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b) {
+    assert(a);
+    assert(b);
+    return a == b;
+}

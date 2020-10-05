@@ -13,7 +13,8 @@ void CYLINDER_delete_shape(SHAPE_Shape* shape) {
 const SHAPE_vtable CYLINDER_vtable = {
         &CYLINDER_local_intersect,
         &CYLINDER_delete_shape,
-        &CYLINDER_local_normal_at
+        &CYLINDER_local_normal_at,
+        &SHAPE_default_shape_contains
 };
 
 CYLINDER_Cylinder* CYLINDER_new() {

@@ -87,3 +87,11 @@ target_link_libraries(render_obj PRIVATE
         module_patterns
         module_raytracer
         module_shapes)
+
+add_executable(csg
+        csg.c)
+
+target_link_libraries(csg PRIVATE
+        module_patterns
+        module_raytracer
+        module_shapes)

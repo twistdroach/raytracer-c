@@ -15,7 +15,9 @@ void ARRLIST_add(ARRLIST_List* list, void* object);
  * @param item
  * @return
  */
-void* ARRLIST_safe_get(ARRLIST_List* list, unsigned int item);
+void* ARRLIST_safe_get(const ARRLIST_List* list, unsigned int item);
+
+unsigned int ARRLIST_item_count(const ARRLIST_List* list);
 
 /**
  * Removes an item from the list and moves the remaining ptrs up.

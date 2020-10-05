@@ -33,7 +33,12 @@ void ARRLIST_add(ARRLIST_List* list, void* object) {
     list->count++;
 }
 
-void* ARRLIST_safe_get(ARRLIST_List* list, unsigned int item) {
+unsigned int ARRLIST_item_count(const ARRLIST_List* list) {
+    assert(list);
+    return list->count;
+}
+
+void* ARRLIST_safe_get(const ARRLIST_List* list, unsigned int item) {
     assert(list);
     if (item >= list->count) {
         Throw(E_INDEX_OUT_OF_BOUNDS);

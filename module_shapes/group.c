@@ -1,11 +1,25 @@
 #include <assert.h>
 #include <exceptions.h>
+#include <arrlist.h>
 #include "group.h"
+
+bool GROUP_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b) {
+    if (a == b) return true;
+    GROUP_Group* a_group = (GROUP_Group*) a;
+    for (unsigned int i=0; i < ARRLIST_item_count(a_group->list); i++) {
+        SHAPE_Shape* shape = (SHAPE_Shape*)ARRLIST_safe_get(a_group->list, i);
+        if (shape->vtable->contains(shape, b)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 const SHAPE_vtable GROUP_vtable = {
         &GROUP_local_intersect,
         &GROUP_delete_shape,
-        &GROUP_local_normal_at
+        &GROUP_local_normal_at,
+        &GROUP_shape_contains
 };
 
 GROUP_Group* GROUP_new() {
