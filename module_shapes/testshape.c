@@ -5,7 +5,8 @@
 const SHAPE_vtable TESTSHAPE_vtable = {
         &TESTSHAPE_local_intersect,
         &SHAPE_delete,
-        &TESTSHAPE_local_normal_at
+        &TESTSHAPE_local_normal_at,
+        &SHAPE_default_shape_contains
 };
 
 void TESTSHAPE_init(TESTSHAPE_TestShape* shape) {

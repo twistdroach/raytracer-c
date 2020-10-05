@@ -90,3 +90,9 @@ An obvious performance improvement would be to add some group bounding, so we do
 
 In any event, flamegraphs are a fun way to see what is going on.
 ![](images/glass_teapot_flamegraph.svg)
+
+## main/csg
+
+Add some constructive solid geometry - aka CSG...this is a sphere with a cubice bite taken out of it.
+
+![](images/csg.png)

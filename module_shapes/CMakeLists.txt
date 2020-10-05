@@ -7,18 +7,21 @@ add_library(module_shapes STATIC
         cylinder.c cylinder.h
         cone.c cone.h
         group.c group.h
-        triangle.c triangle.h)
+        triangle.c triangle.h
+        csg.c csg.h)
 
 target_include_directories(module_shapes PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         module_raytracer
         module_utilities
+        module_datastructures
         CException
 )
 
 target_link_libraries(module_shapes
         module_raytracer
         module_utilities
+        module_datastructures
         CException
         m
 )

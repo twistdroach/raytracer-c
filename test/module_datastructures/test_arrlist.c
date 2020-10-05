@@ -104,5 +104,6 @@ int main(void) {
     RUN_TEST(test_arrlist_remove);
     RUN_TEST(test_arrlist_last);
     RUN_TEST(test_arrlist_safe_get_should_throw_on_bad_index);
+    RUN_TEST(test_arrlist_safe_get);
     UNITY_END();
 }
