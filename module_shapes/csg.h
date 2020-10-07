@@ -17,6 +17,7 @@ typedef struct CSG_Csg {
     SHAPE_Shape*        left;
     SHAPE_Shape*        right;
     CSG_Operation       operation;
+    BOUND_Box*          bounds;
 } CSG_Csg;
 
 const SHAPE_vtable CSG_vtable;

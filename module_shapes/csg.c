@@ -93,6 +93,7 @@ void CSG_init(CSG_Csg* csg, CSG_Operation op, void* left, void* right) {
     csg->right = right;
     SHAPE_set_parent(right, csg);
     csg->operation = op;
+    csg->bounds = NULL;
 }
 
 void CSG_destroy(CSG_Csg* csg) {
@@ -100,6 +101,9 @@ void CSG_destroy(CSG_Csg* csg) {
     SHAPE_delete_any_type(csg->left);
     SHAPE_delete_any_type(csg->right);
     SHAPE_destroy(&csg->shape);
+    if (csg->bounds) {
+        BOUND_delete(csg->bounds);
+    }
 }
 
 void CSG_delete(CSG_Csg* csg) {
@@ -132,9 +136,12 @@ void CSG_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, c
     assert(local_ray);
     CSG_Csg* csg = (CSG_Csg*) shape;
 
-    BOUND_Box bounds;
-    CSG_bounds_of(shape, &bounds);
-    if (!BOUND_intersect(&bounds, local_ray)) {
+    if (!csg->bounds) {
+        csg->bounds = BOUND_new();
+        CSG_bounds_of(shape, csg->bounds);
+    }
+
+    if (!BOUND_intersect(csg->bounds, local_ray)) {
         //we didn't hit the bounding box, so don't bother doing the below
         return;
     }

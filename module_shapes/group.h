@@ -8,6 +8,7 @@
 typedef struct GROUP_Group {
     SHAPE_Shape         shape;
     ARRLIST_List*       list;
+    BOUND_Box*          bounds;
 } GROUP_Group;
 
 const SHAPE_vtable GROUP_vtable;

@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <exceptions.h>
 #include <arrlist.h>
+#include <logger.h>
 #include "group.h"
 
 void GROUP_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
@@ -49,6 +50,7 @@ void GROUP_init(GROUP_Group* group) {
     assert(group);
     SHAPE_init(&group->shape, &GROUP_vtable);
     group->list = ARRLIST_new();
+    group->bounds = NULL;
 }
 
 static void delete_subshape(void* void_shape, void* context) {
@@ -63,7 +65,11 @@ void GROUP_destroy(GROUP_Group* group) {
     SHAPE_destroy(&group->shape);
     ARRLIST_iterator(group->list, delete_subshape, NULL);
     ARRLIST_delete(group->list);
+    if (group->bounds) {
+        BOUND_delete(group->bounds);
+    }
 }
+
 void GROUP_delete(GROUP_Group* group) {
     assert(group);
     GROUP_destroy(group);
@@ -105,9 +111,12 @@ void GROUP_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape,
     assert(local_ray);
     GROUP_Group* group = (GROUP_Group*)shape;
 
-    BOUND_Box bounds;
-    GROUP_bounds_of(shape, &bounds);
-    if (!BOUND_intersect(&bounds, local_ray)) {
+    if (!group->bounds) {
+        group->bounds = BOUND_new();
+        GROUP_bounds_of(shape, group->bounds);
+    }
+
+    if (!BOUND_intersect(group->bounds, local_ray)) {
         //if we don't hit the bounding box, no reason to hit all the children
         return;
     }
