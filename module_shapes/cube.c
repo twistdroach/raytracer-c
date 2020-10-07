@@ -3,22 +3,23 @@
 #include "cube.h"
 
 
+void CUBE_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    UNUSED(shape);
+    BOUND_init(box);
+    BOUND_add_point(box, 1, 1, 1);
+    BOUND_add_point(box, -1, -1, -1);
+}
+
 const SHAPE_vtable CUBE_vtable = {
         &CUBE_local_intersect,
         &SHAPE_delete,
         &CUBE_local_normal_at,
-        &SHAPE_default_shape_contains
+        &SHAPE_default_shape_contains,
+        &CUBE_bounds_of
 };
 
-static double max(double x, double y, double z) {
-    double xory = (x > y) ? x : y;
-    return (xory > z) ? xory : z;
-}
-
-static double min(double x, double y, double z) {
-    double xory = (x < y) ? x : y;
-    return (xory < z) ? xory : z;
-}
 
 void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const TUPLES_Point* local_point, const RAY_Xs* hit) {
     assert(local_normal);
@@ -26,7 +27,7 @@ void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const 
     assert(local_point);
     UNUSED(cube);
     UNUSED(hit);
-    double maxc = max(fabs(local_point->x), fabs(local_point->y), fabs(local_point->z));
+    double maxc = UTILITIES_max(fabs(local_point->x), fabs(local_point->y), fabs(local_point->z));
 
     if (maxc == fabs(local_point->x)) {
         TUPLES_init_vector(local_normal, local_point->x, 0, 0);
@@ -37,9 +38,9 @@ void CUBE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* cube, const 
     }
 }
 
-static void check_axis(double* tmin, double* tmax, double origin, double direction) {
-    double tmin_numerator = -1 - origin;
-    double tmax_numerator = 1 - origin;
+void CUBE_check_axis(double* tmin, double* tmax, double origin, double direction, double min, double max) {
+    double tmin_numerator = min - origin;
+    double tmax_numerator = max - origin;
 
     if (fabs(direction) >= EPSILON) {
         *tmin = tmin_numerator / direction;
@@ -61,12 +62,12 @@ void CUBE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* cube, c
     assert(cube);
     assert(local_ray);
     double xtmin, xtmax, ytmin, ytmax, ztmin, ztmax;
-    check_axis(&xtmin, &xtmax, local_ray->origin.x, local_ray->direction.x);
-    check_axis(&ytmin, &ytmax, local_ray->origin.y, local_ray->direction.y);
-    check_axis(&ztmin, &ztmax, local_ray->origin.z, local_ray->direction.z);
+    CUBE_check_axis(&xtmin, &xtmax, local_ray->origin.x, local_ray->direction.x, -1, 1);
+    CUBE_check_axis(&ytmin, &ytmax, local_ray->origin.y, local_ray->direction.y, -1, 1);
+    CUBE_check_axis(&ztmin, &ztmax, local_ray->origin.z, local_ray->direction.z, -1, 1);
 
-    double tmin = max(xtmin, ytmin, ztmin);
-    double tmax = min(xtmax, ytmax, ztmax);
+    double tmin = UTILITIES_max(xtmin, ytmin, ztmin);
+    double tmax = UTILITIES_min(xtmax, ytmax, ztmax);
 
     if (tmin < tmax) {
         RAY_add_intersection(intersections, tmin, cube);

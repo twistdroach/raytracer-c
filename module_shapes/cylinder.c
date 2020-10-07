@@ -10,11 +10,21 @@ void CYLINDER_delete_shape(SHAPE_Shape* shape) {
     CYLINDER_delete(cylinder);
 }
 
+void CYLINDER_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    CYLINDER_Cylinder* cylinder = (CYLINDER_Cylinder*)shape;
+    BOUND_init(box);
+    BOUND_add_point(box, 1, cylinder->minimum, 1);
+    BOUND_add_point(box, -1, cylinder->maximum, -1);
+}
+
 const SHAPE_vtable CYLINDER_vtable = {
         &CYLINDER_local_intersect,
         &CYLINDER_delete_shape,
         &CYLINDER_local_normal_at,
-        &SHAPE_default_shape_contains
+        &SHAPE_default_shape_contains,
+        &CYLINDER_bounds_of
 };
 
 CYLINDER_Cylinder* CYLINDER_new() {

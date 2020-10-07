@@ -228,6 +228,38 @@ void test_finding_normal_on_child_object() {
     GROUP_delete(g1);
 }
 
+void test_testshape_bounding_box() {
+    TESTSHAPE_TestShape* t = TESTSHAPE_new();
+    BOUND_Box box;
+    ((SHAPE_Shape*)t)->vtable->bounds_of((SHAPE_Shape*)t, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -1, -1, -1);
+    TUPLES_init_point(&max_expected, 1, 1, 1);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    TESTSHAPE_delete(t);
+}
+
+void test_get_shape_bounding_box_in_parents_space() {
+    SPHERE_Sphere* sphere = SPHERE_new();
+    MATRIX_Matrix* translation = MATRIX_new_translation(1, -3, 5);
+    MATRIX_Matrix* scaling = MATRIX_new_scaling(0.5, 2, 4);
+    MATRIX_Matrix* transformation = MATRIX_multiply_many(translation, scaling);
+    SPHERE_set_transform(sphere, transformation);
+
+    BOUND_Box box;
+    SHAPE_parent_space_bounds_of(&box, (SHAPE_Shape*)sphere);
+
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, 0.5, -5, 1);
+    TUPLES_init_point(&max_expected, 1.5, -1, 9);
+    test_tuples(&min_expected, &box.min);
+    test_tuples(&max_expected, &box.max);
+
+    MATRIX_delete_all(transformation, translation, scaling);
+    SPHERE_delete(sphere);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -244,5 +276,7 @@ int main(void)
     RUN_TEST(test_convert_point_from_world_to_object_space);
     RUN_TEST(test_convert_normal_from_object_to_world_space);
     RUN_TEST(test_finding_normal_on_child_object);
+    RUN_TEST(test_testshape_bounding_box);
+    RUN_TEST(test_get_shape_bounding_box_in_parents_space);
     return UNITY_END();
 }

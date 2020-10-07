@@ -10,6 +10,9 @@
 #define EPSILON 0.0001
 bool double_equal(double a, double b);
 
+double UTILITIES_max(double a, double b, double c);
+double UTILITIES_min(double a, double b, double c);
+
 /**
  * Mark a value as unsed and stop the compiler from warning about it.
  */

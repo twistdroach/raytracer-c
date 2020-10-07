@@ -1,6 +1,21 @@
 #include <assert.h>
 #include "csg.h"
 
+void CSG_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    CSG_Csg* csg = (CSG_Csg*) shape;
+    BOUND_init(box);
+
+    BOUND_Box left_box;
+    SHAPE_parent_space_bounds_of(&left_box, csg->left);
+    BOUND_add_box(box, &left_box);
+
+    BOUND_Box right_box;
+    SHAPE_parent_space_bounds_of(&right_box, csg->right);
+    BOUND_add_box(box, &right_box);
+}
+
 bool CSG_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b) {
     assert(a);
     assert(b);
@@ -13,7 +28,8 @@ const SHAPE_vtable CSG_vtable = {
         &CSG_local_intersect,
         &CSG_delete_shape,
         &CSG_local_normal_at,
-        &CSG_shape_contains
+        &CSG_shape_contains,
+        &CSG_bounds_of
 };
 
 bool CSG_intersection_allowed(CSG_Operation op, bool lhit, bool inl, bool inr) {
@@ -56,7 +72,7 @@ RAY_Intersections* CSG_filter_intersections(const CSG_Csg* csg, const RAY_Inters
     return result;
 }
 
-CSG_Csg* CSG_new(CSG_Operation op, SHAPE_Shape* left, SHAPE_Shape* right) {
+CSG_Csg* CSG_new(CSG_Operation op, void* left, void* right) {
     assert(left);
     assert(right);
     CSG_Csg* csg = malloc(sizeof(CSG_Csg));
@@ -67,7 +83,7 @@ CSG_Csg* CSG_new(CSG_Operation op, SHAPE_Shape* left, SHAPE_Shape* right) {
     return csg;
 }
 
-void CSG_init(CSG_Csg* csg, CSG_Operation op, SHAPE_Shape* left, SHAPE_Shape* right) {
+void CSG_init(CSG_Csg* csg, CSG_Operation op, void* left, void* right) {
     assert(csg);
     assert(left);
     assert(right);
@@ -81,6 +97,8 @@ void CSG_init(CSG_Csg* csg, CSG_Operation op, SHAPE_Shape* left, SHAPE_Shape* ri
 
 void CSG_destroy(CSG_Csg* csg) {
     assert(csg);
+    SHAPE_delete_any_type(csg->left);
+    SHAPE_delete_any_type(csg->right);
     SHAPE_destroy(&csg->shape);
 }
 
@@ -113,6 +131,14 @@ void CSG_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, c
     assert(shape);
     assert(local_ray);
     CSG_Csg* csg = (CSG_Csg*) shape;
+
+    BOUND_Box bounds;
+    CSG_bounds_of(shape, &bounds);
+    if (!BOUND_intersect(&bounds, local_ray)) {
+        //we didn't hit the bounding box, so don't bother doing the below
+        return;
+    }
+
     RAY_Intersections* temp_xs = RAY_new_intersections();
     SHAPE_intersect(temp_xs, csg->left, local_ray);
     SHAPE_intersect(temp_xs, csg->right, local_ray);

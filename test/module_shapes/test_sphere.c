@@ -268,6 +268,18 @@ void test_helper_to_produce_sphere_with_glassy_material() {
     SPHERE_delete(sphere);
 }
 
+void test_sphere_bounding_box() {
+    SPHERE_Sphere* s = SPHERE_new();
+    BOUND_Box box;
+    s->vtable->bounds_of(s, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -1, -1, -1);
+    TUPLES_init_point(&max_expected, 1, 1, 1);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    SPHERE_delete(s);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -289,5 +301,6 @@ int main(void)
     RUN_TEST(test_compute_normal_on_translated_sphere);
     RUN_TEST(test_compute_normal_on_transformed_sphere);
     RUN_TEST(test_helper_to_produce_sphere_with_glassy_material);
+    RUN_TEST(test_sphere_bounding_box);
     return UNITY_END();
 }

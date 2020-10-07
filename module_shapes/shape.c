@@ -153,3 +153,12 @@ bool SHAPE_default_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b) {
     assert(b);
     return a == b;
 }
+
+void SHAPE_parent_space_bounds_of(BOUND_Box* dest_box, const SHAPE_Shape* shape) {
+    assert(dest_box);
+    assert(shape);
+    const MATRIX_Matrix* transform = SHAPE_get_transform(shape);
+    BOUND_Box shape_bounds;
+    shape->vtable->bounds_of(shape, &shape_bounds);
+    BOUND_transform(dest_box, &shape_bounds, transform);
+}

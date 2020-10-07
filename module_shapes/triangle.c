@@ -2,18 +2,30 @@
 #include <exceptions.h>
 #include "triangle.h"
 
+void TRIANGLE_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    TRIANGLE_Triangle* triangle = (TRIANGLE_Triangle*) shape;
+    BOUND_init(box);
+    BOUND_add_point_from_tuple(box, &triangle->p1);
+    BOUND_add_point_from_tuple(box, &triangle->p2);
+    BOUND_add_point_from_tuple(box, &triangle->p3);
+}
+
 const SHAPE_vtable TRIANGLE_vtable = {
         &TRIANGLE_local_intersect,
         &TRIANGLE_delete_shape,
         &TRIANGLE_local_normal_at,
-        &SHAPE_default_shape_contains
+        &SHAPE_default_shape_contains,
+        &TRIANGLE_bounds_of
 };
 
 const SHAPE_vtable TRIANGLE_smooth_vtable = {
        &TRIANGLE_local_intersect,
        &TRIANGLE_delete_shape,
        &TRIANGLE_smooth_local_normal_at,
-       &SHAPE_default_shape_contains
+       &SHAPE_default_shape_contains,
+       &TRIANGLE_bounds_of
 };
 
 TRIANGLE_Triangle* TRIANGLE_new_from_points(const TUPLES_Point* p1, const TUPLES_Point* p2, const TUPLES_Point* p3) {

@@ -71,3 +71,11 @@ target_link_libraries(module_shapes_csg
         Unity
         m)
 add_test(shapes_csg module_shapes_csg)
+
+add_executable(module_shapes_bound
+        test_bound.c)
+target_link_libraries(module_shapes_bound
+        module_shapes
+        Unity
+        m)
+add_test(shapes_bound module_shapes_bound)

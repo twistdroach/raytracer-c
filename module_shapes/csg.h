@@ -21,9 +21,19 @@ typedef struct CSG_Csg {
 
 const SHAPE_vtable CSG_vtable;
 
-CSG_Csg* CSG_new(CSG_Operation op, SHAPE_Shape* left, SHAPE_Shape* right);
-void CSG_init(CSG_Csg* csg, CSG_Operation op, SHAPE_Shape* left, SHAPE_Shape* right);
+CSG_Csg* CSG_new(CSG_Operation op, void* left, void* right);
+void CSG_init(CSG_Csg* csg, CSG_Operation op, void* left, void* right);
+
+/**
+ * Destroying the CSG will delete any shape objects it contains!
+ * @param csg
+ */
 void CSG_destroy(CSG_Csg* csg);
+
+/**
+ * Deleting the CSG will delete any shape objects it contains!
+ * @param csg
+ */
 void CSG_delete(CSG_Csg* csg);
 void CSG_delete_shape(SHAPE_Shape* shape);
 

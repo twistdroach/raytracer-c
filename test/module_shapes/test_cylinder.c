@@ -186,6 +186,32 @@ void test_normal_vector_on_cylinder_end_caps() {
     helper_test_normal_vector_on_cylinder_end_caps(0, 2, 0.5, 0, 1, 0);
 }
 
+void test_unbounded_cylinder_bounding_box() {
+    CYLINDER_Cylinder* c = CYLINDER_new();
+    BOUND_Box box;
+    c->vtable->bounds_of((SHAPE_Shape*)c, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -1, -INFINITY, -1);
+    TUPLES_init_point(&max_expected, 1, INFINITY, 1);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    CYLINDER_delete(c);
+}
+
+void test_bounded_cylinder_bounding_box() {
+    CYLINDER_Cylinder* c = CYLINDER_new();
+    c->minimum = -5;
+    c->maximum = 3;
+    BOUND_Box box;
+    c->vtable->bounds_of((SHAPE_Shape*)c, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -1, -5, -1);
+    TUPLES_init_point(&max_expected, 1, 3, 1);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    CYLINDER_delete(c);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -197,5 +223,7 @@ int main(void)
     RUN_TEST(test_default_closed_value_for_cylinder);
     RUN_TEST(test_intersect_caps_of_closed_cylinder);
     RUN_TEST(test_normal_vector_on_cylinder_end_caps);
+    RUN_TEST(test_bounded_cylinder_bounding_box);
+    RUN_TEST(test_unbounded_cylinder_bounding_box);
     return UNITY_END();
 }

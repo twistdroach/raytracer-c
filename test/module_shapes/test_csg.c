@@ -2,6 +2,7 @@
 #include <csg.h>
 #include <sphere.h>
 #include <cube.h>
+#include <testshape.h>
 
 void setUp() {}
 void tearDown() {}
@@ -17,8 +18,6 @@ void test_create_csg() {
     TEST_ASSERT_EQUAL_PTR(csg, SHAPE_get_parent(s));
     TEST_ASSERT_EQUAL_PTR(csg, SHAPE_get_parent(c));
 
-    SPHERE_delete(s);
-    CUBE_delete(c);
     CSG_delete(csg);
 }
 
@@ -77,8 +76,6 @@ void filter_list_of_intersections(CSG_Operation op, uint first, uint second) {
     RAY_delete_intersections(xs);
     RAY_delete_intersections(filtered_xs);
     CSG_delete(csg);
-    SPHERE_delete(s1);
-    CUBE_delete(s2);
 }
 
 void test_filter_list_of_intersections() {
@@ -101,8 +98,6 @@ void test_ray_misses_a_csg_object() {
     TEST_ASSERT_EQUAL(0, xs->count);
     RAY_delete_intersections(xs);
     CSG_delete(csg);
-    CUBE_delete(c);
-    SPHERE_delete(s);
 }
 
 void test_ray_hits_csg_object() {
@@ -127,7 +122,63 @@ void test_ray_hits_csg_object() {
 
     RAY_delete_intersections(xs);
     CSG_delete(csg);
-    SPHERE_delete_all(s1, s2);
+}
+
+void test_csg_has_bounding_box_that_contains_its_children() {
+    SPHERE_Sphere* left = SPHERE_new();
+    SPHERE_Sphere* right = SPHERE_new();
+    MATRIX_Matrix* translation = MATRIX_new_translation(2, 3, 4);
+    SPHERE_set_transform(right, translation);
+    MATRIX_delete(translation);
+
+    CSG_Csg* csg = CSG_new(CSG_Difference, left, right);
+    BOUND_Box box;
+    SHAPE_bounds_of(csg, &box);
+
+    TEST_ASSERT_EQUAL_DOUBLE(-1, box.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, box.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-1, box.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(3, box.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(4, box.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(5, box.max.z);
+
+    CSG_delete(csg);
+}
+
+void test_intersect_ray_and_csg_test_children_if_box_is_hit() {
+    TESTSHAPE_TestShape* left = TESTSHAPE_new();
+    TESTSHAPE_TestShape* right = TESTSHAPE_new();
+    CSG_Csg* csg = CSG_new(CSG_Difference, left, right);
+
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0, -5, 0, 0, 1);
+
+    RAY_Intersections* xs = RAY_new_intersections();
+    SHAPE_intersect(xs, (SHAPE_Shape*)csg, &ray);
+
+    TEST_ASSERT_TRUE(left->ray_set);
+    TEST_ASSERT_TRUE(right->ray_set);
+
+    RAY_delete_intersections(xs);
+    CSG_delete(csg);
+}
+
+void test_intersect_ray_and_csg_doesnt_test_children_if_box_is_not_hit() {
+    TESTSHAPE_TestShape* left = TESTSHAPE_new();
+    TESTSHAPE_TestShape* right = TESTSHAPE_new();
+    CSG_Csg* csg = CSG_new(CSG_Difference, left, right);
+
+    RAY_Ray ray;
+    RAY_init(&ray, 0, 0, -5, 0, 1, 0);
+
+    RAY_Intersections* xs = RAY_new_intersections();
+    SHAPE_intersect(xs, (SHAPE_Shape*)csg, &ray);
+
+    TEST_ASSERT_FALSE(left->ray_set);
+    TEST_ASSERT_FALSE(right->ray_set);
+
+    RAY_delete_intersections(xs);
+    CSG_delete(csg);
 }
 
 int main(void)
@@ -138,5 +189,8 @@ int main(void)
     RUN_TEST(test_filter_list_of_intersections);
     RUN_TEST(test_ray_misses_a_csg_object);
     RUN_TEST(test_ray_hits_csg_object);
+    RUN_TEST(test_csg_has_bounding_box_that_contains_its_children);
+    RUN_TEST(test_intersect_ray_and_csg_doesnt_test_children_if_box_is_not_hit);
+    RUN_TEST(test_intersect_ray_and_csg_test_children_if_box_is_hit);
     return UNITY_END();
 }

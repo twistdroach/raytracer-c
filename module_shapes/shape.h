@@ -5,9 +5,7 @@
 #include "matrix.h"
 #include "material.h"
 #include "ray.h"
-//typedef struct RAY_Ray RAY_Ray;
-//typedef struct RAY_Intersections RAY_Intersections;
-//typedef struct MATERIAL_Material MATERIAL_Material;
+#include "bound.h"
 
 typedef struct SHAPE_Shape SHAPE_Shape;
 typedef struct SHAPE_vtable {
@@ -15,6 +13,7 @@ typedef struct SHAPE_vtable {
     void (*delete)(SHAPE_Shape*);
     void (*local_normal_at)(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit);
     bool (*contains)(const SHAPE_Shape* a, const SHAPE_Shape* b);
+    void (*bounds_of)(const SHAPE_Shape* shape, BOUND_Box* box); /** bounds_of sets the bounds of the shape in the box provided */
 } SHAPE_vtable;
 
 /**
@@ -49,6 +48,7 @@ MATRIX_Matrix* SHAPE_get_transform(const SHAPE_Shape* shape);
 MATRIX_Matrix* SHAPE_get_inverse_transform(const SHAPE_Shape* shape);
 MATRIX_Matrix* SHAPE_get_transpose_inverse_transform(const SHAPE_Shape* shape);
 
+#define SHAPE_bounds_of(shape, box) ((SHAPE_Shape*)(shape))->vtable->bounds_of(((SHAPE_Shape*)(shape)), (box))
 #define SHAPE_set_parent(child, parent_shape) ((((SHAPE_Shape*)(child))->parent) = (SHAPE_Shape*)(parent_shape))
 #define SHAPE_get_parent(shape) (((SHAPE_Shape*)(shape))->parent)
 
@@ -61,11 +61,12 @@ MATRIX_Matrix* SHAPE_get_transpose_inverse_transform(const SHAPE_Shape* shape);
 void SHAPE_calc_local_ray(RAY_Ray* local_ray, const RAY_Ray* ray, SHAPE_Shape* shape);
 
 void SHAPE_delete_any_type(SHAPE_Shape* shape);
+
 void SHAPE_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* ray);
 void SHAPE_normal_at(TUPLES_Vector* world_normal, SHAPE_Shape* shape, const TUPLES_Point* point, const RAY_Xs* hit);
 void SHAPE_world_to_object(TUPLES_Point* result, const SHAPE_Shape* shape, const TUPLES_Point* world_point);
 void SHAPE_normal_to_world(TUPLES_Vector* result, const SHAPE_Shape* shape, const TUPLES_Vector* normal);
 
 bool SHAPE_default_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b);
-
+void SHAPE_parent_space_bounds_of(BOUND_Box* dest_box, const SHAPE_Shape* shape);
 #endif //DATA_STRUCTURES_SHAPE_H

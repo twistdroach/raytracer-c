@@ -85,6 +85,18 @@ void test_intersect_plane_from_below() {
     PLANE_delete(p);
 }
 
+void test_plane_bounding_box() {
+    PLANE_Plane* plane = PLANE_new();
+    BOUND_Box box;
+    plane->vtable->bounds_of(plane, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -INFINITY, 0, -INFINITY);
+    TUPLES_init_point(&max_expected, INFINITY, 0, INFINITY);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    PLANE_delete(plane);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -95,5 +107,6 @@ int main(void)
     RUN_TEST(test_intersect_with_coplanar_ray);
     RUN_TEST(test_intersect_plane_from_above);
     RUN_TEST(test_intersect_plane_from_below);
+    RUN_TEST(test_plane_bounding_box);
     return UNITY_END();
 }

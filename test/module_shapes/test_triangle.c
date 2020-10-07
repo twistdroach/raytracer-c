@@ -192,6 +192,20 @@ void test_prepare_normal_on_smooth_triangle() {
     TRIANGLE_delete_smooth(st);
 }
 
+void test_triangle_bounding_box() {
+    TRIANGLE_Triangle* t = TRIANGLE_new(-3, 7, 2,
+                                        6, 2, -4,
+                                        2, -1, -1);
+    BOUND_Box box;
+    t->vtable->bounds_of((SHAPE_Shape*)t, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -3, -1, -4);
+    TUPLES_init_point(&max_expected, 6, 7, 2);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    TRIANGLE_delete(t);
+}
+
 int main(void)
 
 {
@@ -208,5 +222,6 @@ int main(void)
     RUN_TEST(test_intersection_with_smooth_triangle_stores_u_and_v);
     RUN_TEST(test_smooth_triangle_uses_u_v_to_interpolate_normal);
     RUN_TEST(test_prepare_normal_on_smooth_triangle);
+    RUN_TEST(test_triangle_bounding_box);
     return UNITY_END();
 }

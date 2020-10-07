@@ -2,11 +2,21 @@
 #include <math.h>
 #include <assert.h>
 
+void SPHERE_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    UNUSED(shape);
+    BOUND_init(box);
+    BOUND_add_point(box, 1, 1, 1);
+    BOUND_add_point(box, -1, -1, -1);
+}
+
 const SHAPE_vtable SPHERE_vtable = {
         &SPHERE_local_intersect,
         &SHAPE_delete,
         &SPHERE_local_normal_at,
-        &SHAPE_default_shape_contains
+        &SHAPE_default_shape_contains,
+        &SPHERE_bounds_of
 };
 
 void SPHERE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* local_ray) {

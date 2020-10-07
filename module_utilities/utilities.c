@@ -11,7 +11,19 @@
 inline bool double_equal(double a, double b)
 {
     //ghetto - but likely close enough, we'll see
+    if (a == INFINITY && b == INFINITY) return true;
+    if (a == -INFINITY && b == -INFINITY) return true;
     return (fabs(a - b) < EPSILON);
+}
+
+double UTILITIES_max(double x, double y, double z) {
+    double xory = (x > y) ? x : y;
+    return (xory > z) ? xory : z;
+}
+
+double UTILITIES_min(double x, double y, double z) {
+    double xory = (x < y) ? x : y;
+    return (xory < z) ? xory : z;
 }
 
 double UTILITIES_random_double(double min, double max) {

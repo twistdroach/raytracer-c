@@ -3,6 +3,19 @@
 #include <arrlist.h>
 #include "group.h"
 
+void GROUP_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    GROUP_Group* a_group = (GROUP_Group*) shape;
+    BOUND_init(box);
+    for (unsigned int i=0; i < ARRLIST_item_count(a_group->list); i++) {
+        SHAPE_Shape* child_shape = (SHAPE_Shape*)ARRLIST_safe_get(a_group->list, i);
+        BOUND_Box child_box;
+        SHAPE_parent_space_bounds_of(&child_box, child_shape);
+        BOUND_add_box(box, &child_box);
+    }
+}
+
 bool GROUP_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b) {
     if (a == b) return true;
     GROUP_Group* a_group = (GROUP_Group*) a;
@@ -19,7 +32,8 @@ const SHAPE_vtable GROUP_vtable = {
         &GROUP_local_intersect,
         &GROUP_delete_shape,
         &GROUP_local_normal_at,
-        &GROUP_shape_contains
+        &GROUP_shape_contains,
+        &GROUP_bounds_of
 };
 
 GROUP_Group* GROUP_new() {
@@ -90,6 +104,14 @@ void GROUP_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape,
     assert(shape);
     assert(local_ray);
     GROUP_Group* group = (GROUP_Group*)shape;
+
+    BOUND_Box bounds;
+    GROUP_bounds_of(shape, &bounds);
+    if (!BOUND_intersect(&bounds, local_ray)) {
+        //if we don't hit the bounding box, no reason to hit all the children
+        return;
+    }
+
     check_shape_context c = {
             .local_ray = local_ray,
             .intersections = intersections

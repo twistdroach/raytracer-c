@@ -7,7 +7,17 @@
  * \extends SHAPE_Shape
  */
 typedef struct TRIANGLE_Triangle {
-    SHAPE_Shape shape;              /* Superclass */
+    union {
+        SHAPE_Shape shape; /** Superclass */
+        struct {
+            const SHAPE_vtable* vtable;
+            MATRIX_Matrix*      transform;
+            MATRIX_Matrix*      inverse;
+            MATRIX_Matrix*      inverse_transpose;
+            MATERIAL_Material*  material;
+            SHAPE_Shape*        parent;
+        };
+    };
     TUPLES_Point p1, p2, p3;        /* Corners of the triangle */
     TUPLES_Vector e1, e2, normal;   /* Two edges and the normal vector */
 } TRIANGLE_Triangle;

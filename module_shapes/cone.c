@@ -4,11 +4,26 @@
 #include "exceptions.h"
 #include "cone.h"
 
+void CONE_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    CONE_Cone* cone = (CONE_Cone*)shape;
+
+    double a = fabs(cone->minimum);
+    double b = fabs(cone->maximum);
+    double limit = (a > b) ? a : b;
+
+    BOUND_init(box);
+    BOUND_add_point(box, -limit, cone->minimum, -limit);
+    BOUND_add_point(box, limit, cone->maximum, limit);
+}
+
 const SHAPE_vtable CONE_vtable = {
         &CONE_local_intersect,
         &CYLINDER_delete_shape,
         &CONE_local_normal_at,
-        &SHAPE_default_shape_contains
+        &SHAPE_default_shape_contains,
+        &CONE_bounds_of
 };
 
 CONE_Cone* CONE_new() {

@@ -13,6 +13,7 @@ typedef struct TESTSHAPE_TestShape {
     SHAPE_Shape parent;  /** parent class */
     double size;
     RAY_Ray saved_ray;
+    bool ray_set;
 } TESTSHAPE_TestShape;
 
 TESTSHAPE_TestShape* TESTSHAPE_new();

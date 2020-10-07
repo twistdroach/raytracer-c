@@ -8,7 +8,8 @@ add_library(module_shapes STATIC
         cone.c cone.h
         group.c group.h
         triangle.c triangle.h
-        csg.c csg.h)
+        csg.c csg.h
+        bound.c bound.h)
 
 target_include_directories(module_shapes PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

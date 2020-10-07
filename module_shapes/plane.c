@@ -3,11 +3,20 @@
 
 #include "plane.h"
 
+void PLANE_bounds_of(const SHAPE_Shape* shape, BOUND_Box* box) {
+    assert(shape);
+    assert(box);
+    UNUSED(shape);
+    BOUND_init(box);
+    BOUND_add_point(box, INFINITY, 0, INFINITY);
+    BOUND_add_point(box, -INFINITY, 0, -INFINITY);
+}
 const SHAPE_vtable PLANE_vtable = {
         &PLANE_local_intersect,
         &SHAPE_delete,
         &PLANE_local_normal_at,
-        &SHAPE_default_shape_contains
+        &SHAPE_default_shape_contains,
+        &PLANE_bounds_of
 };
 
 void PLANE_local_normal_at(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit) {

@@ -75,11 +75,24 @@ void test_normal_on_surface_of_cube() {
     helper_check_normal_at_point(-1, -1, -1, -1, 0, 0);
 }
 
+void test_cube_bounding_box() {
+        CUBE_Cube* c = CUBE_new();
+        BOUND_Box box;
+        c->vtable->bounds_of(c, &box);
+        TUPLES_Point min_expected, max_expected;
+        TUPLES_init_point(&min_expected, -1, -1, -1);
+        TUPLES_init_point(&max_expected, 1, 1, 1);
+        TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+        TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+        CUBE_delete(c);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
     RUN_TEST(test_ray_intersects_a_cube);
     RUN_TEST(test_ray_misses_a_cube);
     RUN_TEST(test_normal_on_surface_of_cube);
+    RUN_TEST(test_cube_bounding_box);
     return UNITY_END();
 }

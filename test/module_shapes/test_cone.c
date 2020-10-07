@@ -110,6 +110,32 @@ void compute_normal_on_cone() {
     helper_compute_normal_on_cone(-1, -1, 0, -1, 1, 0);
 }
 
+void test_unbounded_cone_bounding_box() {
+    CONE_Cone* cone = CONE_new();
+    BOUND_Box box;
+    cone->vtable->bounds_of((SHAPE_Shape*)cone, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -INFINITY, -INFINITY, -INFINITY);
+    TUPLES_init_point(&max_expected, INFINITY, INFINITY, INFINITY);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    CONE_delete(cone);
+}
+
+void test_bounded_cone_bounding_box() {
+    CONE_Cone* cone = CONE_new();
+    cone->minimum = -5;
+    cone->maximum = 3;
+    BOUND_Box box;
+    cone->vtable->bounds_of((SHAPE_Shape*)cone, &box);
+    TUPLES_Point min_expected, max_expected;
+    TUPLES_init_point(&min_expected, -5, -5, -5);
+    TUPLES_init_point(&max_expected, 5, 3, 5);
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&min_expected, &box.min));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(&max_expected, &box.max));
+    CONE_delete(cone);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -117,5 +143,7 @@ int main(void)
     RUN_TEST(test_intersecting_cone_with_ray_parallel_to_one_of_its_halves);
     RUN_TEST(test_intersect_cone_end_cap);
     RUN_TEST(compute_normal_on_cone);
+    RUN_TEST(test_bounded_cone_bounding_box);
+    RUN_TEST(test_unbounded_cone_bounding_box);
     return UNITY_END();
 }
