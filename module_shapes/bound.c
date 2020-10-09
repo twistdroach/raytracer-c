@@ -121,3 +121,45 @@ bool BOUND_intersect(const BOUND_Box* box, const RAY_Ray* ray) {
 
     return false;
 }
+
+void BOUND_split(const BOUND_Box* orig_box, BOUND_Box* dest_left, BOUND_Box* dest_right) {
+    assert(orig_box);
+    assert(dest_left);
+    assert(dest_right);
+
+    double dx = fabs(orig_box->max.x - orig_box->min.x);
+    double dy = fabs(orig_box->max.y - orig_box->min.y);
+    double dz = fabs(orig_box->max.z - orig_box->min.z);
+
+    double greatest = UTILITIES_max(dx, dy, dz);
+
+    double x0 = orig_box->min.x;
+    double y0 = orig_box->min.y;
+    double z0 = orig_box->min.z;
+    double x1 = orig_box->max.x;
+    double y1 = orig_box->max.y;
+    double z1 = orig_box->max.z;
+
+    if (greatest == dx) {
+        x1 = x0 + dx / 2.0;
+        x0 = x1;
+    } else if (greatest == dy) {
+        y1 = y0 + dy / 2.0;
+        y0 = y1;
+    } else if (greatest == dz) {
+        z1 = z0 + dz / 2.0;
+        z0 = z1;
+    }
+
+    TUPLES_Point mid_min, mid_max;
+    TUPLES_init_point(&mid_min, x0, y0, z0);
+    TUPLES_init_point(&mid_max, x1, y1, z1);
+
+    BOUND_init(dest_left);
+    BOUND_add_point_from_tuple(dest_left, &orig_box->min);
+    BOUND_add_point_from_tuple(dest_left, &mid_max);
+
+    BOUND_init(dest_right);
+    BOUND_add_point_from_tuple(dest_right, &mid_min);
+    BOUND_add_point_from_tuple(dest_right, &orig_box->max);
+}

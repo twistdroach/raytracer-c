@@ -162,3 +162,10 @@ void SHAPE_parent_space_bounds_of(BOUND_Box* dest_box, const SHAPE_Shape* shape)
     shape->vtable->bounds_of(shape, &shape_bounds);
     BOUND_transform(dest_box, &shape_bounds, transform);
 }
+
+void SHAPE_divide(SHAPE_Shape* shape, unsigned int minimum_size) {
+    assert(shape);
+    if (shape->vtable->divide) {
+        shape->vtable->divide(shape, minimum_size);
+    }
+}

@@ -22,4 +22,5 @@ bool BOUND_contains_point(const BOUND_Box* box, const TUPLES_Point* point);
 bool BOUND_contains_box(const BOUND_Box* outer, const BOUND_Box* inner);
 void BOUND_transform(BOUND_Box* dest, const BOUND_Box* box, const MATRIX_Matrix* transformation);
 bool BOUND_intersect(const BOUND_Box* box, const RAY_Ray* ray);
+void BOUND_split(const BOUND_Box* orig_box, BOUND_Box* dest_left, BOUND_Box* dest_right);
 #endif //SIMPLE_RAYTRACER_BOUND_H

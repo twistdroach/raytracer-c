@@ -24,7 +24,8 @@ const SHAPE_vtable CYLINDER_vtable = {
         &CYLINDER_delete_shape,
         &CYLINDER_local_normal_at,
         &SHAPE_default_shape_contains,
-        &CYLINDER_bounds_of
+        &CYLINDER_bounds_of,
+        NULL
 };
 
 CYLINDER_Cylinder* CYLINDER_new() {

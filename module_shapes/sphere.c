@@ -16,7 +16,8 @@ const SHAPE_vtable SPHERE_vtable = {
         &SHAPE_delete,
         &SPHERE_local_normal_at,
         &SHAPE_default_shape_contains,
-        &SPHERE_bounds_of
+        &SPHERE_bounds_of,
+        NULL
 };
 
 void SPHERE_local_intersect(RAY_Intersections* intersections, SHAPE_Shape* shape, const RAY_Ray* local_ray) {

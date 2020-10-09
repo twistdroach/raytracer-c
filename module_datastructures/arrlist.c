@@ -93,6 +93,10 @@ bool ARRLIST_contains(const ARRLIST_List* list, const void* object) {
 
 void* ARRLIST_last(const ARRLIST_List* list) {
     assert(list);
+    assert(list->count > 0);
+    if (list->count < 1) {
+        return NULL;
+    }
     return list->items[list->count - 1];
 }
 

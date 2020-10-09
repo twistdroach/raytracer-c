@@ -46,6 +46,7 @@ void test_arrlist_remove() {
     TEST_ASSERT_TRUE(ARRLIST_contains(l, s));
     TEST_ASSERT_TRUE(ARRLIST_contains(l, s2));
     ARRLIST_remove(l, s);
+    TEST_ASSERT_EQUAL(1, ARRLIST_item_count(l));
     TEST_ASSERT_FALSE(ARRLIST_contains(l, s));
     ARRLIST_remove(l, s2);
     TEST_ASSERT_FALSE(ARRLIST_contains(l, s2));

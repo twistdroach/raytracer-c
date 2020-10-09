@@ -17,7 +17,8 @@ const SHAPE_vtable CUBE_vtable = {
         &SHAPE_delete,
         &CUBE_local_normal_at,
         &SHAPE_default_shape_contains,
-        &CUBE_bounds_of
+        &CUBE_bounds_of,
+        NULL
 };
 
 

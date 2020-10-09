@@ -175,6 +175,50 @@ void test_intersect_ray_and_group_test_children_if_box_is_hit() {
     GROUP_delete(g);
 }
 
+void test_partition_groups_children() {
+    SPHERE_Sphere* s1 = SPHERE_new();
+    MATRIX_Matrix* s1_trans = MATRIX_new_translation(-2, 0, 0);
+    SPHERE_set_transform(s1, s1_trans);
+    SPHERE_Sphere* s2 = SPHERE_new();
+    MATRIX_Matrix* s2_trans = MATRIX_new_translation(2, 0, 0);
+    SPHERE_set_transform(s2, s2_trans);
+    SPHERE_Sphere* s3 = SPHERE_new();
+    GROUP_Group* g = GROUP_new();
+    GROUP_add_child(g, s1);
+    GROUP_add_child(g, s2);
+    GROUP_add_child(g, s3);
+    GROUP_Group* left_group = GROUP_new();
+    GROUP_Group* right_group = GROUP_new();
+    GROUP_partition_children(g, left_group, right_group);
+    TEST_ASSERT_TRUE(GROUP_contains(g, s3));
+    TEST_ASSERT_TRUE(GROUP_contains(left_group, s1));
+    TEST_ASSERT_TRUE(GROUP_contains(right_group, s2));
+    MATRIX_delete_all(s1_trans, s2_trans);
+    GROUP_delete(left_group);
+    GROUP_delete(right_group);
+    GROUP_delete(g);
+}
+
+void test_subdividing_group_partition_its_children() {
+    SPHERE_Sphere* s1 = SPHERE_new();
+    MATRIX_Matrix* s1_trans = MATRIX_new_translation(-2, 0, 0);
+    SPHERE_set_transform(s1, s1_trans);
+    SPHERE_Sphere* s2 = SPHERE_new();
+    MATRIX_Matrix* s2_trans = MATRIX_new_translation(2, 0, 0);
+    SPHERE_set_transform(s2, s2_trans);
+    SPHERE_Sphere* s3 = SPHERE_new();
+    MATRIX_Matrix* s3_trans = MATRIX_new_scaling(4, 4, 4);
+    SPHERE_set_transform(s3, s3_trans);
+    GROUP_Group* g = GROUP_new();
+    GROUP_add_child(g, s1);
+    GROUP_add_child(g, s2);
+    GROUP_add_child(g, s3);
+    SHAPE_divide((SHAPE_Shape*)g, 1);
+    //TODO - decide on a good way to tell if we have group or shape?
+    MATRIX_delete_all(s1_trans, s2_trans, s3_trans);
+    GROUP_delete(g);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -187,5 +231,7 @@ int main(void)
     RUN_TEST(test_group_has_bounding_box_that_contains_all_children);
     RUN_TEST(test_intersect_ray_and_group_doesnt_test_children_if_box_is_missed);
     RUN_TEST(test_intersect_ray_and_group_test_children_if_box_is_hit);
+    RUN_TEST(test_partition_groups_children);
+    RUN_TEST(test_subdividing_group_partition_its_children);
     return UNITY_END();
 }

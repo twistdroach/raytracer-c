@@ -1,5 +1,6 @@
 add_library(module_datastructures STATIC
-        arrlist.c arrlist.h)
+        arrlist.c arrlist.h
+        linkedlist.c linkedlist.h)
 
 target_include_directories(module_datastructures PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

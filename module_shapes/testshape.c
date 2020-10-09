@@ -16,7 +16,8 @@ const SHAPE_vtable TESTSHAPE_vtable = {
         &SHAPE_delete,
         &TESTSHAPE_local_normal_at,
         &SHAPE_default_shape_contains,
-        &TESTSHAPE_bounds_of
+        &TESTSHAPE_bounds_of,
+        NULL
 };
 
 void TESTSHAPE_init(TESTSHAPE_TestShape* shape) {

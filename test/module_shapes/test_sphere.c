@@ -280,6 +280,14 @@ void test_sphere_bounding_box() {
     SPHERE_delete(s);
 }
 
+void test_subdivide_a_primitive_does_nothing() {
+    SPHERE_Sphere* s = SPHERE_new();
+    SPHERE_Sphere* s_tmp = s;
+    SHAPE_divide(s, 1);
+    TEST_ASSERT_EQUAL_PTR(s_tmp, s);
+    SPHERE_delete(s);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -302,5 +310,6 @@ int main(void)
     RUN_TEST(test_compute_normal_on_transformed_sphere);
     RUN_TEST(test_helper_to_produce_sphere_with_glassy_material);
     RUN_TEST(test_sphere_bounding_box);
+    RUN_TEST(test_subdivide_a_primitive_does_nothing);
     return UNITY_END();
 }

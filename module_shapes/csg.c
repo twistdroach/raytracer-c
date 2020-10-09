@@ -29,7 +29,8 @@ const SHAPE_vtable CSG_vtable = {
         &CSG_delete_shape,
         &CSG_local_normal_at,
         &CSG_shape_contains,
-        &CSG_bounds_of
+        &CSG_bounds_of,
+        NULL
 };
 
 bool CSG_intersection_allowed(CSG_Operation op, bool lhit, bool inl, bool inr) {

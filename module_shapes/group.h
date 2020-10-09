@@ -5,11 +5,7 @@
 #include "ray.h"
 #include "shape.h"
 
-typedef struct GROUP_Group {
-    SHAPE_Shape         shape;
-    ARRLIST_List*       list;
-    BOUND_Box*          bounds;
-} GROUP_Group;
+typedef struct GROUP_Group GROUP_Group;
 
 const SHAPE_vtable GROUP_vtable;
 
@@ -18,6 +14,8 @@ void GROUP_init(GROUP_Group* group);
 void GROUP_destroy(GROUP_Group* group);
 void GROUP_delete(GROUP_Group* group);
 void GROUP_delete_shape(SHAPE_Shape* shape);
+void GROUP_partition_children(GROUP_Group* src_group, GROUP_Group* sub_group1, GROUP_Group* sub_group2);
+void GROUP_remove_child(GROUP_Group* group, SHAPE_Shape* shape);
 
 /**
  * \pure This function should never be called...it should be overridden by the members of the group.
@@ -47,6 +45,6 @@ bool GROUP_contains(const GROUP_Group* group, const void* shape);
  * Must cast to appropriate type...likely SHAPE_Shape* unless you know what you put in there.
  * This is really only used for testing at the moment.
  */
-#define GROUP_get_child(group, ndx) (ARRLIST_safe_get((group)->list, ndx))
+void* GROUP_get_child(GROUP_Group* group, unsigned int ndx);
 
 #endif //DATA_STRUCTURES_GROUP_H

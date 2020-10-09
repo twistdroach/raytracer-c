@@ -207,6 +207,102 @@ void test_intersecting_ray_with_non_cubic_bounding_box() {
     check_ray_non_cube_bound_box_intersection(12, 5, 4, 01, 0, 0, false);
 }
 
+void test_splitting_a_perfect_cube() {
+    BOUND_Box box;
+    BOUND_init(&box);
+    BOUND_add_point(&box, -1, -4, -5);
+    BOUND_add_point(&box, 9, 6, 5);
+
+    BOUND_Box left, right;
+    BOUND_split(&box, &left, &right);
+
+    TEST_ASSERT_EQUAL_DOUBLE(-1, left.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-4, left.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-5, left.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(4, left.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(6, left.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(5, left.max.z);
+
+    TEST_ASSERT_EQUAL_DOUBLE(4, right.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-4, right.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-5, right.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(9, right.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(6, right.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(5, right.max.z);
+}
+
+void test_splitting_an_xwide_box() {
+    BOUND_Box box;
+    BOUND_init(&box);
+    BOUND_add_point(&box, -1, -2, -3);
+    BOUND_add_point(&box, 9, 5.5, 3);
+
+    BOUND_Box left, right;
+    BOUND_split(&box, &left, &right);
+
+    TEST_ASSERT_EQUAL_DOUBLE(-1, left.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, left.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-3, left.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(4, left.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(5.5, left.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(3, left.max.z);
+
+    TEST_ASSERT_EQUAL_DOUBLE(4, right.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, right.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-3, right.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(9, right.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(5.5, right.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(3, right.max.z);
+}
+
+void test_splitting_an_ywide_box() {
+    BOUND_Box box;
+    BOUND_init(&box);
+    BOUND_add_point(&box, -1, -2, -3);
+    BOUND_add_point(&box, 5, 8, 3);
+
+    BOUND_Box left, right;
+    BOUND_split(&box, &left, &right);
+
+    TEST_ASSERT_EQUAL_DOUBLE(-1, left.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, left.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-3, left.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(5, left.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, left.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(3, left.max.z);
+
+    TEST_ASSERT_EQUAL_DOUBLE(-1, right.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, right.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-3, right.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(5, right.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(8, right.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(3, right.max.z);
+}
+
+void test_splitting_an_zwide_box() {
+    BOUND_Box box;
+    BOUND_init(&box);
+    BOUND_add_point(&box, -1, -2, -3);
+    BOUND_add_point(&box, 5, 3, 7);
+
+    BOUND_Box left, right;
+    BOUND_split(&box, &left, &right);
+
+    TEST_ASSERT_EQUAL_DOUBLE(-1, left.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, left.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(-3, left.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(5, left.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, left.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(2, left.max.z);
+
+    TEST_ASSERT_EQUAL_DOUBLE(-1, right.min.x);
+    TEST_ASSERT_EQUAL_DOUBLE(-2, right.min.y);
+    TEST_ASSERT_EQUAL_DOUBLE(2, right.min.z);
+    TEST_ASSERT_EQUAL_DOUBLE(5, right.max.x);
+    TEST_ASSERT_EQUAL_DOUBLE(3, right.max.y);
+    TEST_ASSERT_EQUAL_DOUBLE(7, right.max.z);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -218,5 +314,9 @@ int main(void)
     RUN_TEST(test_transform_a_bounding_box);
     RUN_TEST(test_intersecting_ray_with_bounding_box_at_the_origin);
     RUN_TEST(test_intersecting_ray_with_non_cubic_bounding_box);
+    RUN_TEST(test_splitting_a_perfect_cube);
+    RUN_TEST(test_splitting_an_xwide_box);
+    RUN_TEST(test_splitting_an_ywide_box);
+    RUN_TEST(test_splitting_an_zwide_box);
     return UNITY_END();
 }

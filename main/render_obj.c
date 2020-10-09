@@ -12,7 +12,7 @@
 #include <wavefrontobj.h>
 
 CEXCEPTION_T e;
-void build_world(WORLD_World* world) {
+static void build_world(WORLD_World* world) {
     TUPLES_Color red, green, blue;
     TUPLES_init_color(&red, 1, 0, 0);
     TUPLES_init_color(&green, 0, 1, 0);
@@ -29,6 +29,11 @@ void build_world(WORLD_World* world) {
     PATTERN_delete(floor_pattern);
     PLANE_set_material(floor, material);
     MATERIAL_delete(material);
+}
+
+static void log_perf(UTILITIES_Timer_Results results, char* prefix) {
+    LOGGER_log(LOGGER_INFO, "%sWall: %.2f User: %.2f System: %.2f\n", prefix,  results.wall_time_seconds,
+               results.user_time_seconds, results.system_time_seconds);
 }
 
 int main(int argc, char *argv[]) {
@@ -55,7 +60,7 @@ int main(int argc, char *argv[]) {
                 LIGHTS_PointLight* light = LIGHTS_new_pointlight(light_position, light_color);
                 TUPLES_delete_all(light_position, light_color);
 
-                CAMERA_Camera* camera = CAMERA_new(320, 240, M_PI / 3.0);
+                CAMERA_Camera* camera = CAMERA_new(1920,1080, M_PI / 3.0);
                 TUPLES_Point* from = TUPLES_new_point(0, 1.5, -5);
                 TUPLES_Point* to = TUPLES_new_point(0, 1, 0);
                 TUPLES_Vector* up = TUPLES_new_vector(0, 1, 0);
@@ -66,7 +71,10 @@ int main(int argc, char *argv[]) {
 
                 WORLD_World* world = WORLD_new(light);
                 build_world(world);
+                UTILITIES_Timer* parse_timer = UTILITIES_Timer_start();
                 WAVEFRONTOBJ_Obj* obj = WAVEFRONTOBJ_parse_file_by_name(input_file);
+                UTILITIES_Timer_Results parse_results = UTILITIES_Timer_stop(parse_timer);
+                log_perf(parse_results, "Parse time: ");
                 GROUP_Group* obj_group = WAVEFRONTOBJ_get_default_group(obj);
                 MATRIX_Matrix* obj_group_scale = MATRIX_new_scaling(obj_scale, obj_scale, obj_scale);
                 GROUP_set_transform(obj_group, obj_group_scale);
@@ -80,11 +88,17 @@ int main(int argc, char *argv[]) {
                 obj_group_material->shininess = 400;
                 GROUP_set_material(obj_group, obj_group_material);
                 MATERIAL_delete(obj_group_material);
+                LOGGER_log(LOGGER_INFO, "Computing bounds...\n");
+                UTILITIES_Timer* divide_timer = UTILITIES_Timer_start();
+                SHAPE_divide((SHAPE_Shape*)obj_group, 5000);
+                UTILITIES_Timer_Results divide_results = UTILITIES_Timer_stop(divide_timer);
+                log_perf(divide_results, "Divide time: ");
                 WORLD_add_object(world, obj_group);
                 LOGGER_log(LOGGER_INFO, "Rendering...\n");
                 UTILITIES_Timer* render_timer = UTILITIES_Timer_start();
                 CANVAS_Canvas* canvas = CAMERA_render(camera, world);
                 UTILITIES_Timer_Results render_results = UTILITIES_Timer_stop(render_timer);
+                log_perf(render_results, "Render time: ");
 
                 char *filename = "render_obj.ppm";
                 LOGGER_log(LOGGER_INFO, "Writing file %s...\n", filename);
@@ -95,8 +109,6 @@ int main(int argc, char *argv[]) {
                 LIGHTS_delete_pointlight(light);
                 CAMERA_delete(camera);
                 CANVAS_delete(canvas);
-                LOGGER_log(LOGGER_INFO, "Wall: %.2f User: %.2f System: %.2f\n", render_results.wall_time_seconds,
-                           render_results.user_time_seconds, render_results.system_time_seconds);
             } Catch(e) {
         if (e == E_MALLOC_FAILED) {
             printf("Malloc failed.  Exiting\n");

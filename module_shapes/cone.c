@@ -23,7 +23,8 @@ const SHAPE_vtable CONE_vtable = {
         &CYLINDER_delete_shape,
         &CONE_local_normal_at,
         &SHAPE_default_shape_contains,
-        &CONE_bounds_of
+        &CONE_bounds_of,
+        NULL
 };
 
 CONE_Cone* CONE_new() {

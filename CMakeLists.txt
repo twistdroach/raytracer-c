@@ -7,10 +7,11 @@ endif()
 
 set(CMAKE_C_STANDARD 11)
 
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+add_compile_options(-Wall -Wextra -pedantic -Werror -fno-omit-frame-pointer)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-    add_compile_options(--coverage)
+    add_compile_options(--coverage -Wno-unknown-pragmas)
     add_link_options(--coverage)
+    set( USE_OpenMP OFF )
 endif()
 
 OPTION (USE_OpenMP "Use OpenMP" ON)

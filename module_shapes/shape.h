@@ -14,6 +14,7 @@ typedef struct SHAPE_vtable {
     void (*local_normal_at)(TUPLES_Vector* local_normal, SHAPE_Shape* shape, const TUPLES_Point* local_point, const RAY_Xs* hit);
     bool (*contains)(const SHAPE_Shape* a, const SHAPE_Shape* b);
     void (*bounds_of)(const SHAPE_Shape* shape, BOUND_Box* box); /** bounds_of sets the bounds of the shape in the box provided */
+    void (*divide)(SHAPE_Shape* shape, unsigned int minimum_size);
 } SHAPE_vtable;
 
 /**
@@ -69,4 +70,7 @@ void SHAPE_normal_to_world(TUPLES_Vector* result, const SHAPE_Shape* shape, cons
 
 bool SHAPE_default_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b);
 void SHAPE_parent_space_bounds_of(BOUND_Box* dest_box, const SHAPE_Shape* shape);
+
+void SHAPE_divide(SHAPE_Shape* shape, unsigned int minimum_size);
+
 #endif //DATA_STRUCTURES_SHAPE_H

@@ -17,7 +17,8 @@ const SHAPE_vtable TRIANGLE_vtable = {
         &TRIANGLE_delete_shape,
         &TRIANGLE_local_normal_at,
         &SHAPE_default_shape_contains,
-        &TRIANGLE_bounds_of
+        &TRIANGLE_bounds_of,
+        NULL
 };
 
 const SHAPE_vtable TRIANGLE_smooth_vtable = {
@@ -25,7 +26,8 @@ const SHAPE_vtable TRIANGLE_smooth_vtable = {
        &TRIANGLE_delete_shape,
        &TRIANGLE_smooth_local_normal_at,
        &SHAPE_default_shape_contains,
-       &TRIANGLE_bounds_of
+       &TRIANGLE_bounds_of,
+       NULL
 };
 
 TRIANGLE_Triangle* TRIANGLE_new_from_points(const TUPLES_Point* p1, const TUPLES_Point* p2, const TUPLES_Point* p3) {
