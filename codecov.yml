@@ -3,4 +3,5 @@ fixes:
   - "raytracer-c/::"
 ignore:
   - "external/"
-  - "main/"
+  - "demo/"
+  - "demo/"

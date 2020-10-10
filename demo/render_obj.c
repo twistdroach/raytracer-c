@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
                 MATERIAL_delete(obj_group_material);
                 LOGGER_log(LOGGER_INFO, "Computing bounds...\n");
                 UTILITIES_Timer* divide_timer = UTILITIES_Timer_start();
-                SHAPE_divide((SHAPE_Shape*)obj_group, 5000);
+                SHAPE_divide((SHAPE_Shape*)obj_group, 50);
                 UTILITIES_Timer_Results divide_results = UTILITIES_Timer_stop(divide_timer);
                 log_perf(divide_results, "Divide time: ");
                 WORLD_add_object(world, obj_group);

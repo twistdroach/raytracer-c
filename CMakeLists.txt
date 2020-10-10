@@ -31,8 +31,9 @@ find_package( Doxygen )
 if ( DOXYGEN_FOUND )
   set( DOXYGEN_EXCLUDE_PATTERNS
     */test/*
-    */main/*
-    */external/* )
+    */demo/*
+    */external/*
+    */main/* )
 
   set( DOXYGEN_OUTPUT_DIRECTORY doxygen )
   set( DOXYGEN_EXTRACT_ALL YES )
@@ -53,7 +54,7 @@ add_subdirectory(module_shapes)
 add_subdirectory(module_patterns)
 add_subdirectory(module_utilities)
 
-add_subdirectory(main)
+add_subdirectory(demo)
 
 include(CTest)
 add_subdirectory(test)
