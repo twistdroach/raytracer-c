@@ -5,6 +5,7 @@
 #include "exceptions.h"
 #include "matrix.h"
 #include "utilities.h"
+#include <immintrin.h>
 
 MATRIX_Matrix* MATRIX_new(uint width, uint height) {
     MATRIX_Matrix* m = malloc(sizeof(MATRIX_Matrix));
@@ -227,6 +228,7 @@ static void convert_matrix_to_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* src
 }
 #endif
 
+#ifndef __AVX2__
 static double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple, uint row) {
     return MATRIX_read_cell(matrix, row, 0) * tuple->x +
             MATRIX_read_cell(matrix, row, 1) * tuple->y +
@@ -235,6 +237,7 @@ static double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tu
 }
 
 void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
+    //Lenovo x250:Fri Oct  9 22:10:39  Info: Render time: Wall: 110.29 User: 423.10 System: 0.45
     assert(matrix);
     assert(tuple);
     assert(dest);
@@ -245,6 +248,38 @@ void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, cons
                             multiply_row_by_tuple(matrix, tuple, 2));
     dest->w = multiply_row_by_tuple(matrix, tuple, 3);
 }
+#else
+void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
+    //Lenovo x250: Fri Oct  9 22:07:35  Info: Render time: Wall: 97.89 User: 349.13 System: 0.51
+    assert(matrix);
+    assert(tuple);
+    assert(dest);
+    assert(matrix->height == 4 && matrix->width == 4);
+    __m256d tuple_x_vec = _mm256_set1_pd(tuple->x);
+    __m256d tuple_y_vec = _mm256_set1_pd(tuple->y);
+    __m256d tuple_z_vec = _mm256_set1_pd(tuple->z);
+    __m256d tuple_w_vec = _mm256_set1_pd(tuple->w);
+
+    __m256d m_col0_vec = _mm256_set_pd(matrix->data[12], matrix->data[8], matrix->data[4], matrix->data[0]);
+    __m256d m_col1_vec = _mm256_set_pd(matrix->data[13], matrix->data[9], matrix->data[5], matrix->data[1]);
+    __m256d m_col2_vec = _mm256_set_pd(matrix->data[14], matrix->data[10], matrix->data[6], matrix->data[2]);
+    __m256d m_col3_vec = _mm256_set_pd(matrix->data[15], matrix->data[11], matrix->data[7], matrix->data[3]);
+
+    __m256d col0_by_x = _mm256_mul_pd(m_col0_vec, tuple_x_vec);
+    __m256d col1_by_y = _mm256_mul_pd(m_col1_vec, tuple_y_vec);
+    __m256d col2_by_z = _mm256_mul_pd(m_col2_vec, tuple_z_vec);
+    __m256d col3_by_w = _mm256_mul_pd(m_col3_vec, tuple_w_vec);
+
+    __m256d sum = _mm256_add_pd(col3_by_w, col2_by_z);
+    sum = _mm256_add_pd(col1_by_y, sum);
+    sum = _mm256_add_pd(col0_by_x, sum);
+
+    dest->x = sum[0];
+    dest->y = sum[1];
+    dest->z = sum[2];
+    dest->w = sum[3];
+}
+#endif
 
 static void transpose_cell(MATRIX_Matrix* matrix, uint row, uint column) {
     double val = MATRIX_read_cell(matrix, row, column);

@@ -7,6 +7,11 @@ endif()
 
 set(CMAKE_C_STANDARD 11)
 
+OPTION (USE_AVX2 "Use AVX2" ON)
+IF(USE_AVX2)
+  add_compile_options(-mavx2)
+ENDIF()
+
 add_compile_options(-Wall -Wextra -pedantic -Werror -fno-omit-frame-pointer)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_compile_options(--coverage -Wno-unknown-pragmas)
