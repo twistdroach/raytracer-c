@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <sphere.h>
 
-CEXCEPTION_T e;
+CEXCEPTION_T global_exception;
 int main(void) {
     Try {
                 double wall_z = 10;
@@ -78,13 +78,13 @@ int main(void) {
                 SPHERE_delete(sphere);
                 CANVAS_delete(canvas);
                 TUPLES_delete_all(ray_origin);
-            } Catch(e) {
-        if (e == E_MALLOC_FAILED)
+            } Catch(global_exception) {
+        if (global_exception == E_MALLOC_FAILED)
             printf("Malloc failed.  Exiting\n");
-        else if (e == E_FILE_FAILED)
+        else if (global_exception == E_FILE_FAILED)
             printf("Failed to open test.ppm\n");
         else
-            printf("Unknown exception %i occurred\n", e);
+            printf("Unknown exception %i occurred\n", global_exception);
     }
     return 0;
 }

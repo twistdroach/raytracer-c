@@ -2,7 +2,7 @@
 #include "exceptions.h"
 #include <stdio.h>
 
-CEXCEPTION_T e;
+CEXCEPTION_T global_exception;
 int main(void) {
     Try {
         CANVAS_Canvas *canvas = CANVAS_new(900, 550);
@@ -32,13 +32,13 @@ int main(void) {
         TUPLES_delete(p);
         TUPLES_delete(red);
         CANVAS_delete(canvas);
-    } Catch(e) {
-        if (e == E_MALLOC_FAILED)
+    } Catch(global_exception) {
+        if (global_exception == E_MALLOC_FAILED)
             printf("Malloc failed.  Exiting\n");
-        else if (e == E_FILE_FAILED)
+        else if (global_exception == E_FILE_FAILED)
             printf("Failed to open test.ppm\n");
         else
-            printf("Unknown exception %i occurred\n", e);
+            printf("Unknown exception %i occurred\n", global_exception);
     }
     return 0;
 }

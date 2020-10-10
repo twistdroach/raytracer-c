@@ -10,7 +10,7 @@
 #include "pattern.h"
 #include <math.h>
 
-CEXCEPTION_T e;
+CEXCEPTION_T global_exception;
 void build_world(WORLD_World* world) {
     TUPLES_Color red, green, blue;
     TUPLES_init_color(&red, 1, 0, 0);
@@ -122,13 +122,13 @@ int main(void) {
                 CANVAS_delete(canvas);
                 LOGGER_log(LOGGER_INFO, "Wall: %.2f User: %.2f System: %.2f\n", render_results.wall_time_seconds,
                            render_results.user_time_seconds, render_results.system_time_seconds);
-            } Catch(e) {
-        if (e == E_MALLOC_FAILED)
+            } Catch(global_exception) {
+        if (global_exception == E_MALLOC_FAILED)
             printf("Malloc failed.  Exiting\n");
-        else if (e == E_FILE_FAILED)
+        else if (global_exception == E_FILE_FAILED)
             printf("Failed to open test.ppm\n");
         else
-            printf("Unknown exception %i occurred\n", e);
+            printf("Unknown exception %i occurred\n", global_exception);
     }
     return 0;
 }

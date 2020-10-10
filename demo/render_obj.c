@@ -11,7 +11,7 @@
 #include <math.h>
 #include <wavefrontobj.h>
 
-CEXCEPTION_T e;
+CEXCEPTION_T global_exception;
 static void build_world(WORLD_World* world) {
     TUPLES_Color red, green, blue;
     TUPLES_init_color(&red, 1, 0, 0);
@@ -109,15 +109,15 @@ int main(int argc, char *argv[]) {
                 LIGHTS_delete_pointlight(light);
                 CAMERA_delete(camera);
                 CANVAS_delete(canvas);
-            } Catch(e) {
-        if (e == E_MALLOC_FAILED) {
+            } Catch(global_exception) {
+        if (global_exception == E_MALLOC_FAILED) {
             printf("Malloc failed.  Exiting\n");
             exit(EXIT_FAILURE);
-        } else if (e == E_FILE_FAILED) {
+        } else if (global_exception == E_FILE_FAILED) {
             printf("Failed to open %s\n", input_file);
             exit(EXIT_FAILURE);
         } else {
-            printf("Unknown exception %i occurred\n", e);
+            printf("Unknown exception %i occurred\n", global_exception);
             exit(EXIT_FAILURE);
         }
     }
