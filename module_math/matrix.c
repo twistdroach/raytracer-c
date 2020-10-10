@@ -238,6 +238,7 @@ static double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tu
 
 void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
     //Lenovo x250:Fri Oct  9 22:10:39  Info: Render time: Wall: 110.29 User: 423.10 System: 0.45
+    //Beast: Fri Oct  9 22:24:56  Info: Render time: Wall: 29.11 User: 2088.06 System: 3.07
     assert(matrix);
     assert(tuple);
     assert(dest);
@@ -251,6 +252,7 @@ void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, cons
 #else
 void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
     //Lenovo x250: Fri Oct  9 22:07:35  Info: Render time: Wall: 97.89 User: 349.13 System: 0.51
+    //Beast: Fri Oct  9 22:19:58  Info: Render time: Wall: 26.30 User: 1859.25 System: 4.69
     assert(matrix);
     assert(tuple);
     assert(dest);
