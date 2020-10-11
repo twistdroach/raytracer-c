@@ -1,10 +1,32 @@
 # raytracer-c
 
+## Badges for CI build, static analysis, and code test coverage
 [![CI](https://github.com/twistdroach/raytracer-c/workflows/CI/badge.svg?branch=master)](https://github.com/twistdroach/raytracer-c/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/twistdroach/raytracer-c/branch/master/graph/badge.svg)](https://codecov.io/gh/twistdroach/raytracer-c)
 [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/twistdroach/raytracer-c.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/twistdroach/raytracer-c/context:cpp)
 
-Current executables (and sample output) are:
+## Current interesting features
+ * ([commit](https://github.com/twistdroach/raytracer-c/commit/595c005fdcf9f470f3911c22b6140c3465550fff), [commit](https://github.com/twistdroach/raytracer-c/commit/98fe9c79b22ff8ceb148cd8ebafbb9e2e580ca57), [commit](https://github.com/twistdroach/raytracer-c/commit/fd7b1612ee826a4fbac9c7dc6ce0a234a65c2201 )) Accelerated (algorithmically) using Bounded Volume Hierarchies (no kd trees)
+ * ([commit](https://github.com/twistdroach/raytracer-c/commit/34ca0eb36e417ad1657fb17438d179eac5236f45 )) Multithreaded using OpenMP (can be disabled via CMake option)
+ * ([commit](https://github.com/twistdroach/raytracer-c/commit/fcdb7cceb8586d99524d868ad38f0c41e904d809 )) Certain hot spots (only 1 so far that made sense) optimized using AVX2 intrinsics (again can be disabled via CMake)
+ * ([commit](https://github.com/twistdroach/raytracer-c/commit/3590c195885751de5915b717887d4f7d47de3ffa )) Doxygen doc is generated if doxygen is found by CMake (need to find an easy way to host this)
+ * Load Wavefront OBJ files (no MTL support yet though), with triangle smoothing via normal interpolation
+
+## Geometry
+ * Spheres, Pleanes, Cylinders, Cubes, & Cones
+ * Triangles (and loading them from OBJ) files
+ * Constructive Solid Geometry (CSG) allows composing complex shapes from the above primitives with three operations: Union, Intersection, and Difference
+ * Groups to allow operations and materials to be applied to many primitives (or complex objects) at once
+
+## Limitations/Future
+ * Only single point light supported
+ * Need to make so sort of Render executable that would support a simple (yaml?) scene syntax
+ * Textures!
+ * Various cleanup & documentation (see issues)
+ * BVH for CSG objects - only single AABB supported at the moment.
+ 
+
+# Demo Executables 
 
 ## demo/parabola
 
@@ -96,3 +118,4 @@ In any event, flamegraphs are a fun way to see what is going on.
 Add some constructive solid geometry - aka CSG...this is a sphere with a cubice bite taken out of it.
 
 ![](images/csg.png)
+
