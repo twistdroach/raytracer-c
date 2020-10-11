@@ -73,12 +73,15 @@ int main(int argc, char *argv[]) {
                 build_world(world);
                 UTILITIES_Timer* parse_timer = UTILITIES_Timer_start();
                 WAVEFRONTOBJ_Obj* obj = WAVEFRONTOBJ_parse_file_by_name(input_file);
+                WAVEFRONTOBJ_normalize(obj);
                 UTILITIES_Timer_Results parse_results = UTILITIES_Timer_stop(parse_timer);
                 log_perf(parse_results, "Parse time: ");
                 GROUP_Group* obj_group = WAVEFRONTOBJ_get_default_group(obj);
                 MATRIX_Matrix* obj_group_scale = MATRIX_new_scaling(obj_scale, obj_scale, obj_scale);
-                GROUP_set_transform(obj_group, obj_group_scale);
-                MATRIX_delete(obj_group_scale);
+                MATRIX_Matrix* current_transform = GROUP_get_transform(obj_group);
+                MATRIX_Matrix* new_transform = MATRIX_multiply(obj_group_scale, current_transform);
+                GROUP_set_transform(obj_group, new_transform);
+                MATRIX_delete_all(obj_group_scale, new_transform);
                 MATERIAL_Material* obj_group_material = MATERIAL_new();
                 obj_group_material->refractive_index = 1.5;
                 obj_group_material->ambient = 0;
@@ -90,7 +93,7 @@ int main(int argc, char *argv[]) {
                 MATERIAL_delete(obj_group_material);
                 LOGGER_log(LOGGER_INFO, "Computing bounds...\n");
                 UTILITIES_Timer* divide_timer = UTILITIES_Timer_start();
-                SHAPE_divide((SHAPE_Shape*)obj_group, 50);
+                SHAPE_divide((SHAPE_Shape*)obj_group, 1000);
                 UTILITIES_Timer_Results divide_results = UTILITIES_Timer_stop(divide_timer);
                 log_perf(divide_results, "Divide time: ");
                 WORLD_add_object(world, obj_group);

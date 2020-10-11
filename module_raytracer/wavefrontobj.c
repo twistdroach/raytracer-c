@@ -342,3 +342,26 @@ void WAVEFRONTOBJ_delete(WAVEFRONTOBJ_Obj* obj) {
     WAVEFRONTOBJ_destroy(obj);
     free(obj);
 }
+
+void WAVEFRONTOBJ_normalize(WAVEFRONTOBJ_Obj* obj) {
+    assert(obj);
+    BOUND_Box box;
+    SHAPE_bounds_of(obj->default_group, &box);
+    double dx = box.max.x - box.min.x;
+    double dy = box.max.y - box.min.y;
+    double dz = box.max.z - box.min.z;
+
+    TUPLES_Vector delta;
+    TUPLES_Point  origin;
+    TUPLES_init_point(&origin, 0, 0, 0);
+    TUPLES_Point middle_of_object;
+    TUPLES_init_point(&middle_of_object, box.min.x + (dx/2), box.min.y, box.min.z + (dz/2));
+    TUPLES_subtract(&delta, &origin, &middle_of_object);
+    MATRIX_Matrix* translation = MATRIX_new_translation(delta.x, delta.y, delta.z);
+
+    double scalefactor = 1 / (UTILITIES_max(dx, dy, dz) / 2.0);
+    MATRIX_Matrix* scale_matrix = MATRIX_new_scaling(scalefactor, scalefactor, scalefactor);
+    MATRIX_Matrix* new_transform = MATRIX_multiply_many(translation, scale_matrix);
+    GROUP_set_transform(obj->default_group, new_transform);
+    MATRIX_delete_all(scale_matrix, new_transform, translation);
+}

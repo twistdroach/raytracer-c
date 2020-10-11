@@ -69,6 +69,37 @@ void test_parse_vertex() {
     WAVEFRONTOBJ_delete(obj);
 }
 
+void test_wavefrontobj_normalize() {
+    char* data = "\n"
+                 "v -10 10 0\n"
+                 "v -10 0 0\n"
+                 "v 10 0 0\n"
+                 "v 10 10 0\n"
+                 "\n"
+                 "f 1 2 3\n"
+                 "f 1 3 4\n"
+                 "\n";
+
+    volatile CEXCEPTION_T e;
+    Try {
+                WAVEFRONTOBJ_Obj* obj = from_string(data);
+                WAVEFRONTOBJ_normalize(obj);
+                BOUND_Box box;
+                SHAPE_parent_space_bounds_of(&box, (SHAPE_Shape*)WAVEFRONTOBJ_get_default_group(obj));
+                TEST_ASSERT_LESS_OR_EQUAL(1.0, box.max.x);
+                TEST_ASSERT_LESS_OR_EQUAL(1.0, box.max.y);
+                TEST_ASSERT_LESS_OR_EQUAL(1.0, box.max.z);
+                TEST_ASSERT_GREATER_OR_EQUAL(-1.0, box.min.x);
+                TEST_ASSERT_GREATER_OR_EQUAL(-1.0, box.min.y);
+                TEST_ASSERT_GREATER_OR_EQUAL(-1.0, box.min.z);
+                WAVEFRONTOBJ_delete(obj);
+            }
+    Catch(e) {
+        printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+        TEST_FAIL_MESSAGE("Caught exception");
+    }
+}
+
 void test_parse_triangle_face() {
     char* data = "\n"
                  "v -1 1 0\n"
@@ -257,5 +288,6 @@ int main(void) {
     RUN_TEST(test_parse_many_poly_teapot);
     RUN_TEST(test_vertex_normal_records);
     RUN_TEST(test_faces_with_normals);
+    RUN_TEST(test_wavefrontobj_normalize);
     UNITY_END();
 }
