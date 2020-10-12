@@ -24,13 +24,20 @@ bool CSG_shape_contains(const SHAPE_Shape* a, const SHAPE_Shape* b) {
            acsg->right->vtable->contains(acsg->right, b);
 }
 
+void CSG_shape_divide(SHAPE_Shape* a_csg, unsigned int minimum_size) {
+    assert(a_csg);
+    CSG_Csg* csg = (CSG_Csg*) a_csg;
+    SHAPE_divide(csg->left, minimum_size);
+    SHAPE_divide(csg->right, minimum_size);
+}
+
 const SHAPE_vtable CSG_vtable = {
         &CSG_local_intersect,
         &CSG_delete_shape,
         &CSG_local_normal_at,
         &CSG_shape_contains,
         &CSG_bounds_of,
-        NULL
+        &CSG_shape_divide
 };
 
 bool CSG_intersection_allowed(CSG_Operation op, bool lhit, bool inl, bool inr) {

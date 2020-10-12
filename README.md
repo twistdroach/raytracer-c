@@ -23,7 +23,6 @@
  * Need to make so sort of Render executable that would support a simple (yaml?) scene syntax
  * Textures!
  * Various cleanup & documentation (see issues)
- * BVH for CSG objects - only single AABB supported at the moment.
  
 
 # Demo Executables 

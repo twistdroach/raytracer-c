@@ -3,6 +3,7 @@
 #include <sphere.h>
 #include <cube.h>
 #include <testshape.h>
+#include <group.h>
 
 void setUp() {}
 void tearDown() {}
@@ -181,6 +182,35 @@ void test_intersect_ray_and_csg_doesnt_test_children_if_box_is_not_hit() {
     CSG_delete(csg);
 }
 
+void test_csg_should_delegate_divide_to_children() {
+    SPHERE_Sphere* s1 = SPHERE_new();
+    MATRIX_Matrix* s1_transform = MATRIX_new_translation(-1.5, 0, 0);
+    SPHERE_set_transform(s1, s1_transform);
+
+    SPHERE_Sphere* s2 = SPHERE_new();
+    MATRIX_Matrix* s2_transform = MATRIX_new_translation(1.5, 0, 0);
+    SPHERE_set_transform(s2, s2_transform);
+
+    MATRIX_delete_all(s1_transform, s2_transform);
+
+    GROUP_Group* g = GROUP_new();
+    GROUP_add_child(g, s1);
+    GROUP_add_child(g, s2);
+
+    SPHERE_Sphere* s3 = SPHERE_new();
+
+    CSG_Csg* csg = CSG_new(CSG_Union, g, s3);
+    SHAPE_divide((SHAPE_Shape*)csg, 1);
+    TEST_ASSERT_FALSE(GROUP_is_empty(g));
+    TEST_ASSERT_FALSE(GROUP_contains(g, s1));
+    TEST_ASSERT_FALSE(GROUP_contains(g, s2));
+
+    TEST_ASSERT_TRUE(GROUP_contains(GROUP_get_child(g, 0), s1));
+    TEST_ASSERT_TRUE(GROUP_contains(GROUP_get_child(g, 1), s2));
+
+    CSG_delete(csg);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -192,5 +222,6 @@ int main(void)
     RUN_TEST(test_csg_has_bounding_box_that_contains_its_children);
     RUN_TEST(test_intersect_ray_and_csg_doesnt_test_children_if_box_is_not_hit);
     RUN_TEST(test_intersect_ray_and_csg_test_children_if_box_is_hit);
+    RUN_TEST(test_csg_should_delegate_divide_to_children);
     return UNITY_END();
 }
