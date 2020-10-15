@@ -1,10 +1,7 @@
-//
-// Created by zrowitsch on 8/11/20.
-//
-
 #include <assert.h>
 #include <exceptions.h>
 #include "lights.h"
+#include "world.h"
 
 LIGHTS_PointLight* LIGHTS_new_pointlight(const TUPLES_Point* p, const TUPLES_Color* c) {
     assert(p);
@@ -51,4 +48,14 @@ const TUPLES_Color* LIGHTS_get_color(const LIGHTS_PointLight* light) {
     assert(light);
     return &light->intensity;
 
+}
+
+double LIGHTS_intensity_at(const LIGHTS_PointLight* light, const TUPLES_Point* point, const WORLD_World* world) {
+    assert(light);
+    assert(point);
+    assert(world);
+    if (WORLD_is_shadowed(world, &light->position, point)) {
+        return 0.0;
+    }
+    return 1.0;
 }

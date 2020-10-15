@@ -66,8 +66,6 @@ void test_shading_an_intersection() {
 }
 
 void test_shading_an_intersection_from_inside() {
-    //HMM this test fails because the hit is just barely far enough from zero to cause shadow to be triggered.
-    //commenting out for now.
     WORLD_World* world = construct_test_world();
 
     TUPLES_Point light_origin;
@@ -138,7 +136,7 @@ void test_color_with_intersection_behind_ray() {
     RAY_delete(ray);
     destruct_test_world(world);
 }
-
+#if 0
 void test_no_shadow_when_nothing_collinear_with_point_and_light() {
     WORLD_World* world = construct_test_world();
     TUPLES_Point p;
@@ -170,6 +168,7 @@ void test_shadow_when_object_is_behind_the_point() {
     TEST_ASSERT_FALSE(WORLD_is_shadowed(world, &p));
     destruct_test_world(world);
 }
+#endif
 
 void test_shade_hit_with_a_point_in_shadow() {
     TUPLES_Point light_p;
@@ -523,6 +522,26 @@ void test_shade_hit_with_a_reflective_transparent_material() {
     destruct_test_world(world);
 }
 
+void is_shadow_tests_for_occlusion_between_two_points(double x, double y, double z, bool expected_result) {
+    WORLD_World* world = construct_test_world();
+    TUPLES_Point light_position, point;
+    TUPLES_init_point(&light_position, -10, -10, -10);
+    TUPLES_init_point(&point, x, y, z);
+    bool result = WORLD_is_shadowed(world, &light_position, &point);
+    if (result != expected_result) {
+        printf("Failed testing %.1f, %.1f, %.1f, expected %u\n", x, y, z, expected_result);
+        TEST_FAIL();
+    }
+    destruct_test_world(world);
+}
+
+void test_is_shadow_tests_for_occlusion_between_two_points() {
+    is_shadow_tests_for_occlusion_between_two_points(-10, -10, -10, false);
+    is_shadow_tests_for_occlusion_between_two_points(10, 10, 10, true);
+    is_shadow_tests_for_occlusion_between_two_points(-20, -20, -20, false);
+    is_shadow_tests_for_occlusion_between_two_points(-5, -5, -5, false);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -534,10 +553,12 @@ int main(void)
     RUN_TEST(test_color_when_ray_misses);
     RUN_TEST(test_color_when_ray_hits);
     RUN_TEST(test_color_with_intersection_behind_ray);
+#if 0
     RUN_TEST(test_no_shadow_when_nothing_collinear_with_point_and_light);
     RUN_TEST(test_shadow_when_object_is_between_point_and_light);
     RUN_TEST(test_shadow_when_object_is_behind_the_light);
     RUN_TEST(test_shadow_when_object_is_behind_the_point);
+#endif
     RUN_TEST(test_shade_hit_with_a_point_in_shadow);
     RUN_TEST(test_shade_hit_for_reflective_material);
     RUN_TEST(test_reflected_color_for_nonreflective_material);
@@ -550,5 +571,6 @@ int main(void)
     RUN_TEST(test_refracted_color_with_refracted_ray);
     RUN_TEST(test_shade_hit_with_transparent_material);
     RUN_TEST(test_shade_hit_with_a_reflective_transparent_material);
+    RUN_TEST(test_is_shadow_tests_for_occlusion_between_two_points);
     return UNITY_END();
 }

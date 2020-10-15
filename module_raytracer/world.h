@@ -11,10 +11,9 @@ unsigned int WORLD_default_ttl;
 WORLD_World* WORLD_new(const LIGHTS_PointLight* light);
 void WORLD_delete(WORLD_World* world);
 
-/** Add a sphere to the world.  In the future this will be
- * expanded to other object types.
+/** Add a shape to the world.
  *
- * Ownership of the actual sphere remains with the caller, this
+ * Ownership of the actual allocation remains with the caller, this
  * just adds a reference to it.
  *
  * @param world
@@ -41,7 +40,7 @@ void WORLD_set_light(WORLD_World* world, const LIGHTS_PointLight*);
 RAY_Intersections* WORLD_intersect(const WORLD_World* world, const RAY_Ray* ray);
 void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* computation, unsigned int ttl);
 void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray* ray, unsigned int ttl);
-bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* point);
+bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* light_position, const TUPLES_Point* point);
 void WORLD_reflected_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps, unsigned int ttl);
 void WORLD_refracted_color(TUPLES_Color* dest, const WORLD_World* world, const RAY_Computations* comps, unsigned int ttl);
 #endif //DATA_STRUCTURES_WORLD_H

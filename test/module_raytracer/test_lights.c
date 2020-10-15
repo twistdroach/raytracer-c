@@ -2,6 +2,8 @@
 #include <tuples.h>
 #include <lights.h>
 
+#include "test_world_utils.h"
+
 void setUp() {}
 void tearDown() {}
 
@@ -37,11 +39,36 @@ void test_get_color() {
     LIGHTS_delete_pointlight(pl);
 }
 
+void point_lights_evaluate_intensity_at_single_point(double x, double y, double z, double expected_result) {
+    WORLD_World* world = construct_test_world();
+    const LIGHTS_PointLight* light = WORLD_get_light(world);
+    TUPLES_Point p;
+    TUPLES_init_point(&p, x, y, z);
+
+    double result = LIGHTS_intensity_at(light, &p, world);
+    if (!double_equal(expected_result, result)) {
+        printf("Failed for %f, %f, %f expected %f but got %f\n", x, y, z, expected_result, result);
+        TEST_FAIL();
+    }
+    destruct_test_world(world);
+}
+
+void test_point_lights_evaluate_intensity_at_single_point() {
+    point_lights_evaluate_intensity_at_single_point(0, 1.0001, 0, 1.0);
+    point_lights_evaluate_intensity_at_single_point(-1.0001, 0, 0, 1.0);
+    point_lights_evaluate_intensity_at_single_point(0, 0, -1.0001, 1.0);
+    point_lights_evaluate_intensity_at_single_point(0, 0, 1.0001, 0.0);
+    point_lights_evaluate_intensity_at_single_point(1.0001, 0, 0, 0.0);
+    point_lights_evaluate_intensity_at_single_point(0, -1.0001, 0, 0.0);
+    point_lights_evaluate_intensity_at_single_point(0, 0, 0, 0.0);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
     RUN_TEST(test_pointlight_has_position_and_intensity);
     RUN_TEST(test_light_copy);
     RUN_TEST(test_get_color);
+    RUN_TEST(test_point_lights_evaluate_intensity_at_single_point);
     return UNITY_END();
 }

@@ -93,7 +93,7 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
     assert(world);
     assert(computation);
 
-    bool shadowed = WORLD_is_shadowed(world, &computation->over_point);
+    double intensity = LIGHTS_intensity_at(WORLD_get_light(world), &computation->over_point, world);
 
     MATERIAL_lighting(dest,
                       (SHAPE_Shape*)computation->object,
@@ -101,7 +101,7 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
                       &computation->over_point,
                       &computation->eyev,
                       &computation->normalv,
-                      shadowed);
+                      intensity);
 
     TUPLES_Color reflected, refracted;
     WORLD_reflected_color(&reflected, world, computation, ttl);
@@ -132,10 +132,15 @@ void WORLD_color_at(TUPLES_Color* dest, const WORLD_World* world, const RAY_Ray*
     RAY_delete_intersections(intersections);
 }
 
-bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* point) {
+bool WORLD_is_shadowed(const WORLD_World* world, const TUPLES_Point* light_position, const TUPLES_Point* point) {
+    assert(world);
+    assert(light_position);
+    assert(point);
+
     TUPLES_Vector direction;
-    TUPLES_subtract(&direction, LIGHTS_get_origin(WORLD_get_light(world)), point);
+    TUPLES_subtract(&direction, light_position, point);
     double distance = TUPLES_magnitude(&direction);
+    if (double_equal(0, distance)) return false;
     TUPLES_normalize(&direction);
 
     RAY_Ray ray;
