@@ -46,7 +46,6 @@ target_link_libraries(module_shapes_cone
         Unity
         m)
 add_test(shapes_cone module_shapes_cone)
-set_tests_properties(shapes_cone PROPERTIES DISABLED True)
 
 add_executable(module_shapes_group
         test_group.c)

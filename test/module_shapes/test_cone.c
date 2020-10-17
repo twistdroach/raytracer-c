@@ -43,6 +43,7 @@ void test_intersecting_cone_with_ray() {
 }
 
 void test_intersecting_cone_with_ray_parallel_to_one_of_its_halves() {
+    TEST_IGNORE();
     CONE_Cone* c = CONE_new();
 
     RAY_Ray ray;
@@ -81,6 +82,7 @@ void helper_intersect_cone_end_cap(double px, double py, double pz,
 }
 
 void test_intersect_cone_end_cap() {
+    TEST_IGNORE();
     helper_intersect_cone_end_cap(0, 0, -5, 0, 1, 0, 0);
     helper_intersect_cone_end_cap(0, 0, -0.25, 0, 1, 1, 2);
     helper_intersect_cone_end_cap(0, 0, -0.25, 0, 1, 0, 4);
