@@ -95,3 +95,9 @@ target_link_libraries(csg PRIVATE
         module_patterns
         module_raytracer
         module_shapes)
+
+add_executable(sphere_spin sphere_spin.c)
+target_link_libraries(sphere_spin PRIVATE
+        module_raytracer
+        module_patterns
+        module_shapes)

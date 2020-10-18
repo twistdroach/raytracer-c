@@ -118,3 +118,12 @@ Add some constructive solid geometry - aka CSG...this is a sphere with a cubice 
 
 ![](images/csg.png)
 
+## demo/sphere_spin
+
+Simple spin of a camera around a sphere on a parametric path of the form
+```
+x(t) = 5*cos(t) - 2.5
+y(t) = 5sin(2t)
+```
+
+[![Watch the video](https://img.youtube.com/vi/CbSXbAcwYNg/maxresdefault.jpg)](https://youtu.be/CbSXbAcwYNg)
