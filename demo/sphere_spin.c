@@ -81,7 +81,7 @@ int main(void) {
                 unsigned int frame = 0;
 
                 UTILITIES_Timer* render_timer = UTILITIES_Timer_start();
-                for (double t; t < 2 * M_PI; t += t_per_frame) {
+                for (double t = 0; t < 2 * M_PI; t += t_per_frame) {
 
                     CAMERA_Camera* camera = CAMERA_new(3840, 2160, M_PI / 3.0);
                     //CAMERA_Camera* camera = CAMERA_new(1920, 1080, M_PI / 3.0);
