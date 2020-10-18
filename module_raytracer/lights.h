@@ -4,10 +4,34 @@
 #include "tuples.h"
 typedef struct WORLD_World WORLD_World;
 
-typedef struct LIGHTS_PointLight {
+typedef struct LIGHTS_Light {
     TUPLES_Point position;
     TUPLES_Color intensity;
-} LIGHTS_PointLight;
+    double (*intensity_at)(const struct LIGHTS_Light* light, const TUPLES_Point* point, const WORLD_World* world);
+} LIGHTS_Light;
+
+typedef struct LIGHTS_Light LIGHTS_PointLight;
+
+typedef struct LIGHTS_AreaLight {
+    union {
+        LIGHTS_Light light;
+        struct {
+            TUPLES_Point position;
+            TUPLES_Color intensity;
+            double (*intensity_at)(const struct LIGHTS_Light* light, const TUPLES_Point* point, const WORLD_World* world);
+        };
+    };
+    TUPLES_Vector uvec;
+    unsigned int usteps;
+    TUPLES_Vector vvec;
+    unsigned int vsteps;
+    unsigned int samples;
+    TUPLES_Point corner;
+} LIGHTS_AreaLight;
+
+LIGHTS_AreaLight* LIGHTS_new_arealight(const TUPLES_Point* corner, const TUPLES_Vector* uvec, unsigned int usteps, const TUPLES_Vector* vvec, unsigned int vsteps, const TUPLES_Color* color);
+void LIGHTS_point_on_area_light(TUPLES_Point* dest, const LIGHTS_AreaLight* light, unsigned int u, unsigned int v);
+void LIGHTS_delete_arealight(LIGHTS_AreaLight* pl);
 
 LIGHTS_PointLight* LIGHTS_new_pointlight(const TUPLES_Point* p, const TUPLES_Color* c);
 void LIGHTS_init_pointlight(LIGHTS_PointLight* pl, const TUPLES_Point* p, const TUPLES_Color* c);
