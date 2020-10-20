@@ -21,7 +21,7 @@ void WORLD_init(WORLD_World* world, const LIGHTS_PointLight* light) {
     world->object_count = 0;
 }
 
-WORLD_World* WORLD_new(const LIGHTS_PointLight* light) {
+WORLD_World* WORLD_new(const LIGHTS_Light* light) {
     assert(light);
     WORLD_World* world = malloc(sizeof(WORLD_World));
     if (!world)

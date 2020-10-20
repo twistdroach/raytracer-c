@@ -8,7 +8,7 @@
 typedef struct WORLD_World WORLD_World;
 unsigned int WORLD_default_ttl;
 
-WORLD_World* WORLD_new(const LIGHTS_PointLight* light);
+WORLD_World* WORLD_new(const LIGHTS_Light* light);
 void WORLD_delete(WORLD_World* world);
 
 /** Add a shape to the world.

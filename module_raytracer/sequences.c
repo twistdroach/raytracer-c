@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <exceptions.h>
 #include <string.h>
+#include <utilities.h>
 
 typedef struct SEQUENCES_Sequence {
     unsigned int    count;
@@ -29,11 +30,15 @@ void SEQUENCES_delete(SEQUENCES_Sequence* sequence) {
 
 }
 double SEQUENCES_next(SEQUENCES_Sequence* sequence) {
-#pragma omp critical SEQUENCES_next
-    assert(sequence);
-    double r = sequence->seq[sequence->next_ndx];
-    if(++sequence->next_ndx == sequence->count) {
-        sequence->next_ndx = 0;
+    double r = 0;
+    #pragma omp critical(SEQUENCES_next)
+    {
+        assert(sequence);
+        r = sequence->seq[sequence->next_ndx];
+        sequence->next_ndx++;
+        if (sequence->next_ndx == sequence->count) {
+            sequence->next_ndx = 0;
+        }
     }
     return r;
 }
@@ -42,4 +47,13 @@ SEQUENCES_Sequence* SEQUENCES_copy(SEQUENCES_Sequence* sequence) {
     SEQUENCES_Sequence* seq = SEQUENCES_new(sequence->count, sequence->seq);
     seq->next_ndx = sequence->next_ndx;
     return seq;
+}
+
+SEQUENCES_Sequence* SEQUENCES_new_random(unsigned int count) {
+    assert(count >= 1);
+    double rands[count];
+    for (unsigned int ndx = 0; ndx < count; ndx++) {
+        rands[ndx] = UTILITIES_random_double(0, 1);
+    }
+    return SEQUENCES_new(count, rands);
 }
