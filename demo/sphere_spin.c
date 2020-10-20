@@ -24,7 +24,6 @@ void build_world(WORLD_World* world) {
     WORLD_add_object(world, floor);
     MATERIAL_Material* material = MATERIAL_new();
     material->specular = 0;
-//    PATTERN_Pattern* floor_pattern = PATTERN_new_stripe(&red, &green);
     PATTERN_Pattern* floor_pattern = PATTERN_new_checkers(&red, &green);
     MATRIX_Matrix* pattern_transform = MATRIX_new_rotation_y(-M_PI / 5);
     PATTERN_set_transform(floor_pattern, pattern_transform);
@@ -54,7 +53,7 @@ void build_world(WORLD_World* world) {
 
 void generate_coordinates(TUPLES_Point* dest, double t) {
     assert(dest);
-    assert(t > 0);
+    assert(t > 0 || double_equal(t, 0));
     assert(t <= M_2_PI);
     //double y = 1.75;
     double y = 2.75;
@@ -66,12 +65,20 @@ void generate_coordinates(TUPLES_Point* dest, double t) {
 int main(void) {
     Try {
                 LOGGER_log(LOGGER_INFO, "Building world...\n");
-                TUPLES_Point* light_position = TUPLES_new_point(-10, 10, -10);
-                TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-                LIGHTS_PointLight* light = LIGHTS_new_pointlight(light_position, light_color);
-                TUPLES_delete_all(light_position, light_color);
+                TUPLES_Point light_position;
+                TUPLES_init_point(&light_position, -10, 10, -10);
+                TUPLES_Color light_color;
+                TUPLES_init_color(&light_color, 1, 1, 1);
+                TUPLES_Vector v1, v2;
+                TUPLES_init_vector(&v1, 4, 0, 0);
+                TUPLES_init_vector(&v2, 0, 3, 0);
 
-                WORLD_World* world = WORLD_new(light);
+                LIGHTS_AreaLight* light = LIGHTS_new_arealight(&light_position, &v1, 8, &v2, 8, &light_color);
+                SEQUENCES_Sequence* seq = SEQUENCES_new_random(128);
+                LIGHTS_set_jitter_on_area_light(light, seq);
+                SEQUENCES_delete(seq);
+
+                WORLD_World* world = WORLD_new((LIGHTS_Light*)light);
                 build_world(world);
 
                 double fps = 60;
@@ -83,8 +90,9 @@ int main(void) {
                 UTILITIES_Timer* render_timer = UTILITIES_Timer_start();
                 for (double t = 0; t < 2 * M_PI; t += t_per_frame) {
 
-                    CAMERA_Camera* camera = CAMERA_new(3840, 2160, M_PI / 3.0);
+                    //CAMERA_Camera* camera = CAMERA_new(320, 240, M_PI / 3.0);
                     //CAMERA_Camera* camera = CAMERA_new(1920, 1080, M_PI / 3.0);
+                    CAMERA_Camera* camera = CAMERA_new(3840, 2160, M_PI / 3.0);
                     TUPLES_Point from;
                     generate_coordinates(&from, t);
                     TUPLES_Point* to = TUPLES_new_point(0, 1, 0);
@@ -112,7 +120,7 @@ int main(void) {
                                render_results.user_time_seconds, render_results.system_time_seconds);
                 WORLD_delete_all_objects(world);
                 WORLD_delete(world);
-                LIGHTS_delete_pointlight(light);
+                LIGHTS_delete_arealight(light);
             } Catch(global_exception) {
             if (global_exception == E_MALLOC_FAILED)
                 printf("Malloc failed.  Exiting\n");
