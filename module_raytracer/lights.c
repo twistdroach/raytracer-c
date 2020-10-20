@@ -108,6 +108,7 @@ LIGHTS_AreaLight* LIGHTS_new_arealight(const TUPLES_Point* corner, const TUPLES_
     TUPLES_add(&light->position, corner, &uvec_tmp);
     TUPLES_add(&light->position, &light->position, &vvec_tmp);
     light->intensity_at = arealight_intensity_at;
+    light->sequence = NULL;
     return light;
 }
 
@@ -115,13 +116,34 @@ void LIGHTS_point_on_area_light(TUPLES_Point* dest, const LIGHTS_AreaLight* ligh
     assert(dest);
     assert(light);
     TUPLES_Vector uvec_tmp, vvec_tmp;
-    TUPLES_multiply(&uvec_tmp, &light->uvec, u + 0.5);
-    TUPLES_multiply(&vvec_tmp, &light->vvec, v + 0.5);
+    double uvec_offset = u + (light->sequence ? SEQUENCES_next(light->sequence) : 0.5);
+    double vvec_offset = v + (light->sequence ? SEQUENCES_next(light->sequence) : 0.5);
+    TUPLES_multiply(&uvec_tmp, &light->uvec, uvec_offset);
+    TUPLES_multiply(&vvec_tmp, &light->vvec, vvec_offset);
     TUPLES_add(dest, &light->corner, &uvec_tmp);
     TUPLES_add(dest, dest, &vvec_tmp);
 }
 
 void LIGHTS_delete_arealight(LIGHTS_AreaLight* l) {
     assert(l);
+    if (l->sequence) {
+       SEQUENCES_delete(l->sequence);
+    }
     free(l);
+}
+
+void LIGHTS_set_jitter_on_area_light(LIGHTS_AreaLight* light, SEQUENCES_Sequence* seq) {
+    assert(light);
+    assert(seq);
+    if (light->sequence) {
+        SEQUENCES_delete(light->sequence);
+    }
+    light->sequence = SEQUENCES_copy(seq);
+}
+
+double LIGHTS_intensity_at(const LIGHTS_Light* light, const TUPLES_Point* point, const WORLD_World* world) {
+    assert(light);
+    assert(point);
+    assert(world);
+    return light->intensity_at(light, point, world);
 }

@@ -1,8 +1,10 @@
 #include <unity.h>
 #include <tuples.h>
 #include <lights.h>
+#include <sequences.h>
 
 #include "test_world_utils.h"
+#include "testutils.h"
 
 void setUp() {}
 void tearDown() {}
@@ -144,6 +146,62 @@ void test_area_light_intensity_function() {
     area_light_intensity_function(0, 0, -2, 1);
 }
 
+void find_single_point_on_a_jittered_area(unsigned int u, unsigned int v, double x, double y, double z) {
+    TUPLES_Point corner;
+    TUPLES_init_point(&corner, 0, 0, 0);
+    TUPLES_Vector v1, v2;
+    TUPLES_init_vector(&v1, 2, 0, 0);
+    TUPLES_init_vector(&v2, 0, 0, 1);
+    TUPLES_Color color;
+    TUPLES_init_color(&color, 1, 1, 1);
+    LIGHTS_AreaLight* light = LIGHTS_new_arealight(&corner, &v1, 4, &v2, 2, &color);
+    SEQUENCES_Sequence* seq = SEQUENCES_new(2, (double[]) {0.3, 0.7});
+    LIGHTS_set_jitter_on_area_light(light, seq);
+    SEQUENCES_delete(seq);
+    TUPLES_Point expected, result;
+    TUPLES_init_point(&expected, x, y, z);
+    LIGHTS_point_on_area_light(&result, light, u, v);
+    test_tuples(&expected, &result);
+    LIGHTS_delete_arealight(light);
+}
+
+void test_find_single_point_on_a_jittered_area() {
+    find_single_point_on_a_jittered_area(0, 0, 0.15, 0, 0.35);
+    find_single_point_on_a_jittered_area(1, 0, 0.65, 0, 0.35);
+    find_single_point_on_a_jittered_area(0, 1, 0.15, 0, 0.85);
+    find_single_point_on_a_jittered_area(2, 0, 1.15, 0, 0.35);
+    find_single_point_on_a_jittered_area(3, 1, 1.65, 0, 0.85);
+}
+
+void area_light_with_jittered_samples(double x, double y, double z, double expected_intensity) {
+    WORLD_World* world = construct_test_world();
+    TUPLES_Point corner;
+    TUPLES_init_point(&corner, -0.5, -0.5, -5);
+    TUPLES_Vector v1, v2;
+    TUPLES_init_vector(&v1, 1, 0, 0);
+    TUPLES_init_vector(&v2, 0, 1, 0);
+    TUPLES_Color color;
+    TUPLES_init_color(&color, 1, 1, 1);
+    LIGHTS_AreaLight* light = LIGHTS_new_arealight(&corner, &v1, 2, &v2, 2, &color);
+    SEQUENCES_Sequence* seq = SEQUENCES_new(5, (double[]) {0.7, 0.3, 0.9, 0.1, 0.5});
+    LIGHTS_set_jitter_on_area_light(light, seq);
+    SEQUENCES_delete(seq);
+    TUPLES_Point test_point;
+    TUPLES_init_point(&test_point, x, y, z);
+    double result = LIGHTS_intensity_at((LIGHTS_Light*)light, &test_point, world);
+    TEST_ASSERT_EQUAL_DOUBLE(expected_intensity, result);
+    destruct_test_world(world);
+    LIGHTS_delete_arealight(light);
+}
+
+void test_area_light_with_jittered_samples() {
+    area_light_with_jittered_samples(0, 0, 2, 0.0);
+    area_light_with_jittered_samples(1, -1, 2, 0.5);
+    area_light_with_jittered_samples(1.5, 0, 2, 0.75);
+    area_light_with_jittered_samples(1.25, 1.25, 3, 0.75);
+    area_light_with_jittered_samples(0, 0, -2, 1.0);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -154,5 +212,7 @@ int main(void)
     RUN_TEST(test_create_area_light);
     RUN_TEST(test_find_single_point_on_an_area_light);
     RUN_TEST(test_area_light_intensity_function);
+    RUN_TEST(test_find_single_point_on_a_jittered_area);
+    RUN_TEST(test_area_light_with_jittered_samples);
     return UNITY_END();
 }

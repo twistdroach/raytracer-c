@@ -55,3 +55,10 @@ target_link_libraries(module_datastructures_wavefrontobj
 add_test(NAME datastructures_wavefrontobj
          COMMAND module_datastructures_wavefrontobj
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/wavefrontobj)
+
+add_executable(module_datastructures_sequences
+        test_sequences.c)
+target_link_libraries(module_datastructures_sequences
+        module_raytracer
+        Unity)
+add_test(datastructures_sequences module_datastructures_sequences)

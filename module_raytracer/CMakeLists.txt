@@ -5,7 +5,8 @@ add_library(module_raytracer STATIC
         material.c material.h
         world.c world.h
         camera.c camera.h
-        wavefrontobj.c wavefrontobj.h)
+        wavefrontobj.c wavefrontobj.h
+        sequences.c sequences.h)
 
 target_include_directories(module_raytracer PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

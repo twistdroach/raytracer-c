@@ -94,7 +94,7 @@ void WORLD_shade_hit(TUPLES_Color* dest, const WORLD_World* world, const RAY_Com
     assert(computation);
 
     const LIGHTS_Light* light = WORLD_get_light(world);
-    double intensity = light->intensity_at(light, &computation->over_point, world);
+    double intensity = LIGHTS_intensity_at(light, &computation->over_point, world);
 
     MATERIAL_lighting(dest,
                       (SHAPE_Shape*)computation->object,
