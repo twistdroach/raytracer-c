@@ -6,9 +6,17 @@
 #include <string.h>
 #include <utilities.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#else
+#define omp_get_num_threads() 1
+#define omp_get_thread_num() 0
+#define omp_get_max_threads() 1
+#endif
+
 typedef struct SEQUENCES_Sequence {
     unsigned int    count;
-    unsigned int    next_ndx;
+    unsigned int*   next_ndx;
     double          seq[];
 } SEQUENCES_Sequence;
 
@@ -20,32 +28,28 @@ SEQUENCES_Sequence* SEQUENCES_new(unsigned int count, double numbers[]) {
     }
     seq->count = count;
     memcpy(seq->seq, numbers, count * sizeof(numbers[0]));
-    seq->next_ndx = 0;
+    seq->next_ndx = calloc(omp_get_max_threads(), sizeof(unsigned int));
+
     return seq;
 }
 
 void SEQUENCES_delete(SEQUENCES_Sequence* sequence) {
     assert(sequence);
+    free(sequence->next_ndx);
     free(sequence);
 
 }
 double SEQUENCES_next(SEQUENCES_Sequence* sequence) {
-    double r = 0;
-    #pragma omp critical(SEQUENCES_next)
-    {
-        assert(sequence);
-        r = sequence->seq[sequence->next_ndx];
-        sequence->next_ndx++;
-        if (sequence->next_ndx == sequence->count) {
-            sequence->next_ndx = 0;
-        }
-    }
-    return r;
+    assert(sequence);
+    int thread_id = omp_get_thread_num();
+    unsigned int ndx = sequence->next_ndx[thread_id];
+    sequence->next_ndx[thread_id] = (ndx + 1) % sequence->count;
+    return sequence->seq[ndx];
 }
 
 SEQUENCES_Sequence* SEQUENCES_copy(SEQUENCES_Sequence* sequence) {
     SEQUENCES_Sequence* seq = SEQUENCES_new(sequence->count, sequence->seq);
-    seq->next_ndx = sequence->next_ndx;
+    memcpy(seq->next_ndx, sequence->next_ndx, omp_get_max_threads());
     return seq;
 }
 

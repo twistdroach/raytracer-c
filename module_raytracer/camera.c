@@ -114,11 +114,15 @@ CANVAS_Canvas* CAMERA_render(const CAMERA_Camera* camera, const WORLD_World* wor
     const uint total_pixels = camera->vsize * camera->hsize;
     const uint one_percent_pixels = total_pixels / 100;
     uint pixel_count = 0;
+#ifdef _OPENMP
     #pragma omp parallel for collapse(2) schedule(dynamic)
+#endif
     for (uint y = 0; y < camera->vsize - 1; y++) {
         for (uint x = 0; x < camera->hsize - 1; x++) {
             uint this_pixel_count;
+#ifdef _OPENMP
             #pragma omp atomic capture
+#endif
             this_pixel_count = pixel_count++;
             if (this_pixel_count % one_percent_pixels == 0) {
                 const uint percent = this_pixel_count * 100 / total_pixels;

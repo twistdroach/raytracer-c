@@ -14,7 +14,7 @@ ENDIF()
 
 add_compile_options(-Wall -Wextra -pedantic -Werror -fno-omit-frame-pointer)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-    add_compile_options(--coverage -Wno-unknown-pragmas)
+    add_compile_options(--coverage)
     add_link_options(--coverage)
     set( USE_OpenMP OFF )
 endif()
