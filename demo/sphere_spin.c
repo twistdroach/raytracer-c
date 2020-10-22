@@ -73,7 +73,7 @@ int main(void) {
                 TUPLES_init_vector(&v1, 4, 0, 0);
                 TUPLES_init_vector(&v2, 0, 3, 0);
 
-                LIGHTS_AreaLight* light = LIGHTS_new_arealight(&light_position, &v1, 8, &v2, 8, &light_color);
+                LIGHTS_Light* light = LIGHTS_new_arealight(&light_position, &v1, 8, &v2, 8, &light_color);
                 SEQUENCES_Sequence* seq = SEQUENCES_new_random(2048);
                 LIGHTS_set_jitter_on_area_light(light, seq);
                 SEQUENCES_delete(seq);
