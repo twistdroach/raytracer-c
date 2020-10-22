@@ -90,6 +90,7 @@ int main(void) {
                 UTILITIES_Timer* render_timer = UTILITIES_Timer_start();
                 for (double t = 0; t < 2 * M_PI; t += t_per_frame) {
 
+                    UTILITIES_Timer* frame_timer = UTILITIES_Timer_start();
                     //CAMERA_Camera* camera = CAMERA_new(320, 240, M_PI / 3.0);
                     CAMERA_Camera* camera = CAMERA_new(1920, 1080, M_PI / 3.0);
                     //CAMERA_Camera* camera = CAMERA_new(3840, 2160, M_PI / 3.0);
@@ -114,6 +115,9 @@ int main(void) {
                     CAMERA_delete(camera);
                     CANVAS_delete(canvas);
                     frame++;
+                    UTILITIES_Timer_Results frame_results = UTILITIES_Timer_stop(frame_timer);
+                    LOGGER_log(LOGGER_INFO, "Last frame - Wall: %.2f User: %.2f System: %.2f\n", frame_results.wall_time_seconds,
+                               frame_results.user_time_seconds, frame_results.system_time_seconds);
                 }
                 UTILITIES_Timer_Results render_results = UTILITIES_Timer_stop(render_timer);
                 LOGGER_log(LOGGER_INFO, "Wall: %.2f User: %.2f System: %.2f\n", render_results.wall_time_seconds,
