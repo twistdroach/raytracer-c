@@ -12,42 +12,30 @@ void tearDown() {}
 void test_pointlight_has_position_and_intensity() {
     TUPLES_Color* c = TUPLES_new_color(1, 1, 1);
     TUPLES_Point* p = TUPLES_new_point(0, 0, 0);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(p, c);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(p, c);
     TEST_ASSERT_TRUE(TUPLES_is_equal(c, &pl->intensity));
-    TEST_ASSERT_TRUE(TUPLES_is_equal(p, &pl->position));
+    TEST_ASSERT_TRUE(TUPLES_is_equal(p, &pl->corner));
     TUPLES_delete_all(c, p);
-    LIGHTS_delete_pointlight(pl);
-}
-
-void test_light_copy() {
-    TUPLES_Color* c = TUPLES_new_color(0.1, 0.2, 0.3);
-    TUPLES_Point* p = TUPLES_new_point(0.4, 0.5, 0.6);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(p, c);
-    LIGHTS_PointLight pl_copy;
-    LIGHTS_copy(&pl_copy, pl);
-    TEST_ASSERT_TRUE(TUPLES_is_equal(c, &pl_copy.intensity));
-    TEST_ASSERT_TRUE(TUPLES_is_equal(p, &pl_copy.position));
-    TUPLES_delete_all(c, p);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
 }
 
 void test_get_color() {
     TUPLES_Color* c = TUPLES_new_color(0.1, 0.2, 0.3);
     TUPLES_Point* p = TUPLES_new_point(0.4, 0.5, 0.6);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(p, c);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(p, c);
     const TUPLES_Color* c_returned = LIGHTS_get_color(pl);
     TEST_ASSERT_TRUE(TUPLES_is_equal(c, c_returned));
     TUPLES_delete_all(c, p);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
 }
 
 void point_lights_evaluate_intensity_at_single_point(double x, double y, double z, double expected_result) {
     WORLD_World* world = construct_test_world();
-    const LIGHTS_PointLight* light = WORLD_get_light(world);
+    const LIGHTS_Light* light = WORLD_get_light(world);
     TUPLES_Point p;
     TUPLES_init_point(&p, x, y, z);
 
-    double result = light->intensity_at(light, &p, world);
+    double result = LIGHTS_intensity_at(light, &p, world);
     if (!double_equal(expected_result, result)) {
         printf("Failed for %f, %f, %f expected %f but got %f\n", x, y, z, expected_result, result);
         TEST_FAIL();
@@ -73,7 +61,7 @@ void test_create_area_light() {
     TUPLES_init_vector(&v2, 0, 0, 1);
     TUPLES_Color color;
     TUPLES_init_color(&color, 1, 1, 1);
-    LIGHTS_AreaLight* light = LIGHTS_new_arealight(&corner, &v1, 4, &v2, 2, &color);
+    LIGHTS_Light* light = LIGHTS_new_arealight(&corner, &v1, 4, &v2, 2, &color);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&corner, &light->corner));
     TUPLES_Vector expected;
     TUPLES_init_vector(&expected, 0.5, 0, 0);
@@ -83,11 +71,7 @@ void test_create_area_light() {
     TEST_ASSERT_EQUAL_UINT(4, light->usteps);
     TEST_ASSERT_EQUAL_UINT(2, light->vsteps);
     TEST_ASSERT_EQUAL_UINT(8, light->samples);
-    TUPLES_Point expected_p;
-    TUPLES_init_point(&expected_p, 1, 0, 0.5);
-    TEST_ASSERT_TRUE(TUPLES_is_equal(&light->position, &expected_p));
-
-    LIGHTS_delete_arealight(light);
+    LIGHTS_delete(light);
 }
 
 void find_single_point_on_an_area_light(unsigned int u,
@@ -102,12 +86,12 @@ void find_single_point_on_an_area_light(unsigned int u,
     TUPLES_init_vector(&v2, 0, 0, 1);
     TUPLES_Color color;
     TUPLES_init_color(&color, 1, 1, 1);
-    LIGHTS_AreaLight* light = LIGHTS_new_arealight(&corner, &v1, 4, &v2, 2, &color);
+    LIGHTS_Light* light = LIGHTS_new_arealight(&corner, &v1, 4, &v2, 2, &color);
     TUPLES_Point result, expected_result;
     LIGHTS_point_on_area_light(&result, light, u, v);
     TUPLES_init_point(&expected_result, x, y, z);
     TEST_ASSERT_TRUE(TUPLES_is_equal(&expected_result, &result));
-    LIGHTS_delete_arealight(light);
+    LIGHTS_delete(light);
 }
 
 void test_find_single_point_on_an_area_light() {
@@ -128,14 +112,14 @@ void area_light_intensity_function(double x, double y,
     TUPLES_init_vector(&v2, 0, 1, 0);
     TUPLES_Color color;
     TUPLES_init_color(&color, 1, 1, 1);
-    LIGHTS_AreaLight* light = LIGHTS_new_arealight(&corner, &v1, 2, &v2, 2, &color);
+    LIGHTS_Light* light = LIGHTS_new_arealight(&corner, &v1, 2, &v2, 2, &color);
 
     TUPLES_Point point;
     TUPLES_init_point(&point, x, y ,z);
-    double result = light->intensity_at((LIGHTS_Light*)light, &point, world);
+    double result = LIGHTS_intensity_at(light, &point, world);
     TEST_ASSERT_EQUAL_DOUBLE(expected, result);
     destruct_test_world(world);
-    LIGHTS_delete_arealight(light);
+    LIGHTS_delete(light);
 }
 
 void test_area_light_intensity_function() {
@@ -154,7 +138,7 @@ void find_single_point_on_a_jittered_area(unsigned int u, unsigned int v, double
     TUPLES_init_vector(&v2, 0, 0, 1);
     TUPLES_Color color;
     TUPLES_init_color(&color, 1, 1, 1);
-    LIGHTS_AreaLight* light = LIGHTS_new_arealight(&corner, &v1, 4, &v2, 2, &color);
+    LIGHTS_Light* light = LIGHTS_new_arealight(&corner, &v1, 4, &v2, 2, &color);
     SEQUENCES_Sequence* seq = SEQUENCES_new(2, (double[]) {0.3, 0.7});
     LIGHTS_set_jitter_on_area_light(light, seq);
     SEQUENCES_delete(seq);
@@ -162,7 +146,7 @@ void find_single_point_on_a_jittered_area(unsigned int u, unsigned int v, double
     TUPLES_init_point(&expected, x, y, z);
     LIGHTS_point_on_area_light(&result, light, u, v);
     test_tuples(&expected, &result);
-    LIGHTS_delete_arealight(light);
+    LIGHTS_delete(light);
 }
 
 void test_find_single_point_on_a_jittered_area() {
@@ -182,7 +166,7 @@ void area_light_with_jittered_samples(double x, double y, double z, double expec
     TUPLES_init_vector(&v2, 0, 1, 0);
     TUPLES_Color color;
     TUPLES_init_color(&color, 1, 1, 1);
-    LIGHTS_AreaLight* light = LIGHTS_new_arealight(&corner, &v1, 2, &v2, 2, &color);
+    LIGHTS_Light* light = LIGHTS_new_arealight(&corner, &v1, 2, &v2, 2, &color);
     SEQUENCES_Sequence* seq = SEQUENCES_new(5, (double[]) {0.7, 0.3, 0.9, 0.1, 0.5});
     LIGHTS_set_jitter_on_area_light(light, seq);
     SEQUENCES_delete(seq);
@@ -191,7 +175,7 @@ void area_light_with_jittered_samples(double x, double y, double z, double expec
     double result = LIGHTS_intensity_at((LIGHTS_Light*)light, &test_point, world);
     TEST_ASSERT_EQUAL_DOUBLE(expected_intensity, result);
     destruct_test_world(world);
-    LIGHTS_delete_arealight(light);
+    LIGHTS_delete(light);
 }
 
 void test_area_light_with_jittered_samples() {
@@ -206,7 +190,6 @@ int main(void)
 {
     UNITY_BEGIN();
     RUN_TEST(test_pointlight_has_position_and_intensity);
-    RUN_TEST(test_light_copy);
     RUN_TEST(test_get_color);
     RUN_TEST(test_point_lights_evaluate_intensity_at_single_point);
     RUN_TEST(test_create_area_light);

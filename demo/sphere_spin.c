@@ -91,8 +91,8 @@ int main(void) {
                 for (double t = 0; t < 2 * M_PI; t += t_per_frame) {
 
                     //CAMERA_Camera* camera = CAMERA_new(320, 240, M_PI / 3.0);
-                    //CAMERA_Camera* camera = CAMERA_new(1920, 1080, M_PI / 3.0);
-                    CAMERA_Camera* camera = CAMERA_new(3840, 2160, M_PI / 3.0);
+                    CAMERA_Camera* camera = CAMERA_new(1920, 1080, M_PI / 3.0);
+                    //CAMERA_Camera* camera = CAMERA_new(3840, 2160, M_PI / 3.0);
                     TUPLES_Point from;
                     generate_coordinates(&from, t);
                     TUPLES_Point* to = TUPLES_new_point(0, 1, 0);
@@ -120,7 +120,7 @@ int main(void) {
                                render_results.user_time_seconds, render_results.system_time_seconds);
                 WORLD_delete_all_objects(world);
                 WORLD_delete(world);
-                LIGHTS_delete_arealight(light);
+                LIGHTS_delete(light);
             } Catch(global_exception) {
             if (global_exception == E_MALLOC_FAILED)
                 printf("Malloc failed.  Exiting\n");

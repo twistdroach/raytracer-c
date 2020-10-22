@@ -35,7 +35,7 @@ void test_lighting_with_eye_between_light_and_surface_in_shadow() {
 
     TUPLES_Point* light_position = TUPLES_new_point(0, 0, -10);
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     SPHERE_set_material(sphere, material);
     TUPLES_Color result;
@@ -43,7 +43,7 @@ void test_lighting_with_eye_between_light_and_surface_in_shadow() {
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.1, 0.1, 0.1);
     test_tuples(expected_result, &result);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
     MATERIAL_delete(material);
     TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
@@ -57,14 +57,14 @@ void test_lighting_with_eye_between_light_and_surface() {
 
     TUPLES_Point* light_position = TUPLES_new_point(0, 0, -10);
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     TUPLES_Color result;
     MATERIAL_lighting(&result, sphere, pl, position, eyev, normalv, 1.0);
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.9, 1.9, 1.9);
     test_tuples(expected_result, &result);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
     MATERIAL_delete(material);
     TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
@@ -77,7 +77,7 @@ void test_lighting_with_eye_between_light_and_surface_eye_offset_45_deg() {
 
     TUPLES_Point* light_position = TUPLES_new_point(0, 0, -10);
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     SPHERE_set_material(sphere, material);
     TUPLES_Color result;
@@ -85,7 +85,7 @@ void test_lighting_with_eye_between_light_and_surface_eye_offset_45_deg() {
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.0, 1.0, 1.0);
     test_tuples(expected_result, &result);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
     MATERIAL_delete(material);
     TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
@@ -98,7 +98,7 @@ void test_lighting_with_eye_opposite_surface_light_offset_45_deg() {
 
     TUPLES_Point* light_position = TUPLES_new_point(0, 10, -10);
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     SPHERE_set_material(sphere, material);
     TUPLES_Color result;
@@ -106,7 +106,7 @@ void test_lighting_with_eye_opposite_surface_light_offset_45_deg() {
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.7364, 0.7364, 0.7364);
     test_tuples(expected_result, &result);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
     MATERIAL_delete(material);
     TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
@@ -119,7 +119,7 @@ void test_lighting_with_eye_in_path_of_reflection_vector() {
 
     TUPLES_Point* light_position = TUPLES_new_point(0, 10, -10);
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     SPHERE_set_material(sphere, material);
     TUPLES_Color result;
@@ -127,7 +127,7 @@ void test_lighting_with_eye_in_path_of_reflection_vector() {
 
     TUPLES_Color* expected_result = TUPLES_new_color(1.6364, 1.6364, 1.6364);
     test_tuples(expected_result, &result);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
     MATERIAL_delete(material);
     TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
@@ -140,7 +140,7 @@ void test_lighting_with_light_behind_surface() {
 
     TUPLES_Point* light_position = TUPLES_new_point(0, 0, 10);
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     SPHERE_set_material(sphere, material);
     TUPLES_Color result;
@@ -148,7 +148,7 @@ void test_lighting_with_light_behind_surface() {
 
     TUPLES_Color* expected_result = TUPLES_new_color(0.1, 0.1, 0.1);
     TEST_ASSERT_TRUE(TUPLES_is_equal(expected_result, &result));
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
     MATERIAL_delete(material);
     TUPLES_delete_all(position, eyev, normalv, light_position, light_color, expected_result);
 }
@@ -167,7 +167,7 @@ void test_lighting_with_a_pattern() {
 
     TUPLES_Point* light_position = TUPLES_new_point(0, 0, 10);
     TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-    LIGHTS_PointLight* pl = LIGHTS_new_pointlight(light_position, light_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(light_position, light_color);
 
     TUPLES_Point* p1 = TUPLES_new_point(0.9, 0, 0);
     TUPLES_Color c1;
@@ -183,7 +183,7 @@ void test_lighting_with_a_pattern() {
     TUPLES_delete_all(white, black, eyev, normalv, light_color, light_position, p1, p2);
     PATTERN_delete(pattern);
     MATERIAL_delete(material);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
 }
 
 void test_material_default_reflective_property() {
@@ -205,7 +205,7 @@ void use_light_intensity_to_attenuate_color(double intensity, double r, double g
     TUPLES_init_point(&lp, 0, 0, -10);
     TUPLES_Color lc;
     TUPLES_init_color(&lc, 1, 1, 1);
-    LIGHTS_PointLight* light = LIGHTS_new_pointlight(&lp, &lc);
+    LIGHTS_Light* light = LIGHTS_new_pointlight(&lp, &lc);
     WORLD_set_light(world, light);
 
     SHAPE_Shape* shape = WORLD_get_object(world, 0);
@@ -227,7 +227,7 @@ void use_light_intensity_to_attenuate_color(double intensity, double r, double g
     MATERIAL_lighting(&result, shape, light, &pt, &eyev, &normalv, intensity);
 
     test_tuples(&expected_result, &result);
-    LIGHTS_delete_pointlight(light);
+    LIGHTS_delete(light);
     destruct_test_world(world);
 }
 
@@ -235,6 +235,44 @@ void test_use_light_intensity_to_attenuate_color() {
     use_light_intensity_to_attenuate_color(1.0, 1, 1, 1);
     use_light_intensity_to_attenuate_color(0.5, 0.55, 0.55, 0.55);
     use_light_intensity_to_attenuate_color(0.0, 0.1, 0.1, 0.1);
+}
+
+void lighting_function_samples_area_light(double x, double y, double z,
+                                          double r, double g, double b) {
+    TUPLES_Point corner;
+    TUPLES_init_point(&corner, -0.5, -0.5, -5);
+    TUPLES_Vector v1, v2;
+    TUPLES_init_vector(&v1, 1, 0, 0);
+    TUPLES_init_vector(&v2, 0,1, 0);
+    TUPLES_Color light_color;
+    TUPLES_init_color(&light_color, 1, 1, 1);
+    LIGHTS_Light* light = LIGHTS_new_arealight(&corner, &v1, 2, &v2, 2, &light_color);
+    SPHERE_Sphere* sphere = SPHERE_new();
+    MATERIAL_Material* sphere_mat = SPHERE_get_material(sphere);
+    sphere_mat->ambient = 0.1;
+    sphere_mat->diffuse = 0.9;
+    sphere_mat->specular = 0;
+    TUPLES_copy(&sphere_mat->color, &light_color);
+    TUPLES_Point eye;
+    TUPLES_init_point(&eye, 0, 0, -5);
+    TUPLES_Point pt;
+    TUPLES_init_point(&pt, x, y, z);
+    TUPLES_Vector eyev;
+    TUPLES_subtract(&eyev, &eye, &pt);
+    TUPLES_normalize(&eyev);
+    TUPLES_Vector normal_v;
+    TUPLES_init_vector(&normal_v, x, y, z);
+    TUPLES_Color result, expected_result;
+    TUPLES_init_color(&expected_result, r, g, b);
+    MATERIAL_lighting(&result, (SHAPE_Shape*)sphere, light, &pt, &eyev, &normal_v, 1.0);
+    test_tuples(&expected_result, &result);
+    SPHERE_delete(sphere);
+    LIGHTS_delete(light);
+}
+
+void test_lighting_function_samples_area_light() {
+    lighting_function_samples_area_light(0, 0, -1, 0.9965, 0.9965, 0.9965);
+    lighting_function_samples_area_light(0, 0.7071, -0.7071, 0.6232, 0.6232, 0.6232);
 }
 
 int main(void)
@@ -251,5 +289,6 @@ int main(void)
     RUN_TEST(test_material_default_reflective_property);
     RUN_TEST(test_material_default_transparency_and_refractive_index);
     RUN_TEST(test_use_light_intensity_to_attenuate_color);
+    RUN_TEST(test_lighting_function_samples_area_light);
     return UNITY_END();
 }

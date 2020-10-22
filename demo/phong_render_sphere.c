@@ -25,7 +25,7 @@ int main(void) {
 
                 TUPLES_Point* light_position = TUPLES_new_point(-10, 10, -10);
                 TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-                LIGHTS_PointLight* light = LIGHTS_new_pointlight(light_position, light_color);
+                LIGHTS_Light* light = LIGHTS_new_pointlight(light_position, light_color);
                 TUPLES_delete_all(light_position, light_color);
 
                 for (uint y=0; y < canvas_pixels - 1; y++) {
@@ -74,7 +74,7 @@ int main(void) {
                 printf("Writing file %s...", filename);
                 CANVAS_write_to_file(canvas, filename);
                 printf("done\n");
-                LIGHTS_delete_pointlight(light);
+                LIGHTS_delete(light);
                 SPHERE_delete(sphere);
                 CANVAS_delete(canvas);
                 TUPLES_delete_all(ray_origin);

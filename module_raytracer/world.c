@@ -13,7 +13,7 @@ typedef struct WORLD_World {
 
 unsigned int WORLD_default_ttl = 5;
 
-void WORLD_init(WORLD_World* world, const LIGHTS_PointLight* light) {
+void WORLD_init(WORLD_World* world, const LIGHTS_Light* light) {
     assert(world);
     assert(light);
     world->light = light;
@@ -43,13 +43,13 @@ void WORLD_delete(WORLD_World* world) {
     free(world);
 }
 
-void WORLD_set_light(WORLD_World* world, const LIGHTS_PointLight* light) {
+void WORLD_set_light(WORLD_World* world, const LIGHTS_Light* light) {
     assert(world);
     assert(light);
     world->light = light;
 }
 
-inline const LIGHTS_PointLight* WORLD_get_light(const WORLD_World* world) {
+inline const LIGHTS_Light* WORLD_get_light(const WORLD_World* world) {
     assert(world);
     return world->light;
 }

@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
                 LOGGER_log(LOGGER_INFO, "Building world...\n");
                 TUPLES_Point* light_position = TUPLES_new_point(-10, 10, -10);
                 TUPLES_Color* light_color = TUPLES_new_color(1, 1, 1);
-                LIGHTS_PointLight* light = LIGHTS_new_pointlight(light_position, light_color);
+                LIGHTS_Light* light = LIGHTS_new_pointlight(light_position, light_color);
                 TUPLES_delete_all(light_position, light_color);
 
                 CAMERA_Camera* camera = CAMERA_new(1920,1080, M_PI / 3.0);
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
                 LOGGER_log(LOGGER_INFO, "Cleaning up...\n");
                 WORLD_delete_all_objects(world);
                 WORLD_delete(world);
-                LIGHTS_delete_pointlight(light);
+                LIGHTS_delete(light);
                 CAMERA_delete(camera);
                 CANVAS_delete(canvas);
             } Catch(global_exception) {

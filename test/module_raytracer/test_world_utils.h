@@ -6,7 +6,7 @@
 
 SPHERE_Sphere* s1;
 SPHERE_Sphere* s2;
-LIGHTS_PointLight* pl;
+LIGHTS_Light* pl;
 
 WORLD_World* construct_test_world() {
     TUPLES_Point pl_origin;
@@ -39,7 +39,7 @@ WORLD_World* construct_test_world() {
 
 void destruct_test_world(WORLD_World* world) {
     TEST_ASSERT_NOT_NULL(world);
-    LIGHTS_delete_pointlight(pl);
+    LIGHTS_delete(pl);
     TEST_ASSERT_NOT_NULL(WORLD_get_object(world, 0));
     TEST_ASSERT_NOT_NULL(WORLD_get_object(world, 1));
     WORLD_delete_all_objects(world);

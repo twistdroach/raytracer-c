@@ -44,7 +44,55 @@ MATERIAL_Material* MATERIAL_new_copy(const MATERIAL_Material* src) {
     return dest;
 }
 
-void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHTS_PointLight* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector, double intensity) {
+struct calculate_lighting_context {
+    TUPLES_Color sum;
+    double intensity;
+    const MATERIAL_Material* material;
+    const TUPLES_Point* position;
+    const TUPLES_Vector* normal_vector;
+    const TUPLES_Vector* eye_vector;
+    const TUPLES_Color* effective_color;
+    const TUPLES_Color* light_color;
+};
+
+static void calculate_lighting(TUPLES_Point* light_point, void* context) {
+    struct calculate_lighting_context* c = (struct calculate_lighting_context*) context;
+
+    TUPLES_Color diffuse;
+    TUPLES_Color specular;
+
+    TUPLES_Vector lightv;
+    TUPLES_subtract(&lightv, light_point, c->position);
+    TUPLES_normalize(&lightv);
+
+    double light_dot_normal = TUPLES_dot(&lightv, c->normal_vector);
+    if (light_dot_normal < 0) {
+        // negative means light is on other side of surface
+        TUPLES_init_color(&diffuse, 0, 0, 0);
+        TUPLES_init_color(&specular, 0, 0, 0);
+    } else {
+        TUPLES_multiply(&diffuse, c->effective_color, c->material->diffuse * light_dot_normal);
+
+        TUPLES_negate(&lightv);
+        TUPLES_Vector reflectv;
+        TUPLES_reflect(&reflectv, &lightv, c->normal_vector);
+        double reflect_dot_eye = TUPLES_dot(&reflectv, c->eye_vector);
+
+        if (reflect_dot_eye < 0 || double_equal(0.0, reflect_dot_eye)) {
+            // light is reflecting away
+            TUPLES_init_color(&specular, 0, 0, 0);
+        } else {
+            double factor = pow(reflect_dot_eye, c->material->shininess);
+            TUPLES_multiply(&specular, c->light_color, c->material->specular * factor);
+        }
+    }
+
+    TUPLES_add(&c->sum, &c->sum, &diffuse);
+    TUPLES_add(&c->sum, &c->sum, &specular);
+
+}
+
+void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHTS_Light* light, const TUPLES_Point* position, const TUPLES_Vector* eye_vector, const TUPLES_Vector* normal_vector, double intensity) {
     assert(dest);
     assert(shape);
     assert(light);
@@ -52,6 +100,7 @@ void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHT
     assert(eye_vector);
     assert(normal_vector);
     assert(shape->material);
+
     TUPLES_Color color_or_pattern;
     const MATERIAL_Material* material = shape->material;
     if (material->pattern) {
@@ -63,41 +112,25 @@ void MATERIAL_lighting(TUPLES_Color* dest, const SHAPE_Shape* shape, const LIGHT
     TUPLES_Color effective_color;
     TUPLES_multiply_colors(&effective_color, &color_or_pattern, &light->intensity);
 
-    TUPLES_Vector lightv;
-    TUPLES_subtract(&lightv, &light->position, position);
-    TUPLES_normalize(&lightv);
+    /* calculate ambient contribution */
+    TUPLES_multiply(dest, &effective_color, material->ambient);
 
-    TUPLES_Color ambient;
-    TUPLES_multiply(&ambient, &effective_color, material->ambient);
+    struct calculate_lighting_context context = (struct calculate_lighting_context) {
+        .intensity = intensity,
+        .material = material,
+        .position = position,
+        .normal_vector = normal_vector,
+        .eye_vector = eye_vector,
+        .effective_color = &effective_color,
+        .light_color = &light->intensity,
+    };
+    TUPLES_init_color(&context.sum, 0, 0, 0);
 
-    TUPLES_Color diffuse;
-    TUPLES_Color specular;
-    double light_dot_normal = TUPLES_dot(&lightv, normal_vector);
-    if (light_dot_normal < 0) {
-        // negative means light is on other side of surface
-        TUPLES_init_color(&diffuse, 0, 0, 0);
-        TUPLES_init_color(&specular, 0, 0, 0);
-    } else {
-        TUPLES_multiply(&diffuse, &effective_color, material->diffuse * light_dot_normal);
+    LIGHTS_iterate_points_on_light(light, &calculate_lighting, &context);
 
-        TUPLES_negate(&lightv);
-        TUPLES_Vector reflectv;
-        TUPLES_reflect(&reflectv, &lightv, normal_vector);
-        double reflect_dot_eye = TUPLES_dot(&reflectv, eye_vector);
-
-        if (reflect_dot_eye < 0 || double_equal(0.0, reflect_dot_eye)) {
-            // light is reflecting away
-            TUPLES_init_color(&specular, 0, 0, 0);
-        } else {
-            double factor = pow(reflect_dot_eye, material->shininess);
-            TUPLES_multiply(&specular, &light->intensity, material->specular * factor);
-        }
-    }
-
-    TUPLES_multiply(&diffuse, &diffuse, intensity);
-    TUPLES_add(dest, &ambient, &diffuse);
-    TUPLES_multiply(&specular, &specular, intensity);
-    TUPLES_add(dest, dest, &specular);
+    TUPLES_divide(&context.sum, &context.sum, light->samples);
+    TUPLES_multiply(&context.sum, &context.sum, intensity);
+    TUPLES_add(dest, dest, &context.sum);
 }
 
 void MATERIAL_set_pattern(MATERIAL_Material* material, const PATTERN_Pattern* pattern) {

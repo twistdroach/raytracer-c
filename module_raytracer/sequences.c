@@ -39,6 +39,7 @@ void SEQUENCES_delete(SEQUENCES_Sequence* sequence) {
     free(sequence);
 
 }
+
 double SEQUENCES_next(SEQUENCES_Sequence* sequence) {
     assert(sequence);
     int thread_id = omp_get_thread_num();

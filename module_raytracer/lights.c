@@ -3,88 +3,39 @@
 #include "lights.h"
 #include "world.h"
 
-double pointlight_intensity_at(const LIGHTS_PointLight* light, const TUPLES_Point* point, const WORLD_World* world) {
-    assert(light);
-    assert(point);
-    assert(world);
-    if (WORLD_is_shadowed(world, &light->position, point)) {
-        return 0.0;
-    }
-    return 1.0;
-}
-
-LIGHTS_PointLight* LIGHTS_new_pointlight(const TUPLES_Point* p, const TUPLES_Color* c) {
+LIGHTS_Light* LIGHTS_new_pointlight(const TUPLES_Point* p, const TUPLES_Color* c) {
     assert(p);
     assert(c);
-    LIGHTS_PointLight* pl = malloc(sizeof(LIGHTS_PointLight));
-    if (!pl)
-        Throw(E_MALLOC_FAILED);
-    LIGHTS_init_pointlight(pl, p, c);
-    return pl;
+    TUPLES_Vector uvec, vvec;
+    TUPLES_init_vector(&uvec, 0, 0, 0);
+    TUPLES_init_vector(&vvec, 0, 0, 0);
+    return LIGHTS_new_arealight(p, &uvec, 1, &vvec, 1, c);
 }
 
-void LIGHTS_init_pointlight(LIGHTS_PointLight* pl, const TUPLES_Point* p, const TUPLES_Color* c) {
-    assert(pl);
-    assert(p);
-    assert(c);
-    TUPLES_copy(&pl->position, p);
-    TUPLES_copy(&pl->intensity, c);
-    pl->intensity_at = &pointlight_intensity_at;
-}
-
-void LIGHTS_destroy_pointlight(LIGHTS_PointLight* pl) {
-    assert(pl);
-    TUPLES_destroy(&pl->position);
-    TUPLES_destroy(&pl->intensity);
-}
-
-void LIGHTS_delete_pointlight(LIGHTS_PointLight* pl) {
-    assert(pl);
-    LIGHTS_destroy_pointlight(pl);
-    free(pl);
-}
-void LIGHTS_copy(LIGHTS_PointLight* dest, const LIGHTS_PointLight* src) {
-    assert(dest);
-    assert(src);
-    TUPLES_copy(&dest->position, &src->position);
-    TUPLES_copy(&dest->intensity, &src->intensity);
-}
-
-const TUPLES_Point* LIGHTS_get_origin(const LIGHTS_PointLight* light) {
-    assert(light);
-    return &light->position;
-}
-
-const TUPLES_Color* LIGHTS_get_color(const LIGHTS_PointLight* light) {
+const TUPLES_Color* LIGHTS_get_color(const LIGHTS_Light* light) {
     assert(light);
     return &light->intensity;
 
 }
-
-double arealight_intensity_at(const LIGHTS_Light* gen_light, const TUPLES_Point* point, const WORLD_World* world) {
-    assert(gen_light);
-    assert(point);
-    assert(world);
-    const LIGHTS_AreaLight* light = (const LIGHTS_AreaLight*) gen_light;
-    double total = 0.0;
-    TUPLES_Point light_point;
+void LIGHTS_iterate_points_on_light(const LIGHTS_Light* light, void (*each_point)(TUPLES_Point* point, void* context), void* context) {
+    assert(light);
+    assert(each_point);
+    TUPLES_Point p;
     for (unsigned int v = 0; v<light->vsteps; v++) {
         for (unsigned int u = 0; u<light->usteps; u++) {
-            LIGHTS_point_on_area_light(&light_point, light, u, v);
-            if (!WORLD_is_shadowed(world, &light_point, point)) {
-                total += 1.0;
-            }
+            LIGHTS_point_on_area_light(&p, light, u, v);
+            each_point(&p, context);
         }
     }
-    return total / light->samples;
+
 }
 
-LIGHTS_AreaLight* LIGHTS_new_arealight(const TUPLES_Point* corner, const TUPLES_Vector* uvec, unsigned int usteps, const TUPLES_Vector* vvec, unsigned int vsteps, const TUPLES_Color* color) {
+LIGHTS_Light* LIGHTS_new_arealight(const TUPLES_Point* corner, const TUPLES_Vector* uvec, unsigned int usteps, const TUPLES_Vector* vvec, unsigned int vsteps, const TUPLES_Color* color) {
     assert(corner);
     assert(uvec);
     assert(vvec);
     assert(color);
-    LIGHTS_AreaLight* light = malloc(sizeof(LIGHTS_AreaLight));
+    LIGHTS_Light* light = malloc(sizeof(LIGHTS_Light));
     if (!light) {
         Throw(E_MALLOC_FAILED);
     }
@@ -100,19 +51,11 @@ LIGHTS_AreaLight* LIGHTS_new_arealight(const TUPLES_Point* corner, const TUPLES_
                        vvec->y / vsteps,
                        vvec->z / vsteps);
     light->samples = usteps * vsteps;
-
-    TUPLES_Vector uvec_tmp, vvec_tmp;
-    TUPLES_multiply(&uvec_tmp, uvec, 0.5);
-    TUPLES_multiply(&vvec_tmp, vvec, 0.5);
-
-    TUPLES_add(&light->position, corner, &uvec_tmp);
-    TUPLES_add(&light->position, &light->position, &vvec_tmp);
-    light->intensity_at = arealight_intensity_at;
     light->sequence = NULL;
     return light;
 }
 
-void LIGHTS_point_on_area_light(TUPLES_Point* dest, const LIGHTS_AreaLight* light, unsigned int u, unsigned int v) {
+void LIGHTS_point_on_area_light(TUPLES_Point* dest, const LIGHTS_Light* light, unsigned int u, unsigned int v) {
     assert(dest);
     assert(light);
     TUPLES_Vector uvec_tmp, vvec_tmp;
@@ -124,15 +67,20 @@ void LIGHTS_point_on_area_light(TUPLES_Point* dest, const LIGHTS_AreaLight* ligh
     TUPLES_add(dest, dest, &vvec_tmp);
 }
 
-void LIGHTS_delete_arealight(LIGHTS_AreaLight* l) {
+void LIGHTS_destroy(LIGHTS_Light* l) {
     assert(l);
     if (l->sequence) {
-       SEQUENCES_delete(l->sequence);
+        SEQUENCES_delete(l->sequence);
     }
+}
+
+void LIGHTS_delete(LIGHTS_Light* l) {
+    assert(l);
+    LIGHTS_destroy(l);
     free(l);
 }
 
-void LIGHTS_set_jitter_on_area_light(LIGHTS_AreaLight* light, SEQUENCES_Sequence* seq) {
+void LIGHTS_set_jitter_on_area_light(LIGHTS_Light* light, SEQUENCES_Sequence* seq) {
     assert(light);
     assert(seq);
     if (light->sequence) {
@@ -141,9 +89,30 @@ void LIGHTS_set_jitter_on_area_light(LIGHTS_AreaLight* light, SEQUENCES_Sequence
     light->sequence = SEQUENCES_copy(seq);
 }
 
+struct sum_area_context {
+    double total;
+    const WORLD_World* world;
+    const TUPLES_Point* point;
+};
+
+static void sum_area_intensity(TUPLES_Point* light_point, void* context) {
+    assert(light_point);
+    assert(context);
+    struct sum_area_context* c = (struct sum_area_context*)context;
+    if (!WORLD_is_shadowed(c->world, light_point, c->point)) {
+        c->total += 1.0;
+    }
+}
+
 double LIGHTS_intensity_at(const LIGHTS_Light* light, const TUPLES_Point* point, const WORLD_World* world) {
     assert(light);
     assert(point);
     assert(world);
-    return light->intensity_at(light, point, world);
+    struct sum_area_context c = (struct sum_area_context) {
+            .point = point,
+            .world = world,
+            .total = 0.0
+    };
+    LIGHTS_iterate_points_on_light(light, sum_area_intensity, &c);
+    return c.total / light->samples;
 }

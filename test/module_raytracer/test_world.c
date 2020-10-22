@@ -10,17 +10,17 @@ void setUp() {}
 void tearDown() {}
 
 void test_world_creation() {
-    LIGHTS_PointLight pl;
     TUPLES_Point pl_origin;
     TUPLES_Color pl_color;
 
     TUPLES_init_point(&pl_origin, -10, 10, -10);
     TUPLES_init_color(&pl_color, 1, 1, 1);
-    LIGHTS_init_pointlight(&pl, &pl_origin, &pl_color);
+    LIGHTS_Light* pl = LIGHTS_new_pointlight(&pl_origin, &pl_color);
 
-    WORLD_World* world = WORLD_new(&pl);
+    WORLD_World* world = WORLD_new(pl);
     TEST_ASSERT_NOT_NULL(world);
     WORLD_delete(world);
+    LIGHTS_delete(pl);
 }
 
 void test_construct_default_world() {
@@ -72,7 +72,7 @@ void test_shading_an_intersection_from_inside() {
     TUPLES_init_point(&light_origin, 0, 0.25, 0);
     TUPLES_Color light_color;
     TUPLES_init_color(&light_color, 1, 1, 1);
-    LIGHTS_PointLight* light = LIGHTS_new_pointlight(&light_origin, &light_color);
+    LIGHTS_Light* light = LIGHTS_new_pointlight(&light_origin, &light_color);
     WORLD_set_light(world, light);
 
     RAY_Ray* ray = RAY_new(0, 0, 0, 0, 0, 1);
@@ -88,7 +88,7 @@ void test_shading_an_intersection_from_inside() {
 
     RAY_delete(ray);
     destruct_test_world(world);
-    LIGHTS_delete_pointlight(light);
+    LIGHTS_delete(light);
     RAY_delete_intersections(xs);
     RAY_delete_computations(comps);
 }
@@ -175,9 +175,8 @@ void test_shade_hit_with_a_point_in_shadow() {
     TUPLES_Color light_c;
     TUPLES_init_point(&light_p, 0, 0, -10);
     TUPLES_init_color(&light_c, 1, 1, 1);
-    LIGHTS_PointLight light;
-    LIGHTS_init_pointlight(&light, &light_p, &light_c);
-    WORLD_World* world = WORLD_new(&light);
+    LIGHTS_Light* light = LIGHTS_new_pointlight(&light_p, &light_c);
+    WORLD_World* world = WORLD_new(light);
 
     SPHERE_Sphere* s1 = SPHERE_new();
     WORLD_add_object(world, s1);
@@ -205,6 +204,7 @@ void test_shade_hit_with_a_point_in_shadow() {
     WORLD_delete(world);
     SPHERE_delete(s1);
     SPHERE_delete(s2);
+    LIGHTS_delete(light);
 }
 
 void test_reflected_color_for_nonreflective_material() {
@@ -285,7 +285,7 @@ void test_color_at_with_mutually_reflective_surfaces() {
     TUPLES_init_point(&pl_origin, 0, 0, 0);
     TUPLES_init_color(&pl_color, 1, 1, 1);
 
-    LIGHTS_PointLight* light = LIGHTS_new_pointlight(&pl_origin, &pl_color);
+    LIGHTS_Light* light = LIGHTS_new_pointlight(&pl_origin, &pl_color);
     WORLD_World* world = WORLD_new(light);
 
     PLANE_Plane* lower = PLANE_new();
@@ -310,7 +310,7 @@ void test_color_at_with_mutually_reflective_surfaces() {
 
     WORLD_delete_all_objects(world);
     WORLD_delete(world);
-    LIGHTS_delete_pointlight(light);
+    LIGHTS_delete(light);
 }
 
 void test_reflected_color_at_max_recursion_depth() {
