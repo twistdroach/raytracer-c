@@ -69,7 +69,10 @@ RAY_Intersections* RAY_new_intersections() {
         Throw(E_MALLOC_FAILED);
 
     intersections->count = 0;
-    intersections->xs = NULL;
+
+    const size_t default_size = 100;
+    intersections->xs = malloc(sizeof(RAY_Xs) * default_size);
+    intersections->xs_size = default_size;
 
     return intersections;
 }
@@ -132,11 +135,14 @@ void RAY_add_intersections(RAY_Intersections* dest_intersection, RAY_Intersectio
 void RAY_add_intersection(RAY_Intersections* intersections, double intersection, void* object) {
     assert(intersections);
     assert(object);
-    RAY_Xs* tmpptr = reallocarray(intersections->xs, sizeof(RAY_Xs), intersections->count + 1);
-    if (!tmpptr) {
-        Throw(E_MALLOC_FAILED);
-    } else {
-        intersections->xs = tmpptr;
+    if (intersections->count > intersections->xs_size) {
+        RAY_Xs* tmpptr = reallocarray(intersections->xs, sizeof(RAY_Xs), intersections->xs_size * 2);
+        if (!tmpptr) {
+            Throw(E_MALLOC_FAILED);
+        } else {
+            intersections->xs = tmpptr;
+            intersections->xs_size *= 2;
+        }
     }
     intersections->xs[intersections->count].t = intersection;
     intersections->xs[intersections->count].object = object;

@@ -27,6 +27,17 @@ IF(USE_OpenMP)
     ENDIF()
 ENDIF()
 
+#jemalloc seems to be quite a bit faster
+find_package(PkgConfig)
+if (PKGCONFIG_FOUND)
+    pkg_check_modules (JEMALLOC jemalloc)
+    pkg_search_module(JEMALLOC jemalloc)
+    if (JEMALLOC_FOUND)
+        include_directories(${JEMALLOC_INCLUDE_DIRS})
+        link_libraries(${JEMALLOC_LIBRARIES})
+    endif()
+endif()
+
 find_package( Doxygen )
 if ( DOXYGEN_FOUND )
   set( DOXYGEN_EXCLUDE_PATTERNS

@@ -30,6 +30,7 @@ typedef struct RAY_Xs {
 typedef struct RAY_Intersections {
     unsigned int count;
     RAY_Xs* xs;
+    size_t xs_size;
 } RAY_Intersections;
 
 RAY_Intersections* RAY_new_intersections();
