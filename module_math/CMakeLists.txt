@@ -7,10 +7,10 @@ target_include_directories(module_math PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         module_utilities
         CException
-)
+        )
 
 target_link_libraries(module_math
         module_utilities
         CException
         m
-)
+        )

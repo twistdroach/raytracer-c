@@ -1,210 +1,213 @@
 #define _GNU_SOURCE
-#include <assert.h>
-#include <stdarg.h>
-#include <math.h>
-#include "exceptions.h"
 #include "matrix.h"
+#include "exceptions.h"
 #include "utilities.h"
+#include <assert.h>
 #include <immintrin.h>
+#include <math.h>
+#include <stdarg.h>
 
-MATRIX_Matrix* MATRIX_new(uint width, uint height) {
-    MATRIX_Matrix* m = malloc(sizeof(MATRIX_Matrix));
-    if (!m)
-        Throw(E_MALLOC_FAILED);
+MATRIX_Matrix *MATRIX_new(uint width, uint height) {
+  MATRIX_Matrix *m = malloc(sizeof(MATRIX_Matrix));
+  if (!m)
+    Throw(E_MALLOC_FAILED);
 
-    MATRIX_init(m, width, height);
-    return m;
+  MATRIX_init(m, width, height);
+  return m;
 }
 
-inline static uint calculate_index(const MATRIX_Matrix* matrix, uint row, uint column) {
-    assert(column < matrix->width);
-    assert(row < matrix->height);
-    return row * matrix->width + column;
+inline static uint calculate_index(const MATRIX_Matrix *matrix, uint row, uint column) {
+  assert(column < matrix->width);
+  assert(row < matrix->height);
+  return row * matrix->width + column;
 }
 
-inline double MATRIX_read_cell(const MATRIX_Matrix* matrix, uint row, uint column) {
-    assert(matrix);
-    assert(matrix->data);
-    uint ndx = calculate_index(matrix, row, column);
-    return matrix->data[ndx];
+inline double MATRIX_read_cell(const MATRIX_Matrix *matrix, uint row, uint column) {
+  assert(matrix);
+  assert(matrix->data);
+  uint ndx = calculate_index(matrix, row, column);
+  return matrix->data[ndx];
 }
 
-inline void MATRIX_write_cell(MATRIX_Matrix* matrix, uint row, uint column, double value) {
-    assert(matrix);
-    uint ndx = calculate_index(matrix, row, column);
-    matrix->data[ndx] = value;
+inline void MATRIX_write_cell(MATRIX_Matrix *matrix, uint row, uint column, double value) {
+  assert(matrix);
+  uint ndx = calculate_index(matrix, row, column);
+  matrix->data[ndx] = value;
 }
 
-void MATRIX_fill(MATRIX_Matrix* matrix, ...) {
-    assert(matrix);
-    va_list args;
-    uint row = 0;
-    uint column = 0;
-    uint matrix_size = matrix->width * matrix->height;
-    va_start(args, matrix);
-    for (uint i=0; i < matrix_size; i++) {
-        double d = va_arg(args, double);
-        MATRIX_write_cell(matrix, row, column, d);
-        column++;
-        if (column == matrix->width) {
-            column = 0;
-            row++;
-        }
+void MATRIX_fill(MATRIX_Matrix *matrix, ...) {
+  assert(matrix);
+  va_list args;
+  uint row = 0;
+  uint column = 0;
+  uint matrix_size = matrix->width * matrix->height;
+  va_start(args, matrix);
+  for (uint i = 0; i < matrix_size; i++) {
+    double d = va_arg(args, double);
+    MATRIX_write_cell(matrix, row, column, d);
+    column++;
+    if (column == matrix->width) {
+      column = 0;
+      row++;
     }
-    va_end(args);
+  }
+  va_end(args);
 }
 
-void MATRIX_copy(MATRIX_Matrix* dest, const MATRIX_Matrix* source) {
-    assert(dest);
-    assert(source);
-    assert(dest != source);
-    *dest = *source;
+void MATRIX_copy(MATRIX_Matrix *dest, const MATRIX_Matrix *source) {
+  assert(dest);
+  assert(source);
+  assert(dest != source);
+  *dest = *source;
 }
 
-bool MATRIX_is_equal(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2) {
-    assert(m1);
-    assert(m2);
-    if (m1 == m2) return true;
-    if (m1->width != m2->width) return false;
-    if (m1->height != m2->height) return false;
-    for (uint ndx=0; ndx < m1->height * m1->width; ndx++) {
-        if (!double_equal(m1->data[ndx], m2->data[ndx])){
-            return false;
-        }
-    }
+bool MATRIX_is_equal(const MATRIX_Matrix *m1, const MATRIX_Matrix *m2) {
+  assert(m1);
+  assert(m2);
+  if (m1 == m2)
     return true;
-}
-
-void MATRIX_init(MATRIX_Matrix* matrix, uint width, uint height) {
-    assert(matrix);
-    assert(width > 0);
-    assert(height > 0);
-    assert(width < 5);
-    assert(height < 5);
-
-    matrix->width = width;
-    matrix->height = height;
-
-    for (uint i=0; i < width * height; i++) {
-        matrix->data[i] = 0.0;
+  if (m1->width != m2->width)
+    return false;
+  if (m1->height != m2->height)
+    return false;
+  for (uint ndx = 0; ndx < m1->height * m1->width; ndx++) {
+    if (!double_equal(m1->data[ndx], m2->data[ndx])) {
+      return false;
     }
+  }
+  return true;
 }
 
-MATRIX_Matrix* MATRIX_new_identity(uint width) {
-    assert(width > 0);
-    MATRIX_Matrix* matrix = MATRIX_new(width, width);
-    for (uint column=0; column < matrix->width; column++) {
-        MATRIX_write_cell(matrix, column, column, 1.0);
+void MATRIX_init(MATRIX_Matrix *matrix, uint width, uint height) {
+  assert(matrix);
+  assert(width > 0);
+  assert(height > 0);
+  assert(width < 5);
+  assert(height < 5);
+
+  matrix->width = width;
+  matrix->height = height;
+
+  for (uint i = 0; i < width * height; i++) {
+    matrix->data[i] = 0.0;
+  }
+}
+
+MATRIX_Matrix *MATRIX_new_identity(uint width) {
+  assert(width > 0);
+  MATRIX_Matrix *matrix = MATRIX_new(width, width);
+  for (uint column = 0; column < matrix->width; column++) {
+    MATRIX_write_cell(matrix, column, column, 1.0);
+  }
+  return matrix;
+}
+
+MATRIX_Matrix *MATRIX_new_translation(double x, double y, double z) {
+  MATRIX_Matrix *matrix = MATRIX_new_identity(4);
+  MATRIX_write_cell(matrix, 0, 3, x);
+  MATRIX_write_cell(matrix, 1, 3, y);
+  MATRIX_write_cell(matrix, 2, 3, z);
+  return matrix;
+}
+
+MATRIX_Matrix *MATRIX_new_scaling(double x, double y, double z) {
+  MATRIX_Matrix *matrix = MATRIX_new(4, 4);
+  MATRIX_write_cell(matrix, 0, 0, x);
+  MATRIX_write_cell(matrix, 1, 1, y);
+  MATRIX_write_cell(matrix, 2, 2, z);
+  MATRIX_write_cell(matrix, 3, 3, 1.0);
+  return matrix;
+}
+
+MATRIX_Matrix *MATRIX_new_rotation_x(double radians) {
+  MATRIX_Matrix *matrix = MATRIX_new(4, 4);
+  double s = sin(radians);
+  double c = cos(radians);
+  MATRIX_write_cell(matrix, 0, 0, 1.0);
+  MATRIX_write_cell(matrix, 1, 1, c);
+  MATRIX_write_cell(matrix, 2, 1, s);
+  MATRIX_write_cell(matrix, 1, 2, -s);
+  MATRIX_write_cell(matrix, 2, 2, c);
+  MATRIX_write_cell(matrix, 3, 3, 1.0);
+  return matrix;
+}
+
+MATRIX_Matrix *MATRIX_new_rotation_y(double radians) {
+  MATRIX_Matrix *matrix = MATRIX_new(4, 4);
+  double s = sin(radians);
+  double c = cos(radians);
+  MATRIX_write_cell(matrix, 1, 1, 1.0);
+  MATRIX_write_cell(matrix, 0, 0, c);
+  MATRIX_write_cell(matrix, 2, 2, c);
+  MATRIX_write_cell(matrix, 2, 0, -s);
+  MATRIX_write_cell(matrix, 0, 2, s);
+  MATRIX_write_cell(matrix, 3, 3, 1.0);
+  return matrix;
+}
+
+MATRIX_Matrix *MATRIX_new_rotation_z(double radians) {
+  MATRIX_Matrix *matrix = MATRIX_new(4, 4);
+  double s = sin(radians);
+  double c = cos(radians);
+  MATRIX_write_cell(matrix, 0, 0, c);
+  MATRIX_write_cell(matrix, 1, 1, c);
+  MATRIX_write_cell(matrix, 0, 1, -s);
+  MATRIX_write_cell(matrix, 1, 0, s);
+  MATRIX_write_cell(matrix, 2, 2, 1.0);
+  MATRIX_write_cell(matrix, 3, 3, 1.0);
+  return matrix;
+}
+
+MATRIX_Matrix *MATRIX_new_shearing(double xy, double xz, double yx, double yz, double zx, double zy) {
+  MATRIX_Matrix *matrix = MATRIX_new_identity(4);
+  MATRIX_write_cell(matrix, 0, 1, xy);
+  MATRIX_write_cell(matrix, 0, 2, xz);
+  MATRIX_write_cell(matrix, 1, 0, yx);
+  MATRIX_write_cell(matrix, 1, 2, yz);
+  MATRIX_write_cell(matrix, 2, 0, zx);
+  MATRIX_write_cell(matrix, 2, 1, zy);
+
+  return matrix;
+}
+
+static double compute_dot_product(const MATRIX_Matrix *m1, const MATRIX_Matrix *m2, uint row, uint column) {
+  uint vector_column = 0;
+  double total = 0.0;
+  for (uint vector_row = 0; vector_row < m1->height; vector_row++) {
+    total += MATRIX_read_cell(m1, row, vector_column) * MATRIX_read_cell(m2, vector_row, column);
+    vector_column++;
+  }
+  return total;
+}
+
+MATRIX_Matrix *MATRIX_multiply_array(const MATRIX_Matrix *matrix[]) {
+  MATRIX_Matrix *retmatrix = MATRIX_new_identity(4);
+  for (uint i = 0; matrix[i]; i++) {
+    const MATRIX_Matrix *m = matrix[i];
+    assert(m->width == 4);
+    assert(m->height == 4);
+    MATRIX_Matrix *new_retmatrix = MATRIX_multiply(retmatrix, m);
+    MATRIX_delete(retmatrix);
+    retmatrix = new_retmatrix;
+  }
+  return retmatrix;
+}
+
+MATRIX_Matrix *MATRIX_multiply(const MATRIX_Matrix *m1, const MATRIX_Matrix *m2) {
+  assert(m1);
+  assert(m2);
+  /* matrix multiplication is only valid if the rows of the first matrix is
+     equals to the columns in the second.  the resulting matrix will have the
+     number of rows of the first matrix & columns of the second
+  */
+  assert(m1->height == m2->width);
+  MATRIX_Matrix *dest = MATRIX_new(m1->width, m2->height);
+  for (uint row = 0; row < m1->height; row++) {
+    for (uint column = 0; column < m1->width; column++) {
+      MATRIX_write_cell(dest, row, column, compute_dot_product(m1, m2, row, column));
     }
-    return matrix;
-}
-
-MATRIX_Matrix* MATRIX_new_translation(double x, double y, double z) {
-    MATRIX_Matrix* matrix = MATRIX_new_identity(4);
-    MATRIX_write_cell(matrix, 0, 3, x);
-    MATRIX_write_cell(matrix, 1, 3, y);
-    MATRIX_write_cell(matrix, 2, 3, z);
-    return matrix;
-}
-
-MATRIX_Matrix* MATRIX_new_scaling(double x, double y, double z) {
-    MATRIX_Matrix* matrix = MATRIX_new(4, 4);
-    MATRIX_write_cell(matrix, 0, 0, x);
-    MATRIX_write_cell(matrix, 1, 1, y);
-    MATRIX_write_cell(matrix, 2, 2, z);
-    MATRIX_write_cell(matrix, 3, 3, 1.0);
-    return matrix;
-}
-
-MATRIX_Matrix* MATRIX_new_rotation_x(double radians) {
-    MATRIX_Matrix* matrix = MATRIX_new(4, 4);
-    double s = sin(radians);
-    double c = cos(radians);
-    MATRIX_write_cell(matrix, 0, 0, 1.0);
-    MATRIX_write_cell(matrix, 1, 1, c);
-    MATRIX_write_cell(matrix, 2, 1, s);
-    MATRIX_write_cell(matrix, 1, 2, -s);
-    MATRIX_write_cell(matrix, 2, 2, c);
-    MATRIX_write_cell(matrix, 3, 3, 1.0);
-    return matrix;
-}
-
-MATRIX_Matrix* MATRIX_new_rotation_y(double radians) {
-    MATRIX_Matrix *matrix = MATRIX_new(4, 4);
-    double s = sin(radians);
-    double c = cos(radians);
-    MATRIX_write_cell(matrix, 1, 1, 1.0);
-    MATRIX_write_cell(matrix, 0, 0, c);
-    MATRIX_write_cell(matrix, 2, 2, c);
-    MATRIX_write_cell(matrix, 2, 0, -s);
-    MATRIX_write_cell(matrix, 0, 2, s);
-    MATRIX_write_cell(matrix, 3, 3, 1.0);
-    return matrix;
-}
-
-MATRIX_Matrix* MATRIX_new_rotation_z(double radians) {
-    MATRIX_Matrix *matrix = MATRIX_new(4, 4);
-    double s = sin(radians);
-    double c = cos(radians);
-    MATRIX_write_cell(matrix, 0, 0, c);
-    MATRIX_write_cell(matrix, 1, 1, c);
-    MATRIX_write_cell(matrix, 0, 1, -s);
-    MATRIX_write_cell(matrix, 1, 0, s);
-    MATRIX_write_cell(matrix, 2, 2, 1.0);
-    MATRIX_write_cell(matrix, 3, 3, 1.0);
-    return matrix;
-}
-
-MATRIX_Matrix* MATRIX_new_shearing(double xy, double xz, double yx, double yz, double zx, double zy) {
-    MATRIX_Matrix *matrix = MATRIX_new_identity(4);
-    MATRIX_write_cell(matrix, 0, 1, xy);
-    MATRIX_write_cell(matrix, 0, 2, xz);
-    MATRIX_write_cell(matrix, 1, 0, yx);
-    MATRIX_write_cell(matrix, 1, 2, yz);
-    MATRIX_write_cell(matrix, 2, 0, zx);
-    MATRIX_write_cell(matrix, 2, 1, zy);
-
-    return matrix;
-}
-
-static double compute_dot_product(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2, uint row, uint column) {
-    uint vector_column=0;
-    double total = 0.0;
-    for (uint vector_row=0; vector_row < m1->height; vector_row++) {
-        total += MATRIX_read_cell(m1, row, vector_column) * MATRIX_read_cell(m2, vector_row, column);
-        vector_column++;
-    }
-    return total;
-}
-
-MATRIX_Matrix* MATRIX_multiply_array(const MATRIX_Matrix* matrix[]) {
-    MATRIX_Matrix* retmatrix = MATRIX_new_identity(4);
-    for (uint i=0; matrix[i]; i++) {
-        const MATRIX_Matrix* m = matrix[i];
-        assert(m->width == 4);
-        assert(m->height == 4);
-        MATRIX_Matrix* new_retmatrix = MATRIX_multiply(retmatrix, m);
-        MATRIX_delete(retmatrix);
-        retmatrix = new_retmatrix;
-    }
-    return retmatrix;
-}
-
-MATRIX_Matrix* MATRIX_multiply(const MATRIX_Matrix* m1, const MATRIX_Matrix* m2) {
-    assert(m1);
-    assert(m2);
-    /* matrix multiplication is only valid if the rows of the first matrix is equals
-       to the columns in the second.  the resulting matrix will have the number of rows
-       of the first matrix & columns of the second
-    */
-    assert(m1->height == m2->width);
-    MATRIX_Matrix* dest = MATRIX_new(m1->width, m2->height);
-    for (uint row=0; row < m1->height; row++) {
-        for (uint column=0; column < m1->width; column++) {
-            MATRIX_write_cell(dest, row, column, compute_dot_product(m1, m2, row, column));
-        }
-    }
-    return dest;
+  }
+  return dest;
 }
 
 #if 0
@@ -229,181 +232,178 @@ static void convert_matrix_to_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* src
 #endif
 
 #ifndef __AVX2__
-static double multiply_row_by_tuple(const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple, uint row) {
-    return MATRIX_read_cell(matrix, row, 0) * tuple->x +
-            MATRIX_read_cell(matrix, row, 1) * tuple->y +
-            MATRIX_read_cell(matrix, row, 2) * tuple->z +
-            MATRIX_read_cell(matrix, row, 3) * tuple->w;
+static double multiply_row_by_tuple(const MATRIX_Matrix *matrix, const TUPLES_Tuple *tuple, uint row) {
+  return MATRIX_read_cell(matrix, row, 0) * tuple->x + MATRIX_read_cell(matrix, row, 1) * tuple->y + MATRIX_read_cell(matrix, row, 2) * tuple->z +
+         MATRIX_read_cell(matrix, row, 3) * tuple->w;
 }
 
-void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
-    //Lenovo x250:Fri Oct  9 22:10:39  Info: Render time: Wall: 110.29 User: 423.10 System: 0.45
-    //Beast: Fri Oct  9 22:24:56  Info: Render time: Wall: 29.11 User: 2088.06 System: 3.07
-    assert(matrix);
-    assert(tuple);
-    assert(dest);
-    assert(matrix->height == 4 && matrix->width == 4);
+void MATRIX_multiply_tuple(TUPLES_Tuple *dest, const MATRIX_Matrix *matrix, const TUPLES_Tuple *tuple) {
+  // Lenovo x250:Fri Oct  9 22:10:39  Info: Render time: Wall: 110.29 User:
+  // 423.10 System: 0.45 Beast: Fri Oct  9 22:24:56  Info: Render time:
+  // Wall: 29.11 User: 2088.06 System: 3.07
+  assert(matrix);
+  assert(tuple);
+  assert(dest);
+  assert(matrix->height == 4 && matrix->width == 4);
 
-    TUPLES_init_point(dest, multiply_row_by_tuple(matrix, tuple, 0),
-                            multiply_row_by_tuple(matrix, tuple, 1),
-                            multiply_row_by_tuple(matrix, tuple, 2));
-    dest->w = multiply_row_by_tuple(matrix, tuple, 3);
+  TUPLES_init_point(dest, multiply_row_by_tuple(matrix, tuple, 0), multiply_row_by_tuple(matrix, tuple, 1), multiply_row_by_tuple(matrix, tuple, 2));
+  dest->w = multiply_row_by_tuple(matrix, tuple, 3);
 }
 #else
-void MATRIX_multiply_tuple(TUPLES_Tuple* dest, const MATRIX_Matrix* matrix, const TUPLES_Tuple* tuple) {
-    //Lenovo x250: Fri Oct  9 22:07:35  Info: Render time: Wall: 97.89 User: 349.13 System: 0.51
-    //Beast: Fri Oct  9 22:19:58  Info: Render time: Wall: 26.30 User: 1859.25 System: 4.69
-    assert(matrix);
-    assert(tuple);
-    assert(dest);
-    assert(matrix->height == 4 && matrix->width == 4);
-    __m256d tuple_x_vec = _mm256_set1_pd(tuple->x);
-    __m256d tuple_y_vec = _mm256_set1_pd(tuple->y);
-    __m256d tuple_z_vec = _mm256_set1_pd(tuple->z);
-    __m256d tuple_w_vec = _mm256_set1_pd(tuple->w);
+void MATRIX_multiply_tuple(TUPLES_Tuple *dest, const MATRIX_Matrix *matrix, const TUPLES_Tuple *tuple) {
+  // Lenovo x250: Fri Oct  9 22:07:35  Info: Render time: Wall: 97.89 User:
+  // 349.13 System: 0.51 Beast: Fri Oct  9 22:19:58  Info: Render time:
+  // Wall: 26.30 User: 1859.25 System: 4.69
+  assert(matrix);
+  assert(tuple);
+  assert(dest);
+  assert(matrix->height == 4 && matrix->width == 4);
+  __m256d tuple_x_vec = _mm256_set1_pd(tuple->x);
+  __m256d tuple_y_vec = _mm256_set1_pd(tuple->y);
+  __m256d tuple_z_vec = _mm256_set1_pd(tuple->z);
+  __m256d tuple_w_vec = _mm256_set1_pd(tuple->w);
 
-    __m256d m_col0_vec = _mm256_set_pd(matrix->data[12], matrix->data[8], matrix->data[4], matrix->data[0]);
-    __m256d m_col1_vec = _mm256_set_pd(matrix->data[13], matrix->data[9], matrix->data[5], matrix->data[1]);
-    __m256d m_col2_vec = _mm256_set_pd(matrix->data[14], matrix->data[10], matrix->data[6], matrix->data[2]);
-    __m256d m_col3_vec = _mm256_set_pd(matrix->data[15], matrix->data[11], matrix->data[7], matrix->data[3]);
+  __m256d m_col0_vec = _mm256_set_pd(matrix->data[12], matrix->data[8], matrix->data[4], matrix->data[0]);
+  __m256d m_col1_vec = _mm256_set_pd(matrix->data[13], matrix->data[9], matrix->data[5], matrix->data[1]);
+  __m256d m_col2_vec = _mm256_set_pd(matrix->data[14], matrix->data[10], matrix->data[6], matrix->data[2]);
+  __m256d m_col3_vec = _mm256_set_pd(matrix->data[15], matrix->data[11], matrix->data[7], matrix->data[3]);
 
-    __m256d col0_by_x = _mm256_mul_pd(m_col0_vec, tuple_x_vec);
-    __m256d col1_by_y = _mm256_mul_pd(m_col1_vec, tuple_y_vec);
-    __m256d col2_by_z = _mm256_mul_pd(m_col2_vec, tuple_z_vec);
-    __m256d col3_by_w = _mm256_mul_pd(m_col3_vec, tuple_w_vec);
+  __m256d col0_by_x = _mm256_mul_pd(m_col0_vec, tuple_x_vec);
+  __m256d col1_by_y = _mm256_mul_pd(m_col1_vec, tuple_y_vec);
+  __m256d col2_by_z = _mm256_mul_pd(m_col2_vec, tuple_z_vec);
+  __m256d col3_by_w = _mm256_mul_pd(m_col3_vec, tuple_w_vec);
 
-    __m256d sum = _mm256_add_pd(col3_by_w, col2_by_z);
-    sum = _mm256_add_pd(col1_by_y, sum);
-    sum = _mm256_add_pd(col0_by_x, sum);
+  __m256d sum = _mm256_add_pd(col3_by_w, col2_by_z);
+  sum = _mm256_add_pd(col1_by_y, sum);
+  sum = _mm256_add_pd(col0_by_x, sum);
 
-    dest->x = sum[0];
-    dest->y = sum[1];
-    dest->z = sum[2];
-    dest->w = sum[3];
+  dest->x = sum[0];
+  dest->y = sum[1];
+  dest->z = sum[2];
+  dest->w = sum[3];
 }
 #endif
 
-static void transpose_cell(MATRIX_Matrix* matrix, uint row, uint column) {
-    double val = MATRIX_read_cell(matrix, row, column);
-    MATRIX_write_cell(matrix, row, column, MATRIX_read_cell(matrix, column, row));
-    MATRIX_write_cell(matrix, column, row, val);
+static void transpose_cell(MATRIX_Matrix *matrix, uint row, uint column) {
+  double val = MATRIX_read_cell(matrix, row, column);
+  MATRIX_write_cell(matrix, row, column, MATRIX_read_cell(matrix, column, row));
+  MATRIX_write_cell(matrix, column, row, val);
 }
 
-void MATRIX_transpose(MATRIX_Matrix* matrix) {
-    assert(matrix);
-    // only needs to support square matrix
-    assert(matrix->width == matrix->height);
-    uint offset = 1;
-    for (uint row=0; row < matrix->height; row++) {
-        for (uint column=offset; column < matrix->width; column++) {
-            transpose_cell(matrix, row, column);
-        }
-        offset++;
+void MATRIX_transpose(MATRIX_Matrix *matrix) {
+  assert(matrix);
+  // only needs to support square matrix
+  assert(matrix->width == matrix->height);
+  uint offset = 1;
+  for (uint row = 0; row < matrix->height; row++) {
+    for (uint column = offset; column < matrix->width; column++) {
+      transpose_cell(matrix, row, column);
     }
+    offset++;
+  }
 }
 
-char* MATRIX_to_string(const MATRIX_Matrix* matrix) {
-    assert(matrix);
-    char* str = NULL;
-    Sasprintf(str, "Matrix:\n");
-    for (uint row=0; row < matrix->height; row++) {
-        for (uint column=0; column < matrix->width; column++) {
-            Sasprintf(str, "%s %.5f", str, MATRIX_read_cell(matrix, row, column));
-        }
-        Sasprintf(str, "%s\n", str);
+char *MATRIX_to_string(const MATRIX_Matrix *matrix) {
+  assert(matrix);
+  char *str = NULL;
+  Sasprintf(str, "Matrix:\n");
+  for (uint row = 0; row < matrix->height; row++) {
+    for (uint column = 0; column < matrix->width; column++) {
+      Sasprintf(str, "%s %.5f", str, MATRIX_read_cell(matrix, row, column));
     }
-    return str;
+    Sasprintf(str, "%s\n", str);
+  }
+  return str;
 }
 
-double MATRIX_determinant(const MATRIX_Matrix* matrix) {
-    assert(matrix);
-    assert(matrix->width >= 2);
-    assert(matrix->height >= 2);
-    double determinant = 0.0;
-    if (matrix->width == 2 && matrix->height == 2) {
-        determinant = (MATRIX_read_cell(matrix, 0, 0) * MATRIX_read_cell(matrix, 1, 1) -
-                       MATRIX_read_cell(matrix, 0, 1) * MATRIX_read_cell(matrix, 1, 0));
+double MATRIX_determinant(const MATRIX_Matrix *matrix) {
+  assert(matrix);
+  assert(matrix->width >= 2);
+  assert(matrix->height >= 2);
+  double determinant = 0.0;
+  if (matrix->width == 2 && matrix->height == 2) {
+    determinant = (MATRIX_read_cell(matrix, 0, 0) * MATRIX_read_cell(matrix, 1, 1) - MATRIX_read_cell(matrix, 0, 1) * MATRIX_read_cell(matrix, 1, 0));
 
-    } else {
-        for (uint column = 0; column < matrix->width; column++) {
-            determinant += MATRIX_read_cell(matrix, 0, column) * MATRIX_cofactor(matrix, 0, column);
-        }
+  } else {
+    for (uint column = 0; column < matrix->width; column++) {
+      determinant += MATRIX_read_cell(matrix, 0, column) * MATRIX_cofactor(matrix, 0, column);
     }
-    return determinant;
+  }
+  return determinant;
 }
 
-MATRIX_Matrix* MATRIX_submatrix(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix, uint row, uint column) {
-    assert(matrix);
-    assert(row < matrix->height);
-    assert(column < matrix->width);
-    assert(matrix->height >= 3);
-    assert(matrix->width >= 3);
+MATRIX_Matrix *MATRIX_submatrix(MATRIX_Matrix *dest, const MATRIX_Matrix *matrix, uint row, uint column) {
+  assert(matrix);
+  assert(row < matrix->height);
+  assert(column < matrix->width);
+  assert(matrix->height >= 3);
+  assert(matrix->width >= 3);
 
-    if (dest) {
-        MATRIX_init(dest, matrix->width - 1, matrix->height - 1);
-    } else {
-        dest = MATRIX_new(matrix->width - 1, matrix->height - 1);
+  if (dest) {
+    MATRIX_init(dest, matrix->width - 1, matrix->height - 1);
+  } else {
+    dest = MATRIX_new(matrix->width - 1, matrix->height - 1);
+  }
+  for (uint write_row = 0; write_row < dest->height; write_row++) {
+    for (uint write_column = 0; write_column < dest->width; write_column++) {
+      uint read_row = write_row;
+      if (write_row >= row)
+        read_row++;
+      uint read_column = write_column;
+      if (write_column >= column)
+        read_column++;
+      MATRIX_write_cell(dest, write_row, write_column, MATRIX_read_cell(matrix, read_row, read_column));
     }
-    for (uint write_row=0; write_row < dest->height; write_row++) {
-        for (uint write_column=0; write_column < dest->width; write_column++) {
-            uint read_row = write_row;
-            if (write_row >= row) read_row++;
-            uint read_column = write_column;
-            if (write_column >= column) read_column++;
-            MATRIX_write_cell(dest, write_row, write_column, MATRIX_read_cell(matrix, read_row, read_column));
-        }
+  }
+  return dest;
+}
+
+double MATRIX_minor(const MATRIX_Matrix *matrix, uint row, uint column) {
+  assert(matrix);
+  assert(row < matrix->height);
+  assert(column < matrix->width);
+  MATRIX_Matrix submatrix;
+  MATRIX_submatrix(&submatrix, matrix, row, column);
+  double determinant = MATRIX_determinant(&submatrix);
+  return determinant;
+}
+
+double MATRIX_cofactor(const MATRIX_Matrix *matrix, uint row, uint column) {
+  assert(matrix);
+  assert(row < matrix->height);
+  assert(column < matrix->width);
+  double cofactor = MATRIX_minor(matrix, row, column);
+  if ((row + column) % 2 == 1) {
+    cofactor = 0.0 - cofactor;
+  }
+  return cofactor;
+}
+
+bool MATRIX_is_invertible(const MATRIX_Matrix *matrix) { return !double_equal(MATRIX_determinant(matrix), 0.0); }
+
+void MATRIX_inverse(MATRIX_Matrix *dest, const MATRIX_Matrix *matrix) {
+  assert(matrix);
+  assert(dest);
+  assert(MATRIX_is_invertible(matrix));
+
+  MATRIX_init(dest, matrix->width, matrix->height);
+  double determinant = MATRIX_determinant(matrix);
+  for (uint row = 0; row < matrix->height; row++) {
+    for (uint column = 0; column < matrix->width; column++) {
+      double cofactor = MATRIX_cofactor(matrix, row, column);
+      // we are transposing also so column / row are swapped below
+      MATRIX_write_cell(dest, column, row, cofactor / determinant);
     }
-    return dest;
+  }
 }
 
-double MATRIX_minor(const MATRIX_Matrix* matrix, uint row, uint column) {
-    assert(matrix);
-    assert(row < matrix->height);
-    assert(column < matrix->width);
-    MATRIX_Matrix submatrix;
-    MATRIX_submatrix(&submatrix, matrix, row, column);
-    double determinant = MATRIX_determinant(&submatrix);
-    return determinant;
+void MATRIX_destroy(MATRIX_Matrix *matrix) {
+  assert(matrix);
+  UNUSED(matrix);
 }
 
-double MATRIX_cofactor(const MATRIX_Matrix* matrix, uint row, uint column) {
-    assert(matrix);
-    assert(row < matrix->height);
-    assert(column < matrix->width);
-    double cofactor = MATRIX_minor(matrix, row, column);
-    if ((row + column) % 2 == 1) {
-        cofactor = 0.0 - cofactor;
-    }
-    return cofactor;
-}
-
-bool MATRIX_is_invertible(const MATRIX_Matrix* matrix) {
-    return !double_equal(MATRIX_determinant(matrix), 0.0);
-}
-
-void MATRIX_inverse(MATRIX_Matrix* dest, const MATRIX_Matrix* matrix) {
-    assert(matrix);
-    assert(dest);
-    assert(MATRIX_is_invertible(matrix));
-
-    MATRIX_init(dest, matrix->width, matrix->height);
-    double determinant = MATRIX_determinant(matrix);
-    for (uint row=0; row<matrix->height; row++) {
-        for (uint column=0; column<matrix->width; column++) {
-            double cofactor = MATRIX_cofactor(matrix, row, column);
-            // we are transposing also so column / row are swapped below
-            MATRIX_write_cell(dest, column, row, cofactor/determinant);
-        }
-    }
-}
-
-void MATRIX_destroy(MATRIX_Matrix* matrix) {
-    assert(matrix);
-    UNUSED(matrix);
-}
-
-void MATRIX_delete(MATRIX_Matrix* matrix) {
-    assert(matrix);
-    MATRIX_destroy(matrix);
-    free(matrix);
+void MATRIX_delete(MATRIX_Matrix *matrix) {
+  assert(matrix);
+  MATRIX_destroy(matrix);
+  free(matrix);
 }

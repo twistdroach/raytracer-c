@@ -7,10 +7,10 @@ target_include_directories(module_datastructures PUBLIC
         module_utilities
         module_shapes
         CException
-)
+        )
 
 target_link_libraries(module_datastructures
         module_utilities
         module_shapes
         CException
-)
+        )
