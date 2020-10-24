@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmodule_shapes.a  CMakeFiles/module_shapes.dir/sphere.c.o CMakeFiles/module_shapes.dir/shape.c.o CMakeFiles/module_shapes.dir/testshape.c.o CMakeFiles/module_shapes.dir/plane.c.o CMakeFiles/module_shapes.dir/cube.c.o CMakeFiles/module_shapes.dir/cylinder.c.o CMakeFiles/module_shapes.dir/cone.c.o CMakeFiles/module_shapes.dir/group.c.o CMakeFiles/module_shapes.dir/triangle.c.o CMakeFiles/module_shapes.dir/csg.c.o CMakeFiles/module_shapes.dir/bound.c.o
+/usr/bin/ranlib libmodule_shapes.a
