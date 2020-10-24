@@ -17,7 +17,7 @@ target_include_directories(module_shapes PUBLIC
         module_utilities
         module_datastructures
         CException
-)
+        )
 
 target_link_libraries(module_shapes
         module_raytracer
@@ -25,4 +25,4 @@ target_link_libraries(module_shapes
         module_datastructures
         CException
         m
-)
+        )
