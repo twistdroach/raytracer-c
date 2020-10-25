@@ -154,7 +154,7 @@ void RAY_add_intersection_tri(RAY_Intersections *intersections, double intersect
 
 void RAY_delete_intersections(RAY_Intersections *intersections) {
   assert(intersections);
-  if (intersections->count > 0 && intersections->xs) {
+  if (intersections->xs) {
     free(intersections->xs);
   }
   free(intersections);
