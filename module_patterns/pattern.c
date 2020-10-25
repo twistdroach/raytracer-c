@@ -11,19 +11,51 @@ typedef struct PATTERN_Pattern {
   MATRIX_Matrix *transform;
   MATRIX_Matrix *inverse_transform;
   void (*at)(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Point *point);
+  PATTERN_Pattern *(*copy)(const PATTERN_Pattern *src);
 } PATTERN_Pattern;
+
+//forward declare
+static PATTERN_Pattern *PATTERN_new(const TUPLES_Color *a, const TUPLES_Color *b);
+
+static PATTERN_Pattern *copy_base_pattern(const PATTERN_Pattern* pattern) {
+  assert(pattern);
+  PATTERN_Pattern *new_pattern = PATTERN_new(&pattern->a, &pattern->b);
+  MATRIX_copy(new_pattern->transform, pattern->transform);
+  MATRIX_copy(new_pattern->inverse_transform, pattern->inverse_transform);
+  new_pattern->at = pattern->at;
+  new_pattern->copy = pattern->copy;
+  return new_pattern;
+}
+
+static void PATTERN_init(PATTERN_Pattern *pattern, const TUPLES_Color *a, const TUPLES_Color *b) {
+  assert(a);
+  assert(b);
+
+  TUPLES_copy(&pattern->a, a);
+  TUPLES_copy(&pattern->b, b);
+  pattern->transform = MATRIX_new_identity(4);
+  pattern->inverse_transform = MATRIX_new_identity(4);
+  MATRIX_inverse(pattern->inverse_transform, pattern->transform);
+  pattern->copy = &copy_base_pattern;
+}
 
 static PATTERN_Pattern *PATTERN_new(const TUPLES_Color *a, const TUPLES_Color *b) {
   PATTERN_Pattern *pattern = malloc(sizeof(PATTERN_Pattern));
   if (!pattern) {
     Throw(E_MALLOC_FAILED);
   }
-  TUPLES_copy(&pattern->a, a);
-  TUPLES_copy(&pattern->b, b);
-  pattern->transform = MATRIX_new_identity(4);
-  pattern->inverse_transform = MATRIX_new_identity(4);
-  MATRIX_inverse(pattern->inverse_transform, pattern->transform);
+  PATTERN_init(pattern, a, b);
   return pattern;
+}
+
+static void copy_base_pattern_in_place(PATTERN_Pattern *dest, const PATTERN_Pattern *src) {
+  assert(dest);
+  assert(src);
+  PATTERN_init(dest, &src->a, &src->b);
+  MATRIX_copy(dest->transform, src->transform);
+  MATRIX_copy(dest->inverse_transform, src->inverse_transform);
+  dest->at = src->at;
+  dest->copy = src->copy;
 }
 
 const TUPLES_Color *PATTERN_get_color_a(const PATTERN_Pattern *pattern) {
@@ -46,11 +78,7 @@ void PATTERN_delete(PATTERN_Pattern *p) {
 PATTERN_Pattern *PATTERN_new_copy(const PATTERN_Pattern *pattern) {
   assert(pattern);
   assert(pattern->transform);
-  PATTERN_Pattern *new_pattern = PATTERN_new(&pattern->a, &pattern->b);
-  MATRIX_copy(new_pattern->transform, pattern->transform);
-  MATRIX_copy(new_pattern->inverse_transform, pattern->inverse_transform);
-  new_pattern->at = pattern->at;
-  return new_pattern;
+  return pattern->copy(pattern);
 }
 
 void PATTERN_set_transform(PATTERN_Pattern *pattern, const MATRIX_Matrix *transformation) {
@@ -187,7 +215,6 @@ PATTERN_Pattern *PATTERN_new_checkers(const TUPLES_Color *a, const TUPLES_Color 
 }
 
 // ------ solid pattern
-
 void solid_at(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Point *point) {
   assert(dest);
   assert(pattern);
@@ -201,4 +228,48 @@ PATTERN_Pattern *PATTERN_new_solid(const TUPLES_Color *a) {
   PATTERN_Pattern *pattern = PATTERN_new(a, a);
   pattern->at = &solid_at;
   return pattern;
+}
+
+// ------ map
+typedef struct PATTERN_Pattern_Map {
+  PATTERN_Pattern pattern;
+  UV_Pattern uv_pattern;
+  void (*map)(double* u, double* v, const TUPLES_Point* point);
+} PATTERN_Pattern_Map;
+
+void map_at(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Point *point) {
+  assert(dest);
+  assert(pattern);
+  assert(point);
+  PATTERN_Pattern_Map* pattern_map = (PATTERN_Pattern_Map*) pattern;
+  double u, v;
+  pattern_map->map(&u, &v, point);
+  UV_PATTERN_pattern_at(dest, &pattern_map->uv_pattern, u, v);
+}
+
+PATTERN_Pattern *copy_pattern_map(const PATTERN_Pattern *pattern) {
+  assert(pattern);
+  PATTERN_Pattern_Map *src = (PATTERN_Pattern_Map*) pattern;
+  PATTERN_Pattern_Map *pattern_map = malloc(sizeof(PATTERN_Pattern_Map));
+  if (!pattern_map) {
+    Throw(E_MALLOC_FAILED);
+  }
+  UV_PATTERN_copy(&pattern_map->uv_pattern, &src->uv_pattern);
+  copy_base_pattern_in_place(&pattern_map->pattern, pattern);
+  pattern_map->map = src->map;
+  return (PATTERN_Pattern*) pattern_map;
+}
+
+PATTERN_Pattern *PATTERN_new_map(const UV_Pattern* uv_pattern, void (*map)(double* u, double* v, const TUPLES_Point* point)) {
+  assert(uv_pattern);
+  PATTERN_Pattern_Map *pattern_map = malloc(sizeof(PATTERN_Pattern_Map));
+  if (!pattern_map) {
+    Throw(E_MALLOC_FAILED);
+  }
+  UV_PATTERN_copy(&pattern_map->uv_pattern, uv_pattern);
+  PATTERN_init(&pattern_map->pattern, &uv_pattern->a, &uv_pattern->b);
+  pattern_map->map = map;
+  pattern_map->pattern.at = &map_at;
+  pattern_map->pattern.copy = copy_pattern_map;
+  return (PATTERN_Pattern*)pattern_map;
 }

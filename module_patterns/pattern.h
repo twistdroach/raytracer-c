@@ -1,6 +1,7 @@
 #ifndef DATA_STRUCTURES_PATTERNS_H
 #define DATA_STRUCTURES_PATTERNS_H
 
+#include "uv_pattern.h"
 #include <matrix.h>
 #include <shape.h>
 #include <tuples.h>
@@ -26,6 +27,7 @@ PATTERN_Pattern *PATTERN_new_gradient(const TUPLES_Color *a, const TUPLES_Color 
 PATTERN_Pattern *PATTERN_new_ring(const TUPLES_Color *a, const TUPLES_Color *b);
 PATTERN_Pattern *PATTERN_new_checkers(const TUPLES_Color *a, const TUPLES_Color *b);
 PATTERN_Pattern *PATTERN_new_solid(const TUPLES_Color *a);
+PATTERN_Pattern *PATTERN_new_map(const UV_Pattern* uv_pattern, void (*map)(double* u, double* v, const TUPLES_Point* point));
 
 const TUPLES_Color *PATTERN_get_color_a(const PATTERN_Pattern *pattern);
 const TUPLES_Color *PATTERN_get_color_b(const PATTERN_Pattern *pattern);
