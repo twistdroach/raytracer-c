@@ -16,5 +16,7 @@ void UV_PATTERN_pattern_at(TUPLES_Color* result, UV_Pattern* patter, double u, d
 
 void UV_PATTERN_spherical_map(double* u, double* v, const TUPLES_Point* point);
 void UV_PATTERN_planar_map(double* u, double* v, const TUPLES_Point* point);
+void UV_PATTERN_cylinder_map(double* u, double* v, const TUPLES_Point* point);
+void UV_PATTERN_cube_map(double* u, double* v, const TUPLES_Point* point);
 
 #endif // SIMPLE_RAYTRACER_UV_PATTERN_H

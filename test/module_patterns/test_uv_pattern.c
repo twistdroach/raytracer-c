@@ -79,12 +79,77 @@ void test_use_texture_map_pattern_with_spherical_map() {
   use_texture_map_pattern_with_spherical_map(-0.7652, 0.2175, 0.6060, black);
 }
 
+void use_planar_mapping_on_a_3d_point(double x, double y, double z, double expected_u, double expected_v) {
+  double u, v;
+  TUPLES_Point p;
+  TUPLES_init_point(&p, x, y, z);
+  UV_PATTERN_planar_map(&u, &v, &p);
+  printf("Testing (%.2f, %.2f, %.2f), got (%.2f, %.2f), expected(%.2f, %.2f)\n", x, y, z, u, v, expected_u, expected_v);
+  TEST_ASSERT_EQUAL_DOUBLE(expected_u, u);
+  TEST_ASSERT_EQUAL_DOUBLE(expected_v, v);
+}
 
+void test_use_planar_mapping_on_a_3d_point() {
+  use_planar_mapping_on_a_3d_point(0.25, 0, 0.5, 0.25, 0.5);
+  use_planar_mapping_on_a_3d_point(0.25, 0, -0.25, 0.25, 0.75);
+  use_planar_mapping_on_a_3d_point(0.25, 0.5, -0.25, 0.25, 0.75);
+  use_planar_mapping_on_a_3d_point(1.25, 0, 0.5, 0.25, 0.5);
+  use_planar_mapping_on_a_3d_point(0.25, 0, -1.75, 0.25, 0.25);
+  use_planar_mapping_on_a_3d_point(1, 0, -1, 0, 0);
+  use_planar_mapping_on_a_3d_point(0, 0, 0, 0, 0);
+}
+
+void use_cylindrical_mapping_on_a_3d_point(double x, double y, double z, double expected_u, double expected_v) {
+  double u, v;
+  TUPLES_Point p;
+  TUPLES_init_point(&p, x, y, z);
+  UV_PATTERN_cylinder_map(&u, &v, &p);
+  printf("Testing (%.2f, %.2f, %.2f), got (%.2f, %.2f), expected(%.2f, %.2f)\n", x, y, z, u, v, expected_u, expected_v);
+  TEST_ASSERT_EQUAL_DOUBLE(expected_u, u);
+  TEST_ASSERT_EQUAL_DOUBLE(expected_v, v);
+}
+
+void test_use_cylindrical_mapping_on_a_3d_point() {
+  use_cylindrical_mapping_on_a_3d_point(0, 0, -1, 0, 0);
+  use_cylindrical_mapping_on_a_3d_point(0, 0.5, -1, 0, 0.5);
+  use_cylindrical_mapping_on_a_3d_point(0, 1, -1, 0, 0);
+  use_cylindrical_mapping_on_a_3d_point(0.70711, 0.5, -0.70711, 0.125, 0.5);
+  use_cylindrical_mapping_on_a_3d_point(1, 0.5, 0, 0.25, 0.5);
+  use_cylindrical_mapping_on_a_3d_point(0.70711, 0.5, 0.70711, 0.375, 0.5);
+  use_cylindrical_mapping_on_a_3d_point(0, -0.25, 1, 0.5, 0.75);
+  use_cylindrical_mapping_on_a_3d_point(-0.70711, 0.5, 0.70711, 0.625, 0.5);
+  use_cylindrical_mapping_on_a_3d_point(-1, 1.25, 0, 0.75, 0.25);
+  use_cylindrical_mapping_on_a_3d_point(-0.70711, 0.5, -0.70711, 0.875, 0.5);
+}
+
+TUPLES_Color main_color, ul, ur, bl, br;
+void layout_of_align_check_pattern(double u, double v, const TUPLES_Color* expected_color) {
+  UNUSED(u);
+  UNUSED(v);
+  UNUSED(expected_color);
+}
+
+void test_layout_of_align_check_pattern() {
+  TUPLES_init_color(&main_color, 1, 1, 1);
+  TUPLES_init_color(&ul, 1, 0, 0);
+  TUPLES_init_color(&ur, 1, 1, 0);
+  TUPLES_init_color(&bl, 0, 1, 0);
+  TUPLES_init_color(&br, 0, 1, 1);
+
+  layout_of_align_check_pattern(0.5, 0.5, &main_color);
+  layout_of_align_check_pattern(0.1, 0.9, &ul);
+  layout_of_align_check_pattern(0.9, 0.9, &ur);
+  layout_of_align_check_pattern(0.1, 0.1, &bl);
+  layout_of_align_check_pattern(0.9, 0.1, &br);
+}
 
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_check_pattern_in_2d);
   RUN_TEST(test_spherical_mapping_on_a_3d_point);
   RUN_TEST(test_use_texture_map_pattern_with_spherical_map);
+  RUN_TEST(test_use_planar_mapping_on_a_3d_point);
+  RUN_TEST(test_use_cylindrical_mapping_on_a_3d_point);
+  RUN_TEST(test_layout_of_align_check_pattern);
   return UNITY_END();
 }

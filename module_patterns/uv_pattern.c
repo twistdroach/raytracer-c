@@ -15,6 +15,22 @@ void UV_PATTERN_pattern_at(TUPLES_Color *result, UV_Pattern *pattern, double u, 
   }
 }
 
+void UV_PATTERN_init(UV_Pattern* pattern, unsigned int u, unsigned int v, const TUPLES_Color* a, const TUPLES_Color* b) {
+  assert(pattern);
+  assert(a);
+  assert(b);
+  TUPLES_copy(&pattern->a, a);
+  TUPLES_copy(&pattern->b, b);
+  pattern->width = u;
+  pattern->height = v;
+}
+
+void UV_PATTERN_copy(UV_Pattern* dest, const UV_Pattern* src) {
+  assert(dest);
+  assert(src);
+  *dest = *src;
+}
+
 void UV_PATTERN_spherical_map(double* u, double* v, const TUPLES_Point* point) {
   assert(point);
   double theta = atan2(point->x, point->z);
@@ -31,18 +47,37 @@ void UV_PATTERN_spherical_map(double* u, double* v, const TUPLES_Point* point) {
   *v = 1 - (phi / M_PI);
 }
 
-void UV_PATTERN_init(UV_Pattern* pattern, unsigned int u, unsigned int v, const TUPLES_Color* a, const TUPLES_Color* b) {
-  assert(pattern);
-  assert(a);
-  assert(b);
-  TUPLES_copy(&pattern->a, a);
-  TUPLES_copy(&pattern->b, b);
-  pattern->width = u;
-  pattern->height = v;
+void UV_PATTERN_planar_map(double* u, double* v, const TUPLES_Point* point) {
+  assert(u);
+  assert(v);
+  assert(point);
+
+  *u = fmod(point->x, 1);
+  if (*u < 0)
+    *u = 1 + *u;
+  *v = fmod(point->z, 1);
+  if (*v < 0)
+    *v = 1 + *v;
 }
 
-void UV_PATTERN_copy(UV_Pattern* dest, const UV_Pattern* src) {
-  assert(dest);
-  assert(src);
-  *dest = *src;
+//TODO - fix cylinder map end-caps
+void UV_PATTERN_cylinder_map(double* u, double* v, const TUPLES_Point* point) {
+  assert(u);
+  assert(v);
+  assert(point);
+
+  double theta = atan2(point->x, point->z);
+  double raw_u = theta / (2 * M_PI);
+  *u = 1 - (raw_u + 0.5);
+
+  *v = fmod(point->y, 1);
+  if (*v < 0) {
+    *v = 1 + *v;
+  }
+}
+
+void UV_PATTERN_cube_map(double* u, double* v, const TUPLES_Point* point) {
+  assert(u);
+  assert(v);
+  assert(point);
 }
