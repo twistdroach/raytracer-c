@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmodule_utilities.a  CMakeFiles/module_utilities.dir/exceptions.c.o CMakeFiles/module_utilities.dir/logger.c.o CMakeFiles/module_utilities.dir/utilities.c.o
-/usr/bin/ranlib libmodule_utilities.a
