@@ -17,11 +17,11 @@ void tearDown() {
 }
 
 void check_pattern_in_2d(double u, double v, const TUPLES_Color* expected) {
-  UV_Pattern p;
-  UV_PATTERN_init(&p, 2, 2, black, white);
+  UV_Pattern *p = UV_PATTERN_new(2, 2, black, white);
   TUPLES_Color result;
-  UV_PATTERN_pattern_at(&result, &p, u, v);
+  UV_PATTERN_pattern_at(&result, p, u, v);
   test_tuples(expected, &result);
+  UV_PATTERN_delete(p);
 }
 
 void test_check_pattern_in_2d() {
@@ -52,10 +52,9 @@ void test_spherical_mapping_on_a_3d_point() {
 }
 
 void use_texture_map_pattern_with_spherical_map(double x, double y, double z, TUPLES_Color* expected_color) {
-  UV_Pattern p;
-  UV_PATTERN_init(&p, 16, 8, black, white);
-
-  PATTERN_Pattern *pattern = PATTERN_new_map(&p, &UV_PATTERN_spherical_map);
+  UV_Pattern *p = UV_PATTERN_new(16, 8, black, white);
+  PATTERN_Pattern *pattern = PATTERN_new_map(p, &UV_PATTERN_spherical_map);
+  UV_PATTERN_delete(p);
 
   TUPLES_Color result;
   TUPLES_Point point;

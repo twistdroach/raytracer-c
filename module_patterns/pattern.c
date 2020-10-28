@@ -12,6 +12,7 @@ typedef struct PATTERN_Pattern {
   MATRIX_Matrix *inverse_transform;
   void (*at)(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Point *point);
   PATTERN_Pattern *(*copy)(const PATTERN_Pattern *src);
+  void (*delete)(PATTERN_Pattern* pattern);
 } PATTERN_Pattern;
 
 //forward declare
@@ -24,7 +25,15 @@ static PATTERN_Pattern *copy_base_pattern(const PATTERN_Pattern* pattern) {
   MATRIX_copy(new_pattern->inverse_transform, pattern->inverse_transform);
   new_pattern->at = pattern->at;
   new_pattern->copy = pattern->copy;
+  new_pattern->delete = new_pattern->delete;
   return new_pattern;
+}
+
+static void delete_base_pattern(PATTERN_Pattern *p) {
+  assert(p);
+  MATRIX_delete(p->transform);
+  MATRIX_delete(p->inverse_transform);
+  free(p);
 }
 
 static void PATTERN_init(PATTERN_Pattern *pattern, const TUPLES_Color *a, const TUPLES_Color *b) {
@@ -37,6 +46,7 @@ static void PATTERN_init(PATTERN_Pattern *pattern, const TUPLES_Color *a, const 
   pattern->inverse_transform = MATRIX_new_identity(4);
   MATRIX_inverse(pattern->inverse_transform, pattern->transform);
   pattern->copy = &copy_base_pattern;
+  pattern->delete = &delete_base_pattern;
 }
 
 static PATTERN_Pattern *PATTERN_new(const TUPLES_Color *a, const TUPLES_Color *b) {
@@ -70,9 +80,7 @@ const TUPLES_Color *PATTERN_get_color_b(const PATTERN_Pattern *pattern) {
 
 void PATTERN_delete(PATTERN_Pattern *p) {
   assert(p);
-  MATRIX_delete(p->transform);
-  MATRIX_delete(p->inverse_transform);
-  free(p);
+  p->delete(p);
 }
 
 PATTERN_Pattern *PATTERN_new_copy(const PATTERN_Pattern *pattern) {
@@ -233,8 +241,8 @@ PATTERN_Pattern *PATTERN_new_solid(const TUPLES_Color *a) {
 // ------ map
 typedef struct PATTERN_Pattern_Map {
   PATTERN_Pattern pattern;
-  UV_Pattern uv_pattern;
-  void (*map)(double* u, double* v, const TUPLES_Point* point);
+  UV_Pattern *uv_pattern;
+  void (*coordinate_mapper)(double* u, double* v, const TUPLES_Point* point);
 } PATTERN_Pattern_Map;
 
 void map_at(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Point *point) {
@@ -243,8 +251,14 @@ void map_at(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Poi
   assert(point);
   PATTERN_Pattern_Map* pattern_map = (PATTERN_Pattern_Map*) pattern;
   double u, v;
-  pattern_map->map(&u, &v, point);
-  UV_PATTERN_pattern_at(dest, &pattern_map->uv_pattern, u, v);
+  pattern_map->coordinate_mapper(&u, &v, point);
+  UV_PATTERN_pattern_at(dest, pattern_map->uv_pattern, u, v);
+}
+
+void delete_pattern_map(PATTERN_Pattern* pattern) {
+  PATTERN_Pattern_Map *pattern_map = (PATTERN_Pattern_Map*) pattern;
+  UV_PATTERN_delete(pattern_map->uv_pattern);
+  delete_base_pattern(pattern);
 }
 
 PATTERN_Pattern *copy_pattern_map(const PATTERN_Pattern *pattern) {
@@ -254,9 +268,9 @@ PATTERN_Pattern *copy_pattern_map(const PATTERN_Pattern *pattern) {
   if (!pattern_map) {
     Throw(E_MALLOC_FAILED);
   }
-  UV_PATTERN_copy(&pattern_map->uv_pattern, &src->uv_pattern);
+  pattern_map->uv_pattern = UV_PATTERN_copy(src->uv_pattern);
   copy_base_pattern_in_place(&pattern_map->pattern, pattern);
-  pattern_map->map = src->map;
+  pattern_map->coordinate_mapper = src->coordinate_mapper;
   return (PATTERN_Pattern*) pattern_map;
 }
 
@@ -266,10 +280,11 @@ PATTERN_Pattern *PATTERN_new_map(const UV_Pattern* uv_pattern, void (*map)(doubl
   if (!pattern_map) {
     Throw(E_MALLOC_FAILED);
   }
-  UV_PATTERN_copy(&pattern_map->uv_pattern, uv_pattern);
-  PATTERN_init(&pattern_map->pattern, &uv_pattern->a, &uv_pattern->b);
-  pattern_map->map = map;
+  PATTERN_init(&pattern_map->pattern, UV_PATTERN_get_color_a(uv_pattern), UV_PATTERN_get_color_b(uv_pattern));
+  pattern_map->uv_pattern = UV_PATTERN_copy(uv_pattern);
+  pattern_map->coordinate_mapper = map;
   pattern_map->pattern.at = &map_at;
-  pattern_map->pattern.copy = copy_pattern_map;
+  pattern_map->pattern.copy = &copy_pattern_map;
+  pattern_map->pattern.delete = &delete_pattern_map;
   return (PATTERN_Pattern*)pattern_map;
 }

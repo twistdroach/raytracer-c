@@ -2,6 +2,23 @@
 #include <assert.h>
 #include <math.h>
 
+typedef struct UV_Pattern {
+  unsigned int width;
+  unsigned int height;
+  TUPLES_Color a;
+  TUPLES_Color b;
+} UV_Pattern;
+
+const TUPLES_Color *UV_PATTERN_get_color_a(const UV_Pattern *pattern) {
+  assert(pattern);
+  return &pattern->a;
+}
+
+const TUPLES_Color *UV_PATTERN_get_color_b(const UV_Pattern *pattern) {
+  assert(pattern);
+  return &pattern->b;
+}
+
 void UV_PATTERN_pattern_at(TUPLES_Color *result, UV_Pattern *pattern, double u, double v) {
   assert(result);
   assert(pattern);
@@ -15,6 +32,17 @@ void UV_PATTERN_pattern_at(TUPLES_Color *result, UV_Pattern *pattern, double u, 
   }
 }
 
+UV_Pattern *UV_PATTERN_new(unsigned int u, unsigned int v, const TUPLES_Color *a, const TUPLES_Color *b) {
+  assert(a);
+  assert(b);
+  UV_Pattern *ptn = malloc(sizeof(UV_Pattern));
+  if (!ptn) {
+    Throw(E_MALLOC_FAILED);
+  }
+  UV_PATTERN_init(ptn, u, v, a, b);
+  return ptn;
+}
+
 void UV_PATTERN_init(UV_Pattern* pattern, unsigned int u, unsigned int v, const TUPLES_Color* a, const TUPLES_Color* b) {
   assert(pattern);
   assert(a);
@@ -25,10 +53,14 @@ void UV_PATTERN_init(UV_Pattern* pattern, unsigned int u, unsigned int v, const 
   pattern->height = v;
 }
 
-void UV_PATTERN_copy(UV_Pattern* dest, const UV_Pattern* src) {
-  assert(dest);
+UV_Pattern *UV_PATTERN_copy(const UV_Pattern* src) {
   assert(src);
-  *dest = *src;
+  UV_Pattern *p = malloc(sizeof(UV_Pattern));
+  if (!p) {
+    Throw(E_MALLOC_FAILED);
+  }
+  *p = *src;
+  return p;
 }
 
 void UV_PATTERN_spherical_map(double* u, double* v, const TUPLES_Point* point) {
@@ -80,4 +112,9 @@ void UV_PATTERN_cube_map(double* u, double* v, const TUPLES_Point* point) {
   assert(u);
   assert(v);
   assert(point);
+}
+
+void UV_PATTERN_delete(UV_Pattern *pattern) {
+  assert(pattern);
+  free(pattern);
 }
