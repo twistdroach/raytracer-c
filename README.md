@@ -126,4 +126,4 @@ x(t) = 5*cos(t) - 2.5
 y(t) = 5sin(2t)
 ```
 
-[![Watch the video](https://img.youtube.com/vi/CbSXbAcwYNg/maxresdefault.jpg)](https://youtu.be/CbSXbAcwYNg)
+[![Watch the video](https://img.youtube.com/vi/22AllcUR0hk/maxresdefault.jpg)](https://youtu.be/22AllcUR0hk)
