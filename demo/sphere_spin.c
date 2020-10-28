@@ -38,6 +38,7 @@ void build_world(WORLD_World* world) {
     MATRIX_Matrix* middle_transform = MATRIX_new_translation(-0.5, 1, 0.5);
     SPHERE_set_transform(middle, middle_transform);
     MATRIX_delete(middle_transform);
+    /*
     MATERIAL_Material* middle_material = MATERIAL_new();
     middle_material->ambient = 0;
     middle_material->diffuse = 0;
@@ -49,6 +50,12 @@ void build_world(WORLD_World* world) {
     middle_material->shadow_calc = true;
     SPHERE_set_material(middle, middle_material);
     MATERIAL_delete(middle_material);
+     */
+    UV_Pattern *checkers = UV_PATTERN_new(16, 16, &white, &black);
+    PATTERN_Pattern *p = PATTERN_new_map(checkers, &UV_PATTERN_spherical_map);
+    MATERIAL_set_pattern(SPHERE_get_material(middle), p);
+    PATTERN_delete(p);
+    UV_PATTERN_delete(checkers);
 }
 
 void generate_coordinates(TUPLES_Point* dest, double t) {
@@ -81,7 +88,7 @@ int main(void) {
                 WORLD_World* world = WORLD_new((LIGHTS_Light*)light);
                 build_world(world);
 
-                double fps = 60;
+                double fps = 30;
                 double length_in_seconds = 30;
                 double total_frames = fps * length_in_seconds;
                 double t_per_frame = (2*M_PI) / total_frames;
@@ -91,7 +98,7 @@ int main(void) {
                 for (double t = 0; t < 2 * M_PI; t += t_per_frame) {
 
                     UTILITIES_Timer* frame_timer = UTILITIES_Timer_start();
-                    //CAMERA_Camera* camera = CAMERA_new(320, 240, M_PI / 3.0);
+//                    CAMERA_Camera* camera = CAMERA_new(320, 240, M_PI / 3.0);
                     CAMERA_Camera* camera = CAMERA_new(1920, 1080, M_PI / 3.0);
                     //CAMERA_Camera* camera = CAMERA_new(3840, 2160, M_PI / 3.0);
                     TUPLES_Point from;
