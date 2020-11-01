@@ -1,7 +1,3 @@
-//
-// Created by zrowitsch on 8/3/20.
-//
-#define _GNU_SOURCE
 #include "canvas.h"
 #include "exceptions.h"
 #include <CException.h>

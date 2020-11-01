@@ -12,6 +12,8 @@
 void setUp() {}
 void tearDown() {}
 
+CEXCEPTION_T exception;
+
 WAVEFRONTOBJ_Obj *from_string(char *str) {
   TEST_ASSERT_NOT_NULL(str);
   FILE *stream = fmemopen(str, strlen(str), "r");
@@ -55,15 +57,14 @@ void test_parse_vertex() {
                    "v 1 1 0\n"
                    "\n";
   WAVEFRONTOBJ_Obj *obj = from_string(vertexes);
-  volatile CEXCEPTION_T e;
   Try {
     check_point(WAVEFRONTOBJ_get_vertex(obj, 1), -1, 1, 0);
     check_point(WAVEFRONTOBJ_get_vertex(obj, 2), -1, 0.5, 0);
     check_point(WAVEFRONTOBJ_get_vertex(obj, 3), 1, 0, 0);
     check_point(WAVEFRONTOBJ_get_vertex(obj, 4), 1, 1, 0);
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
   WAVEFRONTOBJ_delete(obj);
@@ -80,7 +81,6 @@ void test_wavefrontobj_normalize() {
                "f 1 3 4\n"
                "\n";
 
-  volatile CEXCEPTION_T e;
   Try {
     WAVEFRONTOBJ_Obj *obj = from_string(data);
     WAVEFRONTOBJ_normalize(obj);
@@ -94,8 +94,8 @@ void test_wavefrontobj_normalize() {
     TEST_ASSERT_GREATER_OR_EQUAL(-1.0, box.min.z);
     WAVEFRONTOBJ_delete(obj);
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
 }
@@ -111,7 +111,6 @@ void test_parse_triangle_face() {
                "f 1 3 4\n"
                "\n";
 
-  volatile CEXCEPTION_T e;
   Try {
     WAVEFRONTOBJ_Obj *obj = from_string(data);
     GROUP_Group *g = WAVEFRONTOBJ_get_default_group(obj);
@@ -125,8 +124,8 @@ void test_parse_triangle_face() {
     test_tuples(&t2->p3, WAVEFRONTOBJ_get_vertex(obj, 4));
     WAVEFRONTOBJ_delete(obj);
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
 }
@@ -141,7 +140,6 @@ void test_triangulating_polygons() {
                "\n"
                "f 1 2 3 4 5\n"
                "\n";
-  volatile CEXCEPTION_T e;
   Try {
     WAVEFRONTOBJ_Obj *obj = from_string(data);
     GROUP_Group *g = WAVEFRONTOBJ_get_default_group(obj);
@@ -159,18 +157,17 @@ void test_triangulating_polygons() {
     test_tuples(&t3->p3, WAVEFRONTOBJ_get_vertex(obj, 5));
     WAVEFRONTOBJ_delete(obj);
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
 }
 
 void test_parse_from_file() {
   WAVEFRONTOBJ_Obj *volatile obj = NULL;
-  volatile CEXCEPTION_T e;
   Try { obj = WAVEFRONTOBJ_parse_file_by_name("triangles.obj"); }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
   WAVEFRONTOBJ_delete(obj);
@@ -178,7 +175,6 @@ void test_parse_from_file() {
 
 void test_triangles_in_groups() {
   WAVEFRONTOBJ_Obj *volatile obj;
-  volatile CEXCEPTION_T e;
   Try {
     obj = WAVEFRONTOBJ_parse_file_by_name("triangles.obj");
     GROUP_Group *def_group = WAVEFRONTOBJ_get_default_group(obj);
@@ -193,8 +189,8 @@ void test_triangles_in_groups() {
     test_tuples(&t2->p2, WAVEFRONTOBJ_get_vertex(obj, 3));
     test_tuples(&t2->p3, WAVEFRONTOBJ_get_vertex(obj, 4));
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
   WAVEFRONTOBJ_delete(obj);
@@ -202,13 +198,12 @@ void test_triangles_in_groups() {
 
 void test_parse_many_poly_teapot() {
   WAVEFRONTOBJ_Obj *volatile obj;
-  volatile CEXCEPTION_T e;
   Try {
     obj = WAVEFRONTOBJ_parse_file_by_name("teapot.obj");
     TEST_ASSERT_EQUAL(2256, obj->face_count);
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
   WAVEFRONTOBJ_delete(obj);
@@ -221,7 +216,6 @@ void test_vertex_normal_records() {
                "vn 1 2 3\n"
                "\n";
 
-  volatile CEXCEPTION_T e;
   Try {
     WAVEFRONTOBJ_Obj *obj = from_string(data);
     check_vector(WAVEFRONTOBJ_get_normal(obj, 1), 0, 0, 1);
@@ -229,8 +223,8 @@ void test_vertex_normal_records() {
     check_vector(WAVEFRONTOBJ_get_normal(obj, 3), 1, 2, 3);
     WAVEFRONTOBJ_delete(obj);
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
 }
@@ -249,7 +243,6 @@ void test_faces_with_normals() {
                "f 1/0/3 2/102/1 3/14/2\n"
                "\n";
 
-  volatile CEXCEPTION_T e;
   Try {
     WAVEFRONTOBJ_Obj *obj = from_string(data);
     GROUP_Group *g = WAVEFRONTOBJ_get_default_group(obj);
@@ -269,8 +262,8 @@ void test_faces_with_normals() {
     test_tuples(&t2->n3, WAVEFRONTOBJ_get_normal(obj, 2));
     WAVEFRONTOBJ_delete(obj);
   }
-  Catch(e) {
-    printf("Exception: %s\n", EXCEPTIONS_strings[e]);
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
     TEST_FAIL_MESSAGE("Caught exception");
   }
 }
