@@ -28,6 +28,7 @@ PATTERN_Pattern *PATTERN_new_ring(const TUPLES_Color *a, const TUPLES_Color *b);
 PATTERN_Pattern *PATTERN_new_checkers(const TUPLES_Color *a, const TUPLES_Color *b);
 PATTERN_Pattern *PATTERN_new_solid(const TUPLES_Color *a);
 PATTERN_Pattern *PATTERN_new_map(const UV_Pattern* uv_pattern, void (*map)(double* u, double* v, const TUPLES_Point* point));
+PATTERN_Pattern *PATTERN_new_cube_map(const UV_Pattern *left, const UV_Pattern *front, const UV_Pattern *right, const UV_Pattern *back, const UV_Pattern *up, const UV_Pattern *down);
 
 const TUPLES_Color *PATTERN_get_color_a(const PATTERN_Pattern *pattern);
 const TUPLES_Color *PATTERN_get_color_b(const PATTERN_Pattern *pattern);

@@ -280,7 +280,9 @@ PATTERN_Pattern *PATTERN_new_map(const UV_Pattern* uv_pattern, void (*map)(doubl
   if (!pattern_map) {
     Throw(E_MALLOC_FAILED);
   }
-  PATTERN_init(&pattern_map->pattern, UV_PATTERN_get_color_a(uv_pattern), UV_PATTERN_get_color_b(uv_pattern));
+  TUPLES_Color dummy_color;
+  TUPLES_init_color(&dummy_color, 0, 0, 0);
+  PATTERN_init(&pattern_map->pattern, &dummy_color, &dummy_color);
   pattern_map->uv_pattern = UV_PATTERN_copy(uv_pattern);
   pattern_map->coordinate_mapper = map;
   pattern_map->pattern.at = &map_at;
@@ -288,3 +290,68 @@ PATTERN_Pattern *PATTERN_new_map(const UV_Pattern* uv_pattern, void (*map)(doubl
   pattern_map->pattern.delete = &delete_pattern_map;
   return (PATTERN_Pattern*)pattern_map;
 }
+
+//---- cube map
+typedef struct PATTERN_Pattern_Cube_Map {
+  PATTERN_Pattern pattern;
+  UV_Pattern *uv_pattern[UV_PATTERN_SIZE];
+} PATTERN_Pattern_Cube_Map;
+
+void cube_map_at(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Point *point) {
+  assert(dest);
+  assert(pattern);
+  assert(point);
+  PATTERN_Pattern_Cube_Map* cube_map = (PATTERN_Pattern_Cube_Map*) pattern;
+  double u, v;
+  enum UV_PATTERN_Cube_Face face = UV_PATTERN_face_from_point(point);
+  UV_PATTERN_cube_map(&u, &v, face, point);
+  UV_PATTERN_pattern_at(dest, cube_map->uv_pattern[face], u, v);
+}
+
+static PATTERN_Pattern *copy_cube_map(const PATTERN_Pattern *pattern) {
+  assert(pattern);
+  PATTERN_Pattern_Cube_Map *cube_map = (PATTERN_Pattern_Cube_Map*)pattern;
+  return PATTERN_new_cube_map(cube_map->uv_pattern[UV_PATTERN_LEFT],
+                              cube_map->uv_pattern[UV_PATTERN_FRONT],
+                              cube_map->uv_pattern[UV_PATTERN_RIGHT],
+                              cube_map->uv_pattern[UV_PATTERN_BACK],
+                              cube_map->uv_pattern[UV_PATTERN_UP],
+                              cube_map->uv_pattern[UV_PATTERN_DOWN]
+                              );
+}
+
+static void delete_cube_map(PATTERN_Pattern *pattern) {
+  assert(pattern);
+  PATTERN_Pattern_Cube_Map *cube_map = (PATTERN_Pattern_Cube_Map*)pattern;
+  for (unsigned int ndx = 0; ndx < UV_PATTERN_SIZE; ndx++) {
+    UV_PATTERN_delete(cube_map->uv_pattern[ndx]);
+  }
+  delete_base_pattern(&cube_map->pattern);
+}
+
+PATTERN_Pattern *PATTERN_new_cube_map(const UV_Pattern *left, const UV_Pattern *front, const UV_Pattern *right, const UV_Pattern *back, const UV_Pattern *up, const UV_Pattern *down) {
+  assert(left);
+  assert(front);
+  assert(right);
+  assert(back);
+  assert(up);
+  assert(down);
+  PATTERN_Pattern_Cube_Map *map = malloc(sizeof(PATTERN_Pattern_Cube_Map));
+  if (!map) {
+    Throw(E_MALLOC_FAILED);
+  }
+  map->uv_pattern[UV_PATTERN_LEFT] = UV_PATTERN_copy(left);
+  map->uv_pattern[UV_PATTERN_FRONT] = UV_PATTERN_copy(front);
+  map->uv_pattern[UV_PATTERN_RIGHT] = UV_PATTERN_copy(right);
+  map->uv_pattern[UV_PATTERN_BACK] = UV_PATTERN_copy(back);
+  map->uv_pattern[UV_PATTERN_UP] = UV_PATTERN_copy(up);
+  map->uv_pattern[UV_PATTERN_DOWN] = UV_PATTERN_copy(down);
+  TUPLES_Color dummy_color;
+  TUPLES_init_color(&dummy_color, 0, 0, 0);
+  PATTERN_init(&map->pattern, &dummy_color, &dummy_color);
+  map->pattern.at = &cube_map_at;
+  map->pattern.copy = &copy_cube_map;
+  map->pattern.delete = &delete_cube_map;
+  return (PATTERN_Pattern*)map;
+}
+

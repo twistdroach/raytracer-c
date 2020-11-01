@@ -51,7 +51,7 @@ void build_world(WORLD_World* world) {
     SPHERE_set_material(middle, middle_material);
     MATERIAL_delete(middle_material);
      */
-    UV_Pattern *checkers = UV_PATTERN_new(16, 16, &white, &black);
+    UV_Pattern *checkers = UV_PATTERN_new_checkers(16, 16, &white, &black);
     PATTERN_Pattern *p = PATTERN_new_map(checkers, &UV_PATTERN_spherical_map);
     MATERIAL_set_pattern(SPHERE_get_material(middle), p);
     PATTERN_delete(p);

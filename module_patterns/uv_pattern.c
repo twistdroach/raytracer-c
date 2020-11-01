@@ -2,26 +2,30 @@
 #include <assert.h>
 #include <math.h>
 
+#define UV_PATTERN_FIELDS() \
+  void (*pattern_at)(TUPLES_Color *result, UV_Pattern *pattern, double u, double v); \
+  UV_Pattern *(*copy)(const UV_Pattern *src);
+
 typedef struct UV_Pattern {
-  unsigned int width;
-  unsigned int height;
-  TUPLES_Color a;
-  TUPLES_Color b;
+  UV_PATTERN_FIELDS()
 } UV_Pattern;
 
-const TUPLES_Color *UV_PATTERN_get_color_a(const UV_Pattern *pattern) {
-  assert(pattern);
-  return &pattern->a;
-}
+/* ------- checker pattern ---------- */
+typedef struct checker_pattern {
+  union {
+    UV_Pattern uv_pattern;
+    struct { UV_PATTERN_FIELDS() };
+  };
+  TUPLES_Color a;
+  TUPLES_Color b;
+  unsigned int width;
+  unsigned int height;
+} checker_pattern;
 
-const TUPLES_Color *UV_PATTERN_get_color_b(const UV_Pattern *pattern) {
-  assert(pattern);
-  return &pattern->b;
-}
-
-void UV_PATTERN_pattern_at(TUPLES_Color *result, UV_Pattern *pattern, double u, double v) {
+static void checker_pattern_at(TUPLES_Color *result, UV_Pattern *uv_pattern, double u, double v) {
   assert(result);
-  assert(pattern);
+  assert(uv_pattern);
+  checker_pattern *pattern = (checker_pattern*)uv_pattern;
   int u2 = floor(u * pattern->width);
   int v2 = floor(v * pattern->height);
 
@@ -32,36 +36,125 @@ void UV_PATTERN_pattern_at(TUPLES_Color *result, UV_Pattern *pattern, double u, 
   }
 }
 
-UV_Pattern *UV_PATTERN_new(unsigned int u, unsigned int v, const TUPLES_Color *a, const TUPLES_Color *b) {
-  assert(a);
-  assert(b);
-  UV_Pattern *ptn = malloc(sizeof(UV_Pattern));
-  if (!ptn) {
+static UV_Pattern *checker_copy(const UV_Pattern *src) {
+  assert(src);
+  const checker_pattern *src_pattern = (checker_pattern*) src;
+  checker_pattern *dest = malloc(sizeof(checker_pattern));
+  if (!dest) {
     Throw(E_MALLOC_FAILED);
   }
-  UV_PATTERN_init(ptn, u, v, a, b);
-  return ptn;
+  *dest = *src_pattern;
+  return (UV_Pattern*)dest;
 }
 
-void UV_PATTERN_init(UV_Pattern* pattern, unsigned int u, unsigned int v, const TUPLES_Color* a, const TUPLES_Color* b) {
-  assert(pattern);
+UV_Pattern *UV_PATTERN_new_checkers(unsigned int u, unsigned int v, const TUPLES_Color *a, const TUPLES_Color *b) {
   assert(a);
   assert(b);
+  checker_pattern *pattern = malloc(sizeof(checker_pattern));
+  if (!pattern) {
+    Throw(E_MALLOC_FAILED);
+  }
   TUPLES_copy(&pattern->a, a);
   TUPLES_copy(&pattern->b, b);
   pattern->width = u;
   pattern->height = v;
+  pattern->uv_pattern.pattern_at = &checker_pattern_at;
+  pattern->uv_pattern.copy = &checker_copy;
+  return (UV_Pattern*)pattern;
 }
+
+/* ------- align check pattern ---------- */
+typedef struct align_check_pattern {
+  union {
+    UV_Pattern uv_pattern;
+    struct { UV_PATTERN_FIELDS() };
+  };
+  TUPLES_Color main;
+  TUPLES_Color ul;
+  TUPLES_Color ur;
+  TUPLES_Color bl;
+  TUPLES_Color br;
+} align_check_pattern;
+
+/**
+ * The point of this uv_pattern is to make a square with each
+ * corner having a different color.  This let's us check cube
+ * mapping.
+ * @param result  color to be returned
+ * @param uv_pattern a UV_Pattern* created by UV_Pattern_new_align_check()
+ * @param u
+ * @param v
+ */
+static void align_check_pattern_at(TUPLES_Color *result, UV_Pattern *uv_pattern, double u, double v) {
+  assert(result);
+  assert(uv_pattern);
+  align_check_pattern *pattern = (align_check_pattern*)uv_pattern;
+  if (v > 0.8) {
+    if (u < 0.2) {
+      TUPLES_copy(result, &pattern->ul);
+    } else if (u > 0.8) {
+      TUPLES_copy(result, &pattern->ur);
+    }
+  } else if(v < 0.2) {
+    if (u < 0.2) {
+      TUPLES_copy(result, &pattern->bl);
+    } else if (u > 0.8) {
+      TUPLES_copy(result, &pattern->br);
+    }
+  } else {
+    TUPLES_copy(result, &pattern->main);
+  }
+}
+
+static UV_Pattern *align_check_copy(const UV_Pattern *src) {
+  assert(src);
+  const align_check_pattern *src_pattern = (align_check_pattern*) src;
+  align_check_pattern *dest = malloc(sizeof(align_check_pattern));
+  if (!dest) {
+    Throw(E_MALLOC_FAILED);
+  }
+  *dest = *src_pattern;
+  return (UV_Pattern*)dest;
+}
+
+UV_Pattern *UV_PATTERN_new_align_check(const TUPLES_Color *main, const TUPLES_Color *ul, const TUPLES_Color* ur, const TUPLES_Color* bl, const TUPLES_Color* br) {
+  assert(main);
+  assert(ul);
+  assert(ur);
+  assert(bl);
+  assert(br);
+  align_check_pattern *pattern = malloc(sizeof(align_check_pattern));
+  if (!pattern) {
+    Throw(E_MALLOC_FAILED);
+  }
+  TUPLES_copy(&pattern->main, main);
+  TUPLES_copy(&pattern->ul, ul);
+  TUPLES_copy(&pattern->ur, ur);
+  TUPLES_copy(&pattern->bl, bl);
+  TUPLES_copy(&pattern->br, br);
+  pattern->uv_pattern.pattern_at = &align_check_pattern_at;
+  pattern->uv_pattern.copy = &align_check_copy;
+  return (UV_Pattern*)pattern;
+}
+
+/* ------- generic methods ---------- */
 
 UV_Pattern *UV_PATTERN_copy(const UV_Pattern* src) {
   assert(src);
-  UV_Pattern *p = malloc(sizeof(UV_Pattern));
-  if (!p) {
-    Throw(E_MALLOC_FAILED);
-  }
-  *p = *src;
-  return p;
+  return src->copy(src);
 }
+
+void UV_PATTERN_pattern_at(TUPLES_Color *result, UV_Pattern *pattern, double u, double v) {
+  assert(result);
+  assert(pattern);
+  pattern->pattern_at(result, pattern, u, v);
+}
+
+void UV_PATTERN_delete(UV_Pattern *pattern) {
+  assert(pattern);
+  free(pattern);
+}
+/* ------- mapping functions ---------- */
 
 void UV_PATTERN_spherical_map(double* u, double* v, const TUPLES_Point* point) {
   assert(point);
@@ -108,13 +201,56 @@ void UV_PATTERN_cylinder_map(double* u, double* v, const TUPLES_Point* point) {
   }
 }
 
-void UV_PATTERN_cube_map(double* u, double* v, const TUPLES_Point* point) {
+void UV_PATTERN_cube_map(double* u, double* v, enum UV_PATTERN_Cube_Face face, const TUPLES_Point* point) {
   assert(u);
   assert(v);
   assert(point);
+  switch (face) {
+  case UV_PATTERN_LEFT:
+    *u = fmod(point->z + 1, 2.0) / 2.0;
+    *v = fmod(point->y + 1, 2.0) / 2.0;
+    break;
+  case UV_PATTERN_RIGHT:
+    *u = fmod(1 - point->z, 2.0) / 2.0;
+    *v = fmod(point->y + 1, 2.0) / 2.0;
+    break;
+  case UV_PATTERN_FRONT:
+    *u = fmod(point->x + 1, 2.0) / 2.0;
+    *v = fmod(point->y + 1, 2.0) / 2.0;
+    break;
+  case UV_PATTERN_BACK:
+    *u = fmod(1 - point->x, 2.0) / 2.0;
+    *v = fmod(point->y + 1, 2.0) / 2.0;
+    break;
+  case UV_PATTERN_UP:
+    *u = fmod(point->x + 1, 2.0) / 2.0;
+    *v = fmod(1 - point->z, 2.0) / 2.0;
+    break;
+  case UV_PATTERN_DOWN:
+    *u = fmod(point->x + 1, 2.0) / 2.0;
+    *v = fmod(point->z + 1, 2.0) / 2.0;
+    break;
+  default:
+    assert(0);
+    Throw(E_INVALID_ARGUMENT);
+    *u = 0;
+    *v = 0;
+  }
 }
 
-void UV_PATTERN_delete(UV_Pattern *pattern) {
-  assert(pattern);
-  free(pattern);
+enum UV_PATTERN_Cube_Face UV_PATTERN_face_from_point(const TUPLES_Point *point) {
+  assert(point);
+  double abs_x = fabs(point->x);
+  double abs_y = fabs(point->y);
+  double abs_z = fabs(point->z);
+  double max = UTILITIES_max(abs_x, abs_y, abs_z);
+
+  if (double_equal(max, point->x))  { return UV_PATTERN_RIGHT; }
+  if (double_equal(max, -point->x)) { return UV_PATTERN_LEFT;  }
+  if (double_equal(max, point->y))  { return UV_PATTERN_UP;    }
+  if (double_equal(max, -point->y)) { return UV_PATTERN_DOWN;  }
+  if (double_equal(max, point->z))  { return UV_PATTERN_FRONT; }
+
+  return UV_PATTERN_BACK;
 }
+
