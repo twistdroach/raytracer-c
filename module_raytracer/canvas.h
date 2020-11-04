@@ -26,4 +26,7 @@ void CANVAS_write_pixel(CANVAS_Canvas *canvas, uint x, uint y, const TUPLES_Colo
 char *CANVAS_get_ppm_header_string(const CANVAS_Canvas *canvas);
 char *CANVAS_get_ppm_body_string(const CANVAS_Canvas *canvas);
 void CANVAS_write_to_file(const CANVAS_Canvas *canvas, const char *filename);
+
+CANVAS_Canvas *CANVAS_parse_file_by_name(char *file);
+CANVAS_Canvas *CANVAS_parse_stream(FILE *file);
 #endif // DATA_STRUCTURES_CANVAS_H
