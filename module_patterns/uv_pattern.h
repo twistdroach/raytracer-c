@@ -1,6 +1,7 @@
 #ifndef SIMPLE_RAYTRACER_UV_PATTERN_H
 #define SIMPLE_RAYTRACER_UV_PATTERN_H
 
+#include <canvas.h>
 #include <tuples.h>
 
 typedef struct UV_Pattern UV_Pattern;
@@ -17,6 +18,7 @@ enum UV_PATTERN_Cube_Face {
 
 UV_Pattern *UV_PATTERN_new_align_check(const TUPLES_Color *main, const TUPLES_Color *ul, const TUPLES_Color* ur, const TUPLES_Color* bl, const TUPLES_Color* br);
 UV_Pattern *UV_PATTERN_new_checkers(unsigned int u, unsigned int v, const TUPLES_Color *a, const TUPLES_Color *b);
+UV_Pattern *UV_PATTERN_new_image(const CANVAS_Canvas *canvas);
 void UV_PATTERN_delete(UV_Pattern *pattern);
 #define UV_PATTERN_delete_all(...) Fn_apply(UV_Pattern, UV_PATTERN_delete, __VA_ARGS__);
 

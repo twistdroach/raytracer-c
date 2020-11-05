@@ -14,7 +14,7 @@ void tearDown() {}
 
 CEXCEPTION_T exception;
 
-WAVEFRONTOBJ_Obj *from_string(char *str) {
+static WAVEFRONTOBJ_Obj *obj_from_string(char *str) {
   TEST_ASSERT_NOT_NULL(str);
   FILE *stream = fmemopen(str, strlen(str), "r");
   TEST_ASSERT_NOT_NULL_MESSAGE(stream, "fmemopen failed");
@@ -28,7 +28,7 @@ void test_ignore_unrecognized_lines() {
   char *gibberish = "Test line 1\n"
                     "Test line 2\n"
                     "Another test line\n";
-  WAVEFRONTOBJ_Obj *obj = from_string(gibberish);
+  WAVEFRONTOBJ_Obj *obj = obj_from_string(gibberish);
   TEST_ASSERT_EQUAL(3, obj->ignored_lines);
   WAVEFRONTOBJ_delete(obj);
 }
@@ -56,7 +56,7 @@ void test_parse_vertex() {
                    "v 1 0 0\n"
                    "v 1 1 0\n"
                    "\n";
-  WAVEFRONTOBJ_Obj *obj = from_string(vertexes);
+  WAVEFRONTOBJ_Obj *obj = obj_from_string(vertexes);
   Try {
     check_point(WAVEFRONTOBJ_get_vertex(obj, 1), -1, 1, 0);
     check_point(WAVEFRONTOBJ_get_vertex(obj, 2), -1, 0.5, 0);
@@ -82,7 +82,7 @@ void test_wavefrontobj_normalize() {
                "\n";
 
   Try {
-    WAVEFRONTOBJ_Obj *obj = from_string(data);
+    WAVEFRONTOBJ_Obj *obj = obj_from_string(data);
     WAVEFRONTOBJ_normalize(obj);
     BOUND_Box box;
     SHAPE_parent_space_bounds_of(&box, (SHAPE_Shape *)WAVEFRONTOBJ_get_default_group(obj));
@@ -112,7 +112,7 @@ void test_parse_triangle_face() {
                "\n";
 
   Try {
-    WAVEFRONTOBJ_Obj *obj = from_string(data);
+    WAVEFRONTOBJ_Obj *obj = obj_from_string(data);
     GROUP_Group *g = WAVEFRONTOBJ_get_default_group(obj);
     TRIANGLE_Triangle *t1 = (TRIANGLE_Triangle *)GROUP_get_child(g, 0);
     TRIANGLE_Triangle *t2 = (TRIANGLE_Triangle *)GROUP_get_child(g, 1);
@@ -141,7 +141,7 @@ void test_triangulating_polygons() {
                "f 1 2 3 4 5\n"
                "\n";
   Try {
-    WAVEFRONTOBJ_Obj *obj = from_string(data);
+    WAVEFRONTOBJ_Obj *obj = obj_from_string(data);
     GROUP_Group *g = WAVEFRONTOBJ_get_default_group(obj);
     TRIANGLE_Triangle *t1 = (TRIANGLE_Triangle *)GROUP_get_child(g, 0);
     TRIANGLE_Triangle *t2 = (TRIANGLE_Triangle *)GROUP_get_child(g, 1);
@@ -217,7 +217,7 @@ void test_vertex_normal_records() {
                "\n";
 
   Try {
-    WAVEFRONTOBJ_Obj *obj = from_string(data);
+    WAVEFRONTOBJ_Obj *obj = obj_from_string(data);
     check_vector(WAVEFRONTOBJ_get_normal(obj, 1), 0, 0, 1);
     check_vector(WAVEFRONTOBJ_get_normal(obj, 2), 0.707, 0, -0.707);
     check_vector(WAVEFRONTOBJ_get_normal(obj, 3), 1, 2, 3);
@@ -244,7 +244,7 @@ void test_faces_with_normals() {
                "\n";
 
   Try {
-    WAVEFRONTOBJ_Obj *obj = from_string(data);
+    WAVEFRONTOBJ_Obj *obj = obj_from_string(data);
     GROUP_Group *g = WAVEFRONTOBJ_get_default_group(obj);
     TRIANGLE_SmoothTriangle *t1 = (TRIANGLE_SmoothTriangle *)GROUP_get_child(g, 0);
     TRIANGLE_SmoothTriangle *t2 = (TRIANGLE_SmoothTriangle *)GROUP_get_child(g, 1);

@@ -13,6 +13,9 @@ CANVAS_Canvas *CANVAS_new(uint width, uint height);
 void CANVAS_init(CANVAS_Canvas *canvas, uint width, uint height);
 void CANVAS_destroy(CANVAS_Canvas *canvas);
 void CANVAS_delete(CANVAS_Canvas *canvas);
+CANVAS_Canvas *CANVAS_copy(const CANVAS_Canvas *canvas);
+#define CANVAS_get_width(canvas) ((canvas)->width)
+#define CANVAS_get_height(canvas) ((canvas)->height)
 
 /**
  * Returns a ptr to color of the pixel in the canvas.  Should not be freed - canvas will free when deleted.

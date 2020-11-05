@@ -137,6 +137,52 @@ UV_Pattern *UV_PATTERN_new_align_check(const TUPLES_Color *main, const TUPLES_Co
   return (UV_Pattern*)pattern;
 }
 
+/* ------- image pattern ---------- */
+typedef struct image_pattern {
+  union {
+    UV_Pattern uv_pattern;
+    struct {
+      UV_PATTERN_FIELDS()
+    };
+  };
+  const CANVAS_Canvas *canvas;
+} image_pattern;
+
+static void image_pattern_at(TUPLES_Color *result, UV_Pattern *uv_pattern, double u, double v) {
+  assert(result);
+  assert(uv_pattern);
+  const image_pattern *pattern = (image_pattern*) uv_pattern;
+  v = 1 - v;
+  double x = u * (CANVAS_get_width(pattern->canvas) - 1);
+  double y = v * (CANVAS_get_height(pattern->canvas) - 1);
+  printf("Getting (%.2f, %.2f)\n", x, y);
+  TUPLES_copy(result, CANVAS_read_pixel(pattern->canvas, (uint)round(x), (uint)round(y)));
+}
+
+static UV_Pattern *image_copy(const UV_Pattern *src) {
+  assert(src);
+  const image_pattern *src_pattern = (image_pattern*) src;
+  image_pattern *dest = malloc(sizeof(image_pattern));
+  if (!dest) {
+    Throw(E_MALLOC_FAILED);
+  }
+  *dest = *src_pattern;
+  dest->canvas = CANVAS_copy(src_pattern->canvas);
+  return (UV_Pattern*)dest;
+}
+
+UV_Pattern *UV_PATTERN_new_image(const CANVAS_Canvas *canvas) {
+  assert(canvas);
+  image_pattern *pattern = malloc(sizeof(image_pattern));
+  if (!pattern) {
+    Throw(E_MALLOC_FAILED);
+  }
+  //TODO - we should likely make a copy of the canvas and delete it when the patteern is deleted
+  pattern->canvas = canvas;
+  pattern->pattern_at = &image_pattern_at;
+  pattern->copy = &image_copy;
+  return (UV_Pattern*)pattern;
+}
 /* ------- generic methods ---------- */
 
 UV_Pattern *UV_PATTERN_copy(const UV_Pattern* src) {

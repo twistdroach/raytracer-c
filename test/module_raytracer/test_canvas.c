@@ -8,23 +8,7 @@ void setUp() {}
 void tearDown() {}
 
 static CEXCEPTION_T exception;
-
-static CANVAS_Canvas *from_string(char *str) {
-  TEST_ASSERT_NOT_NULL(str);
-  FILE *stream = fmemopen(str, strlen(str), "r");
-  TEST_ASSERT_NOT_NULL_MESSAGE(stream, "fmemopen failed");
-  CANVAS_Canvas *canvas = NULL;
-  Try {
-    canvas = CANVAS_parse_stream(stream);
-  }
-  Catch(exception) {
-    fclose(stream);
-    Throw(exception);
-  }
-  fclose(stream);
-  TEST_ASSERT_NOT_NULL(canvas);
-  return canvas;
-}
+static CANVAS_Canvas *canvas = NULL;
 
 static void validate_colors(CANVAS_Canvas *canvas, double r, double g, double b) {
   for (uint x = 0; x < canvas->width; x++)
@@ -37,7 +21,7 @@ static void validate_colors(CANVAS_Canvas *canvas, double r, double g, double b)
 }
 
 void test_canvas_new() {
-  CANVAS_Canvas *canvas = CANVAS_new(10, 20);
+  canvas = CANVAS_new(10, 20);
   validate_colors(canvas, 0, 0, 0);
   CANVAS_delete(canvas);
 }
@@ -98,7 +82,7 @@ void test_reading_a_file_with_wrong_magic_number() {
                "255\n"
                "0 0 0\n"
                "\n";
-  CANVAS_Canvas *canvas = NULL;
+  canvas = NULL;
   Try {
     canvas = from_string(data);
     TEST_FAIL_MESSAGE("Exception should have been thrown");
@@ -119,7 +103,7 @@ void test_read_ppm_and_return_correct_size() {
                "0 0 0  0 0 0  0 0 0  0 0 0  0 0 0\n"
                "0 0 0  0 0 0  0 0 0  0 0 0  0 0 0\n"
                "0 0 0  0 0 0  0 0 0  0 0 0  0 0 0\n";
-  CANVAS_Canvas *canvas = NULL;
+  canvas = NULL;
   Try {
     canvas = from_string(data);
     TEST_ASSERT_EQUAL(10, canvas->width);
@@ -140,7 +124,7 @@ void reading_pixel_data_from_a_ppm_file(unsigned int x, unsigned int y, double r
                "255 127 0  0 127 255  127 255 0  255 255 255\n"
                "0 0 0  255 0 0  0 255 0  0 0 255\n"
                "255 255 0  0 255 255  255 0 255  127 127 127\n";
-  CANVAS_Canvas *canvas = NULL;
+  canvas = NULL;
   Try {
     canvas = from_string(data);
     TUPLES_Color expected;
@@ -181,7 +165,7 @@ void test_ppm_parsing_ignores_comment_lines() {
                "255 255 255\n"
                "# oh no, comments in the pixel data\n"
                "255 0 255\n";
-  CANVAS_Canvas *canvas = NULL;
+  canvas = NULL;
   Try {
     canvas = from_string(data);
     TUPLES_Color expected;
@@ -204,7 +188,7 @@ void test_ppm_parsing_allows_rgb_triple_to_span_lines() {
                "51\n"
                "153\n\n"
                "204\n";
-  CANVAS_Canvas *canvas = NULL;
+  canvas = NULL;
   Try {
     canvas = from_string(data);
     TUPLES_Color color;
@@ -224,7 +208,7 @@ void test_ppm_parsing_respects_scale_setting() {
                "100\n"
                "100 100 100  50 50 50\n"
                "75 50 25  0 0 0\n";
-  CANVAS_Canvas *canvas = NULL;
+  canvas = NULL;
   Try {
     canvas = from_string(data);
     TUPLES_Color expected;

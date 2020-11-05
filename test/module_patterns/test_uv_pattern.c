@@ -3,7 +3,8 @@
 #include <pattern.h>
 #include <uv_pattern.h>
 
-TUPLES_Color white, black, red, yellow, brown, green, cyan, blue, purple;
+static CEXCEPTION_T exception;
+static TUPLES_Color white, black, red, yellow, brown, green, cyan, blue, purple;
 
 void setUp() {
   TUPLES_init_color(&white, 1, 1, 1);
@@ -265,6 +266,46 @@ void test_map_face_of_cube() {
   map_face_of_cube(0.5, -1, -0.5, UV_PATTERN_DOWN, 0.75, 0.25);
 }
 
+static CANVAS_Canvas *canvas;
+void canvas_based_pattern(double u, double v, double r, double g, double b) {
+  char *data = "P3\n"
+               "10 10\n"
+               "10\n"
+               "0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9\n"
+               "1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0\n"
+               "2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1\n"
+               "3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2\n"
+               "4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3\n"
+               "5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4\n"
+               "6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5\n"
+               "7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6\n"
+               "8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7\n"
+               "9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8\n"
+               "\n";
+  canvas = NULL;
+  Try{
+    canvas = from_string(data);
+    UV_Pattern *pattern = UV_PATTERN_new_image(canvas);
+    TUPLES_Color expected, result;
+    TUPLES_init_color(&expected, r, g, b);
+    UV_PATTERN_pattern_at(&result, pattern, u, v);
+    test_tuples(&expected, &result);
+    UV_PATTERN_delete(pattern);
+  }
+  Catch(exception) {
+    printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
+    TEST_FAIL_MESSAGE("Caught exception");
+  }
+  CANVAS_delete(canvas);
+}
+
+void test_canvas_based_pattern() {
+  canvas_based_pattern(0, 0, 0.9, 0.9, 0.9);
+  canvas_based_pattern(0.3, 0, 0.2, 0.2, 0.2);
+  canvas_based_pattern(0.6, 0.3, 0.1, 0.1, 0.1);
+  canvas_based_pattern(1, 1, 0.9, 0.9, 0.9);
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_check_pattern_in_2d);
@@ -276,5 +317,6 @@ int main(void) {
   RUN_TEST(test_identify_face_of_a_cube_from_a_point);
   RUN_TEST(test_map_face_of_cube);
   RUN_TEST(test_find_color_on_a_mapped_cube);
+  RUN_TEST(test_canvas_based_pattern);
   return UNITY_END();
 }

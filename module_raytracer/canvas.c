@@ -33,6 +33,15 @@ void CANVAS_init(CANVAS_Canvas *canvas, uint width, uint height) {
   }
 }
 
+CANVAS_Canvas *CANVAS_copy(const CANVAS_Canvas *canvas) {
+  assert(canvas);
+  CANVAS_Canvas *new_canvas = CANVAS_new(canvas->width, canvas->height);
+  for (uint i = 0; i < canvas->width * canvas->height; i++) {
+    TUPLES_copy(&new_canvas->data[i], &canvas->data[i]);
+  }
+  return new_canvas;
+}
+
 static uint calculate_index(const CANVAS_Canvas *canvas, uint x, uint y) {
   assert(x < canvas->width);
   assert(y < canvas->height);
