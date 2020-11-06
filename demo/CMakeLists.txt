@@ -101,3 +101,9 @@ target_link_libraries(sphere_spin PRIVATE
         module_raytracer
         module_patterns
         module_shapes)
+
+add_executable(texture_map texture_map.c)
+target_link_libraries(texture_map PRIVATE
+  module_raytracer
+  module_patterns
+  module_shapes)
