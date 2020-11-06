@@ -155,7 +155,6 @@ static void image_pattern_at(TUPLES_Color *result, UV_Pattern *uv_pattern, doubl
   v = 1 - v;
   double x = u * (CANVAS_get_width(pattern->canvas) - 1);
   double y = v * (CANVAS_get_height(pattern->canvas) - 1);
-  printf("Getting (%.2f, %.2f)\n", x, y);
   TUPLES_copy(result, CANVAS_read_pixel(pattern->canvas, (uint)round(x), (uint)round(y)));
 }
 
