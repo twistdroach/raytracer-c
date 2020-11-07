@@ -27,6 +27,22 @@
 
 # Demo Executables 
 
+## demo/sphere_spin
+
+Simple spin of a camera around a sphere on a parametric path of the form
+```
+x(t) = 5*cos(t) - 2.5
+y(t) = 5sin(2t)
+```
+
+[![Watch the video](https://img.youtube.com/vi/CbSXbAcwYNg/maxresdefault.jpg)](https://youtu.be/22AllcUR0hk)
+
+## demo/texture_map
+
+This is to demonstrate a "skybox" or giant cube with a texture map on its surface.  The camera then rotates around a small reflective sphere at the center of the scene (both inside the cube).
+
+[![Watch the video](https://img.youtube.com/vi/-bOzFtL1FAI/maxresdefault.jpg)](https://www.youtube.com/watch?v=-bOzFtL1FAI)
+
 ## demo/parabola
 
 simple demonstration of tuple implementation, shooting a projectile with gravity & wind vectors...
@@ -118,12 +134,3 @@ Add some constructive solid geometry - aka CSG...this is a sphere with a cubice 
 
 ![](images/csg.png)
 
-## demo/sphere_spin
-
-Simple spin of a camera around a sphere on a parametric path of the form
-```
-x(t) = 5*cos(t) - 2.5
-y(t) = 5sin(2t)
-```
-
-[![Watch the video](https://img.youtube.com/vi/CbSXbAcwYNg/maxresdefault.jpg)](https://youtu.be/22AllcUR0hk)
