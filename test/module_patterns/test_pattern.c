@@ -260,6 +260,20 @@ void test_solid_pattern_is_always_same() {
   PATTERN_delete(pattern);
 }
 
+void test_blended_pattern_takes_ownership_of_sub_patterns() {
+  TUPLES_Color *gray = TUPLES_new_color(.5, .5, .5);
+  PATTERN_Pattern *a = PATTERN_new_stripe(white, gray);
+  MATRIX_Matrix *rot_y = MATRIX_new_rotation_y(M_PI_2);
+  PATTERN_set_transform(a, rot_y);
+  MATRIX_delete(rot_y);
+  PATTERN_Pattern *b = PATTERN_new_stripe(white, gray);
+  TUPLES_delete(gray);
+
+  PATTERN_Pattern *blend = PATTERN_new_blended(a, b);
+
+  PATTERN_delete(blend);
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_create_pattern);
@@ -278,5 +292,6 @@ int main(void) {
   RUN_TEST(test_checkers_repeat_in_y);
   RUN_TEST(test_checkers_repeat_in_z);
   RUN_TEST(test_solid_pattern_is_always_same);
+  RUN_TEST(test_blended_pattern_takes_ownership_of_sub_patterns);
   return UNITY_END();
 }

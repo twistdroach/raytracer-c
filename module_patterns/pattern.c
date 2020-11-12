@@ -66,6 +66,7 @@ static void copy_base_pattern_in_place(PATTERN_Pattern *dest, const PATTERN_Patt
   MATRIX_copy(dest->inverse_transform, src->inverse_transform);
   dest->at = src->at;
   dest->copy = src->copy;
+  dest->delete = src->delete;
 }
 
 const TUPLES_Color *PATTERN_get_color_a(const PATTERN_Pattern *pattern) {
@@ -311,6 +312,7 @@ void cube_map_at(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLE
 static PATTERN_Pattern *copy_cube_map(const PATTERN_Pattern *pattern) {
   assert(pattern);
   PATTERN_Pattern_Cube_Map *cube_map = (PATTERN_Pattern_Cube_Map*)pattern;
+  copy_base_pattern_in_place(&cube_map->pattern, pattern);
   return PATTERN_new_cube_map(cube_map->uv_pattern[UV_PATTERN_LEFT],
                               cube_map->uv_pattern[UV_PATTERN_FRONT],
                               cube_map->uv_pattern[UV_PATTERN_RIGHT],
@@ -355,3 +357,62 @@ PATTERN_Pattern *PATTERN_new_cube_map(const UV_Pattern *left, const UV_Pattern *
   return (PATTERN_Pattern*)map;
 }
 
+//---- blended patterns
+typedef struct {
+  PATTERN_Pattern pattern;
+  PATTERN_Pattern *a;
+  PATTERN_Pattern *b;
+} PATTERN_Pattern_Blended;
+
+void blended_map_at(TUPLES_Color *dest, const PATTERN_Pattern *pattern, const TUPLES_Point *point) {
+  assert(dest);
+  assert(pattern);
+  assert(point);
+  PATTERN_Pattern_Blended *bpat = (PATTERN_Pattern_Blended*)pattern;
+
+  TUPLES_Point pattern_a_point, pattern_b_point;
+  MATRIX_multiply_tuple(&pattern_a_point, bpat->a->inverse_transform, point);
+  MATRIX_multiply_tuple(&pattern_b_point, bpat->b->inverse_transform, point);
+
+  TUPLES_Color a_color, b_color;
+  PATTERN_color_at(&a_color, bpat->a, &pattern_a_point);
+  PATTERN_color_at(&b_color, bpat->b, &pattern_b_point);
+  TUPLES_add(dest, &a_color, &b_color);
+  TUPLES_divide(dest, dest, 2);
+}
+
+static PATTERN_Pattern *copy_blended_map(const PATTERN_Pattern *pattern) {
+  assert(pattern);
+  PATTERN_Pattern_Blended *bpat = (PATTERN_Pattern_Blended*)pattern;
+  PATTERN_Pattern *a = PATTERN_new_copy(bpat->a);
+  PATTERN_Pattern *b = PATTERN_new_copy(bpat->b);
+  PATTERN_Pattern *copy = PATTERN_new_blended(a, b);
+  copy_base_pattern_in_place(copy, pattern);
+  return copy;
+}
+
+static void delete_blended_map(PATTERN_Pattern *pattern) {
+  assert(pattern);
+  PATTERN_Pattern_Blended *bpat = (PATTERN_Pattern_Blended*)pattern;
+  PATTERN_delete(bpat->a);
+  PATTERN_delete(bpat->b);
+  delete_base_pattern(&bpat->pattern);
+}
+
+PATTERN_Pattern *PATTERN_new_blended(PATTERN_Pattern *a, PATTERN_Pattern *b) {
+  assert(a);
+  assert(b);
+  PATTERN_Pattern_Blended *pattern = malloc(sizeof(PATTERN_Pattern_Blended));
+  if (!pattern) {
+    Throw(E_MALLOC_FAILED);
+  }
+  TUPLES_Color dummy_color;
+  TUPLES_init_color(&dummy_color, 0, 0, 0);
+  PATTERN_init(&pattern->pattern, &dummy_color, &dummy_color);
+  pattern->pattern.at = &blended_map_at;
+  pattern->pattern.copy = &copy_blended_map;
+  pattern->pattern.delete = &delete_blended_map;
+  pattern->a = a;
+  pattern->b = b;
+  return (PATTERN_Pattern*)pattern;
+}

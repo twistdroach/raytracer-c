@@ -12,20 +12,24 @@
 
 CEXCEPTION_T global_exception;
 void build_world(WORLD_World* world) {
-    TUPLES_Color red, green, blue;
+    TUPLES_Color red, green, blue, black, gray, white;
     TUPLES_init_color(&red, 1, 0, 0);
     TUPLES_init_color(&green, 0, 1, 0);
     TUPLES_init_color(&blue, 0, 0, 1);
-    PLANE_Plane* floor = PLANE_new();
+    TUPLES_init_color(&black, 0, 0, 0);
+    TUPLES_init_color(&gray, .25, .25, .25);
+    TUPLES_init_color(&white, 1, 1, 1);
+  PLANE_Plane* floor = PLANE_new();
     WORLD_add_object(world, floor);
     MATERIAL_Material* material = MATERIAL_new();
     material->specular = 0;
-    PATTERN_Pattern* floor_pattern = PATTERN_new_stripe(&red, &green);
-    MATRIX_Matrix* pattern_transform = MATRIX_new_rotation_y(-M_PI / 5);
-    PATTERN_set_transform(floor_pattern, pattern_transform);
-    MATRIX_delete(pattern_transform);
+    PATTERN_Pattern* floor_pattern_a = PATTERN_new_stripe(&white, &gray);
+    PATTERN_Pattern* floor_pattern_b = PATTERN_new_stripe(&white, &gray);
+    MATRIX_Matrix *rot_y = MATRIX_new_rotation_y(M_PI_4);
+    PATTERN_set_transform(floor_pattern_b, rot_y);
+    MATRIX_delete(rot_y);
+    PATTERN_Pattern *floor_pattern = PATTERN_new_blended(floor_pattern_a, floor_pattern_b);
     MATERIAL_set_pattern(material, floor_pattern);
-    PATTERN_delete(floor_pattern);
     PLANE_set_material(floor, material);
     MATERIAL_delete(material);
 
