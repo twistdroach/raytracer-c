@@ -1,3 +1,8 @@
+#ifdef __NetBSD__
+/* for reallocarray */
+#define _OPENBSD_SOURCE
+#endif
+
 #include <assert.h>
 #include <stdlib.h>
 

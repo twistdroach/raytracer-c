@@ -1,5 +1,9 @@
 #define _GNU_SOURCE
 
+#ifdef __NetBSD__
+#define _OPENBSD_SOURCE
+#endif
+
 #include "ray.h"
 #include "arrlist.h"
 #include <CException.h>

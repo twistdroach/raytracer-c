@@ -3,9 +3,12 @@
 #include "exceptions.h"
 #include "utilities.h"
 #include <assert.h>
-#include <immintrin.h>
 #include <math.h>
 #include <stdarg.h>
+
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
 
 MATRIX_Matrix *MATRIX_new(uint width, uint height) {
   MATRIX_Matrix *m = malloc(sizeof(MATRIX_Matrix));
