@@ -48,7 +48,7 @@ UTILITIES_Timer *UTILITIES_Timer_start() {
   }
   struct tms tmp_tms;
   clock_t walltime = times(&tmp_tms);
-  if (walltime < 0) {
+  if (walltime == ((clock_t)-1)) {
     free(timer);
     return NULL;
   }
@@ -68,7 +68,7 @@ UTILITIES_Timer_Results UTILITIES_Timer_stop(UTILITIES_Timer *timer) {
 
   struct tms tmp_tms;
   clock_t walltime = times(&tmp_tms);
-  if (walltime < 0) {
+  if (walltime == ((clock_t)-1)) {
     free(timer);
     return results;
   }
