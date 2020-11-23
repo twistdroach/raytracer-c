@@ -17,6 +17,13 @@ add_compile_options(-Wall -Wextra -pedantic -Werror -fno-omit-frame-pointer)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 OPTION (USE_OpenMP "Use OpenMP" ON)
+
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    add_compile_options(--coverage)
+    add_link_options(--coverage)
+    set( USE_OpenMP OFF )
+endif()
+
 IF(USE_OpenMP)
     FIND_PACKAGE(OpenMP)
     IF(OPENMP_C_FOUND)
@@ -24,12 +31,6 @@ IF(USE_OpenMP)
         add_link_options(${OpenMP_C_FLAGS})
     ENDIF()
 ENDIF()
-
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    add_compile_options(--coverage)
-    add_link_options(--coverage)
-    set( USE_OpenMP OFF )
-endif()
 
 #jemalloc seems to be quite a bit faster
 OPTION (USE_jemalloc "Use jemalloc" ON)
