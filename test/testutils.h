@@ -12,6 +12,13 @@ void test_tuples(const TUPLES_Tuple *expected, const TUPLES_Tuple *got) {
   }
 }
 
+void test_tuples_str(const TUPLES_Tuple *expected, const TUPLES_Tuple *got, const char *info) {
+  if (!TUPLES_is_equal(expected, got)) {
+    printf("%s - Expected: %s\nBut got: %s\n", info, TUPLES_to_string(expected), TUPLES_to_string(got));
+    TEST_FAIL();
+  }
+}
+
 static __attribute__((unused)) CANVAS_Canvas *from_string(char *str) {
   volatile CEXCEPTION_T exception;
   TEST_ASSERT_NOT_NULL(str);

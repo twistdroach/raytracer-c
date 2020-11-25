@@ -28,4 +28,7 @@ void LIGHTS_delete(LIGHTS_Light *pl);
 const TUPLES_Color *LIGHTS_get_color(const LIGHTS_Light *light);
 double LIGHTS_intensity_at(const LIGHTS_Light *light, const TUPLES_Point *point, const WORLD_World *world);
 void LIGHTS_iterate_points_on_light(const LIGHTS_Light *light, void (*each_point)(TUPLES_Point *point, void *context), void *context);
+
+LIGHTS_Light *LIGHTS_parse_light(char *data);
+
 #endif // DATA_STRUCTURES_LIGHTS_H

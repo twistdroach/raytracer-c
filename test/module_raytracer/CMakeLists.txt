@@ -62,3 +62,10 @@ target_link_libraries(module_datastructures_sequences
         module_raytracer
         Unity)
 add_test(datastructures_sequences module_datastructures_sequences)
+
+add_executable(module_datastructures_yamlloader
+        test_yamlloader.c)
+target_link_libraries(module_datastructures_yamlloader
+        module_raytracer
+        Unity)
+add_test(datastructures_yamlloader module_datastructures_yamlloader)

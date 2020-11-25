@@ -181,6 +181,66 @@ void test_area_light_with_jittered_samples() {
   area_light_with_jittered_samples(0, 0, -2, 1.0);
 }
 
+void test_get_point_light_from_yaml() {
+  char data[] = "\n"
+                "  at: [ -10, 10, -10 ] \n"
+                "  intensity: [0.5, 0.25, 0.75]\n"
+                "\n";
+
+  LIGHTS_Light *result = LIGHTS_parse_light(data);
+  TEST_ASSERT_NOT_NULL(result);
+
+  TUPLES_Point p;
+  TUPLES_Color i;
+  TUPLES_Vector uvec, vvec;
+  TUPLES_init_point(&p, -10, 10, -10);
+  TUPLES_init_color(&i, 0.5, 0.25, 0.75);
+  TUPLES_init_vector(&uvec, 0, 0, 0);
+  TUPLES_init_vector(&vvec, 0, 0, 0);
+
+  test_tuples_str(&p, &result->corner, "Corner");
+  test_tuples_str(&i, &result->intensity, "Intensity");
+  test_tuples_str(&uvec, &result->uvec, "uvec");
+  test_tuples_str(&vvec, &result->vvec, "vvec");
+  TEST_ASSERT_EQUAL(1, result->usteps);
+  TEST_ASSERT_EQUAL(1, result->vsteps);
+
+  LIGHTS_delete(result);
+}
+
+void test_get_area_light_from_yaml() {
+  char data[] = "\n"
+                "  corner: [-1, 2, 4]\n"
+                "  uvec: [2, 0, 0]\n"
+                "  vvec: [0, 2, 0]\n"
+                "  usteps: 10\n"
+                "  vsteps: 20\n"
+                "  jitter: true\n"
+                "  intensity: [1.5, 1.5, 1.5]\n"
+                "\n";
+
+  LIGHTS_Light *result = LIGHTS_parse_light(data);
+  TEST_ASSERT_NOT_NULL(result);
+
+  TUPLES_Point p;
+  TUPLES_Color i;
+  TUPLES_Vector uvec, vvec;
+  TUPLES_init_point(&p, -1, 2, 4);
+  TUPLES_init_color(&i, 1.5, 1.5, 1.5);
+  TUPLES_init_vector(&uvec, 0.2, 0, 0);
+  TUPLES_init_vector(&vvec, 0, 0.1, 0);
+
+  test_tuples_str(&p, &result->corner, "Corner");
+  test_tuples_str(&i, &result->intensity, "Intensity");
+  test_tuples_str(&uvec, &result->uvec, "uvec");
+  test_tuples_str(&vvec, &result->vvec, "vvec");
+  TEST_ASSERT_EQUAL(10, result->usteps);
+  TEST_ASSERT_EQUAL(20, result->vsteps);
+  TEST_ASSERT_NOT_NULL(result->sequence);
+
+  LIGHTS_delete(result);
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_pointlight_has_position_and_intensity);
@@ -191,5 +251,7 @@ int main(void) {
   RUN_TEST(test_area_light_intensity_function);
   RUN_TEST(test_find_single_point_on_a_jittered_area);
   RUN_TEST(test_area_light_with_jittered_samples);
+  RUN_TEST(test_get_point_light_from_yaml);
+  RUN_TEST(test_get_area_light_from_yaml);
   return UNITY_END();
 }
