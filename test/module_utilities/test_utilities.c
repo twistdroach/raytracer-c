@@ -6,7 +6,7 @@
 
 #include "utilities.h"
 #include <unity.h>
-
+#define uint unsigned int
 void setUp(void) {}
 
 void tearDown(void) {}

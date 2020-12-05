@@ -1,7 +1,10 @@
 #include "material.h"
 #include "pattern.h"
+#include "yamlloader.h"
 #include <assert.h>
+#include <logger.h>
 #include <math.h>
+#include <memory.h>
 
 MATERIAL_Material *MATERIAL_new() {
   MATERIAL_Material *m = malloc(sizeof(MATERIAL_Material));
@@ -142,4 +145,41 @@ void MATERIAL_set_pattern(MATERIAL_Material *material, const PATTERN_Pattern *pa
 bool MATERIAL_casts_shadow(const MATERIAL_Material *m) {
   assert(m);
   return m->shadow_calc;
+}
+
+void parse_material_map_entry(char *key, char *value, void *context) {
+  assert(key);
+  assert(value);
+  assert(context);
+  MATERIAL_Material *mat = (MATERIAL_Material *)context;
+
+  if (strcmp("color", key) == 0) {
+    YAMLLOADER_parse_color(value, &mat->color);
+  } else if (strcmp("ambient", key) == 0) {
+    YAMLLOADER_parse_double(value, &mat->ambient);
+  } else if (strcmp("diffuse", key) == 0) {
+    YAMLLOADER_parse_double(value, &mat->diffuse);
+  } else if (strcmp("specular", key) == 0) {
+    YAMLLOADER_parse_double(value, &mat->specular);
+  } else if (strcmp("shininess", key) == 0) {
+    YAMLLOADER_parse_double(value, &mat->shininess);
+  } else if (strcmp("reflective", key) == 0) {
+    YAMLLOADER_parse_double(value, &mat->reflective);
+  } else if (strcmp("transparency", key) == 0) {
+    YAMLLOADER_parse_double(value, &mat->transparency);
+  } else if (strcmp("refractive_index", key) == 0) {
+    YAMLLOADER_parse_double(value, &mat->refractive_index);
+  } else {
+    LOGGER_log(LOGGER_WARN, "Unrecognized map key while parsing material: %s", key);
+  }
+}
+
+MATERIAL_Material *MATERIAL_parse_material(char *data) {
+  assert(data);
+
+  MATERIAL_Material *material = MATERIAL_new();
+  //No validation, as there are no required fields...
+  YAMLLOADER_parse_map_entries(data, parse_material_map_entry, material);
+
+  return material;
 }

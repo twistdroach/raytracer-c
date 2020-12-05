@@ -7,7 +7,7 @@ endif()
 
 set(CMAKE_C_STANDARD 11)
 
-OPTION (USE_AVX2 "Use AVX2" ON)
+OPTION (USE_AVX2 "Use AVX2" OFF)
 IF(USE_AVX2)
   add_compile_options(-mavx2)
 ENDIF()
@@ -33,7 +33,7 @@ IF(USE_OpenMP)
 ENDIF()
 
 #jemalloc seems to be quite a bit faster
-OPTION (USE_jemalloc "Use jemalloc" ON)
+OPTION (USE_jemalloc "Use jemalloc" OFF)
 if (USE_jemalloc)
   find_package(PkgConfig)
   if (PKGCONFIG_FOUND)

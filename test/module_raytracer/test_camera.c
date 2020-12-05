@@ -161,6 +161,23 @@ void test_redering_world_with_a_camera() {
   CANVAS_delete(canvas);
 }
 
+void test_load_camera_from_yaml() {
+  char data[] = "- add: camera\n"
+                "  width: 400\n"
+                "  height: 200\n"
+                "  field-of-view: 1.152\n"
+                "  from: [-2.6, 1.5, -3.9]\n"
+                "  to: [-0.6, 1, -0.8]\n"
+                "  up: [0, 1, 0]\n";
+  CAMERA_Camera *result = CAMERA_parse_camera(data);
+  TEST_ASSERT_NOT_NULL(result);
+  //TODO calculate & compare the expected transformation matrix for this test
+  TEST_ASSERT_EQUAL(400, result->hsize);
+  TEST_ASSERT_EQUAL(200, result->vsize);
+  TEST_ASSERT_EQUAL_DOUBLE(1.152, result->field_of_view);
+  CAMERA_delete(result);
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_transformation_matrix_for_default_orientation);
@@ -173,5 +190,6 @@ int main(void) {
   RUN_TEST(test_get_ray_through_center_of_canvas);
   RUN_TEST(test_get_ray_through_corner_of_canvas);
   RUN_TEST(test_get_ray_when_camera_is_transformed);
+  RUN_TEST(test_load_camera_from_yaml);
   UNITY_END();
 }

@@ -11,23 +11,21 @@
 #include "world.h"
 
 typedef struct WORLD_World {
-  const LIGHTS_Light *light;
+  LIGHTS_Light *light;
   void **objects;
   unsigned int object_count;
 } WORLD_World;
 
 unsigned int WORLD_default_ttl = 5;
 
-void WORLD_init(WORLD_World *world, const LIGHTS_Light *light) {
+void WORLD_init(WORLD_World *world, LIGHTS_Light *light) {
   assert(world);
-  assert(light);
   world->light = light;
   world->objects = NULL;
   world->object_count = 0;
 }
 
-WORLD_World *WORLD_new(const LIGHTS_Light *light) {
-  assert(light);
+WORLD_World *WORLD_new(LIGHTS_Light *light) {
   WORLD_World *world = malloc(sizeof(WORLD_World));
   if (!world)
     Throw(E_MALLOC_FAILED);
@@ -48,13 +46,13 @@ void WORLD_delete(WORLD_World *world) {
   free(world);
 }
 
-void WORLD_set_light(WORLD_World *world, const LIGHTS_Light *light) {
+void WORLD_set_light(WORLD_World *world, LIGHTS_Light *light) {
   assert(world);
   assert(light);
   world->light = light;
 }
 
-inline const LIGHTS_Light *WORLD_get_light(const WORLD_World *world) {
+inline LIGHTS_Light *WORLD_get_light(const WORLD_World *world) {
   assert(world);
   return world->light;
 }
@@ -62,7 +60,7 @@ inline const LIGHTS_Light *WORLD_get_light(const WORLD_World *world) {
 void WORLD_add_object(WORLD_World *world, void *shape) {
   assert(world);
   assert(shape);
-  void **tmpptr = reallocarray(world->objects, sizeof(void *), world->object_count + 1);
+  void **tmpptr = realloc(world->objects, sizeof(void *) * (world->object_count + 1));
   if (!tmpptr) {
     Throw(E_MALLOC_FAILED);
   } else {
@@ -98,7 +96,7 @@ void WORLD_shade_hit(TUPLES_Color *dest, const WORLD_World *world, const RAY_Com
   assert(world);
   assert(computation);
 
-  const LIGHTS_Light *light = WORLD_get_light(world);
+  LIGHTS_Light *light = WORLD_get_light(world);
   double intensity = LIGHTS_intensity_at(light, &computation->over_point, world);
 
   MATERIAL_lighting(dest, (SHAPE_Shape *)computation->object, light, &computation->over_point, &computation->eyev, &computation->normalv, intensity);

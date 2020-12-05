@@ -1,10 +1,12 @@
 #include "camera.h"
 #include "matrix.h"
 #include "tuples.h"
+#include "yamlloader.h"
 
 #include <assert.h>
 #include <logger.h>
 #include <math.h>
+#include <memory.h>
 
 static void calculate_pixel_size(CAMERA_Camera *camera) {
   assert(camera);
@@ -135,3 +137,70 @@ CANVAS_Canvas *CAMERA_render(const CAMERA_Camera *camera, const WORLD_World *wor
   }
   return canvas;
 }
+
+struct camera_context {
+  unsigned int width, height;
+  double field_of_view;
+  TUPLES_Point from, to;
+  TUPLES_Vector up;
+
+  bool found_width, found_height, found_field_of_view,
+      found_from, found_to, found_up;
+};
+
+static void parse_camera_map_entry(char *key, char *value, void *context) {
+  assert(key);
+  assert(value);
+  assert(context);
+  struct camera_context *cc = (struct camera_context *)context;
+
+  if (strcmp("up", key) == 0) {
+    YAMLLOADER_parse_vector(value, &cc->up);
+    cc->found_up = true;
+  } else if (strcmp("from", key) == 0) {
+    YAMLLOADER_parse_point(value, &cc->from);
+    cc->found_from = true;
+  } else if (strcmp("to", key) == 0) {
+    YAMLLOADER_parse_point(value, &cc->to);
+    cc->found_to = true;
+  } else if (strcmp("width", key) == 0) {
+    YAMLLOADER_parse_uint(value, &cc->width);
+    cc->found_width = true;
+  } else if (strcmp("height", key) == 0) {
+    YAMLLOADER_parse_uint(value, &cc->height);
+    cc->found_height = true;
+  } else if (strcmp("field-of-view", key) == 0 ||
+             strcmp("field_of_view", key) == 0) {
+    YAMLLOADER_parse_double(value, &cc->field_of_view);
+    cc->found_field_of_view = true;
+  } else {
+    LOGGER_log(LOGGER_WARN, "Unrecognized map key while parsing camera: %s", key);
+  }
+}
+
+static bool validate_camera_context(struct camera_context *cc) {
+  assert(cc);
+  return cc->found_width && cc->found_height && cc->found_field_of_view && cc->found_from
+                         && cc->found_to && cc->found_up;
+}
+
+CAMERA_Camera *CAMERA_parse_camera(char *data) {
+  assert(data);
+
+  struct camera_context cc = {0};
+
+  YAMLLOADER_parse_map_entries(data, parse_camera_map_entry, &cc);
+
+  if (!validate_camera_context(&cc)) {
+    LOGGER_log(LOGGER_WARN, "Failed to parse camera.  width, height, field of view, from, to, and up all must be specified");
+    return NULL;
+  }
+
+  CAMERA_Camera *camera = CAMERA_new(cc.width, cc.height, cc.field_of_view);
+  MATRIX_Matrix* camera_transform = CAMERA_view_transform(&cc.from, &cc.to, &cc.up);
+  CAMERA_set_transform(camera, camera_transform);
+  MATRIX_delete(camera_transform);
+
+  return camera;
+}
+

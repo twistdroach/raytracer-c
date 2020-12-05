@@ -35,4 +35,6 @@ void CAMERA_ray_for_pixel(RAY_Ray *dest, const CAMERA_Camera *camera, unsigned i
 
 CANVAS_Canvas *CAMERA_render(const CAMERA_Camera *camera, const WORLD_World *world);
 
+CAMERA_Camera *CAMERA_parse_camera(char *data);
+
 #endif // DATA_STRUCTURES_CAMERA_H

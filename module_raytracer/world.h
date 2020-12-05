@@ -8,7 +8,7 @@
 typedef struct WORLD_World WORLD_World;
 unsigned int WORLD_default_ttl;
 
-WORLD_World *WORLD_new(const LIGHTS_Light *light);
+WORLD_World *WORLD_new(LIGHTS_Light *light);
 void WORLD_delete(WORLD_World *world);
 
 /** Add a shape to the world.
@@ -35,8 +35,8 @@ unsigned int WORLD_get_object_count(const WORLD_World *world);
  * @param world
  */
 void WORLD_delete_all_objects(WORLD_World *world);
-const LIGHTS_Light *WORLD_get_light(const WORLD_World *world);
-void WORLD_set_light(WORLD_World *world, const LIGHTS_Light *);
+LIGHTS_Light *WORLD_get_light(const WORLD_World *world);
+void WORLD_set_light(WORLD_World *world, LIGHTS_Light *);
 RAY_Intersections *WORLD_intersect(const WORLD_World *world, const RAY_Ray *ray);
 void WORLD_shade_hit(TUPLES_Color *dest, const WORLD_World *world, const RAY_Computations *computation, unsigned int ttl);
 void WORLD_color_at(TUPLES_Color *dest, const WORLD_World *world, const RAY_Ray *ray, unsigned int ttl);

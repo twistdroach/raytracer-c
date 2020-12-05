@@ -7,7 +7,7 @@ add_library(module_raytracer STATIC
         camera.c camera.h
         wavefrontobj.c wavefrontobj.h
         sequences.c sequences.h
-        yamlloader.c yamlloader.h)
+        yamlloader.c yamlloader.h configuration.h)
 
 target_include_directories(module_raytracer PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

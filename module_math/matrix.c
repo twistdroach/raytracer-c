@@ -19,7 +19,7 @@ MATRIX_Matrix *MATRIX_new(uint width, uint height) {
   return m;
 }
 
-inline static uint calculate_index(const MATRIX_Matrix *matrix, uint row, uint column) {
+uint calculate_index(const MATRIX_Matrix *matrix, uint row, uint column) {
   assert(column < matrix->width);
   assert(row < matrix->height);
   return row * matrix->width + column;

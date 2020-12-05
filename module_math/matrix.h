@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#define uint unsigned int
+
 typedef struct MATRIX_Matrix {
   uint width, height;
   double data[16];

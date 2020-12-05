@@ -22,4 +22,7 @@ void MATERIAL_lighting(TUPLES_Color *dest, const SHAPE_Shape *shape, const LIGHT
                        const TUPLES_Vector *normal_vector, double intensity);
 void MATERIAL_set_pattern(MATERIAL_Material *material, const PATTERN_Pattern *pattern);
 bool MATERIAL_casts_shadow(const MATERIAL_Material *m);
+
+MATERIAL_Material *MATERIAL_parse_material(char *data);
+
 #endif // DATA_STRUCTURES_MATERIAL_H

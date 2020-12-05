@@ -269,6 +269,35 @@ void test_lighting_function_samples_area_light() {
   lighting_function_samples_area_light(0, 0.7071, -0.7071, 0.6232, 0.6232, 0.6232);
 }
 
+void test_create_material_from_yaml() {
+  char data[] = "\n"
+                "    color: [0, 0.2, 0.75]\n"
+                "    ambient: 0.1\n"
+                "    diffuse: 0.4\n"
+                "    specular: 0.9\n"
+                "    shininess: 300\n"
+                "    reflective: 0.7\n"
+                "    transparency: 0.8\n"
+                "    refractive_index: 1.5\n\n";
+
+  MATERIAL_Material *result = MATERIAL_parse_material(data);
+  TEST_ASSERT_NOT_NULL(result);
+
+  TUPLES_Color expected_color;
+  TUPLES_init_color(&expected_color, 0, 0.2, 0.75);
+  test_tuples(&expected_color, &result->color);
+
+  TEST_ASSERT_EQUAL_DOUBLE(0.1, result->ambient);
+  TEST_ASSERT_EQUAL_DOUBLE(0.4, result->diffuse);
+  TEST_ASSERT_EQUAL_DOUBLE(0.9, result->specular);
+  TEST_ASSERT_EQUAL_DOUBLE(300, result->shininess);
+  TEST_ASSERT_EQUAL_DOUBLE(0.7, result->reflective);
+  TEST_ASSERT_EQUAL_DOUBLE(0.8, result->transparency);
+  TEST_ASSERT_EQUAL_DOUBLE(1.5, result->refractive_index);
+
+  MATERIAL_delete(result);
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_default_material);
@@ -283,5 +312,6 @@ int main(void) {
   RUN_TEST(test_material_default_transparency_and_refractive_index);
   RUN_TEST(test_use_light_intensity_to_attenuate_color);
   RUN_TEST(test_lighting_function_samples_area_light);
+  RUN_TEST(test_create_material_from_yaml);
   return UNITY_END();
 }

@@ -4,6 +4,8 @@
 #include "tuples.h"
 #include <stdlib.h>
 
+#define uint unsigned int
+
 typedef struct CANVAS_Canvas {
   uint width, height;
   TUPLES_Color *data;
