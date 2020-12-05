@@ -28,7 +28,7 @@ ARRLIST_List *ARRLIST_new() {
 void ARRLIST_add(ARRLIST_List *list, void *object) {
   assert(list);
   assert(object);
-  void **tmpptr = reallocarray(list->items, sizeof(void *), list->count + 1);
+  void **tmpptr = realloc(list->items, sizeof(void *) * (list->count + 1));
   if (!tmpptr) {
     Throw(E_MALLOC_FAILED);
   } else {

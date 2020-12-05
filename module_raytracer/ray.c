@@ -137,7 +137,7 @@ void RAY_add_intersection(RAY_Intersections *intersections, double intersection,
   assert(intersections);
   assert(object);
   if (intersections->count > intersections->xs_size) {
-    RAY_Xs *tmpptr = reallocarray(intersections->xs, sizeof(RAY_Xs), intersections->xs_size * 2);
+    RAY_Xs *tmpptr = realloc(intersections->xs, sizeof(RAY_Xs) * intersections->xs_size * 2);
     if (!tmpptr) {
       Throw(E_MALLOC_FAILED);
     } else {
