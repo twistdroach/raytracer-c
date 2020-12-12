@@ -5,6 +5,7 @@
 #include <sys/times.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "exceptions.h"
 #include "utilities.h"
