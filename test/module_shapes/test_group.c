@@ -233,3 +233,4 @@ int main(void) {
   RUN_TEST(test_subdividing_group_partition_its_children);
   return UNITY_END();
 }
+
