@@ -126,8 +126,8 @@ char *UTILITIES_slurp(char *input_filename) {
     return NULL;
   }
 
-  fread(buffer, sizeof(char), length, file);
-  if (ferror(file) != 0) {
+  size_t read = fread(buffer, sizeof(char), length, file);
+  if (ferror(file) != 0 || read != (size_t)length) {
     Throw(E_FILE_FAILED);
     free(buffer);
     return NULL;
