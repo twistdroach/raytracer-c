@@ -2,9 +2,23 @@
 #include "configuration.h"
 #include <assert.h>
 #include <ctype.h>
+#include <cube.h>
 #include <logger.h>
 #include <string.h>
 #include <world.h>
+
+/* ***********************************
+ *
+ * What follows is some terrible code
+ * to parse yaml.
+ *
+ * I wanted to hack something together
+ * and avoid pulling in any dependencies,
+ * so here it is.  It is likely very unsafe
+ * and will fail in all but the simplest
+ * of cases.
+ *
+ * ***********************************/
 
 // trim functions from https://stackoverflow.com/a/1431206
 static char *ltrim(char *s)
@@ -35,7 +49,7 @@ static void parse_map_entry(char *data, char **key, char **value) {
   char *colon_delim = ":";
   *key = strtok_r(data, colon_delim, &saveptr);
   if (!*key) {
-    LOGGER_log(LOGGER_ERROR, "Failed parsing - colon delim not found\n", data);
+    LOGGER_log(LOGGER_ERROR, "Failed parsing - colon delim not found (%s)\n", data);
     Throw(E_PARSE_FAILED);
   } else {
     *key = trim(*key);
@@ -43,7 +57,7 @@ static void parse_map_entry(char *data, char **key, char **value) {
 
   *value = strtok_r(NULL, colon_delim, &saveptr);
   if (!*value) {
-    LOGGER_log(LOGGER_ERROR, "Failed parsing - colon delim not found\n", data);
+    LOGGER_log(LOGGER_ERROR, "Failed parsing - colon delim not found (%s)\n", data);
     Throw(E_PARSE_FAILED);
   } else {
     *value = trim(*value);
@@ -65,7 +79,7 @@ static void parse_tuple_values(char* data, double *x, double *y, double *z) {
   size_t data_len = strlen(data);
   if (data[data_len - 1] != ']') {
     //handle parse error
-    LOGGER_log(LOGGER_ERROR, "Parse error - expected ] at end of data in parse_point\n");
+    LOGGER_log(LOGGER_ERROR, "Parse error - expected ] at end of data in parse_point while parsing(%s)\n", data);
     Throw(E_PARSE_FAILED);
   }
   data[data_len - 1] = '\0';
@@ -75,21 +89,21 @@ static void parse_tuple_values(char* data, double *x, double *y, double *z) {
   char *comma_delim = ",";
   char *x_str = strtok_r(data, comma_delim, &saveptr);
   if (!x_str) {
-    LOGGER_log(LOGGER_ERROR, "Error parsing vertex x value\n");
+    LOGGER_log(LOGGER_ERROR, "Error parsing vertex x value while parsing(%s)\n", data);
     Throw(E_PARSE_FAILED);
   }
   *x = strtod(x_str, &err);
 
   char *y_str = strtok_r(NULL, comma_delim, &saveptr);
   if (!y_str) {
-    LOGGER_log(LOGGER_ERROR, "Error parsing vertex y value\n");
+    LOGGER_log(LOGGER_ERROR, "Error parsing vertex y value while parsing(%s)\n", data);
     Throw(E_PARSE_FAILED);
   }
   *y = strtod(y_str, &err);
 
   char *z_str = strtok_r(NULL, comma_delim, &saveptr);
   if (!z_str) {
-    LOGGER_log(LOGGER_ERROR, "Error parsing vertex z value\n");
+    LOGGER_log(LOGGER_ERROR, "Error parsing vertex z value while parsing(%s)\n", data);
     Throw(E_PARSE_FAILED);
   }
   *z = strtod(z_str, &err);
@@ -217,7 +231,7 @@ MATRIX_Matrix *YAMLLOADER_parse_transform(char *data) {
     if (*current_line) {
       MATRIX_Matrix *line_matrix = YAMLLOADER_parse_transform_entry(current_line);
       MATRIX_Matrix *tmp = mat;
-      mat = MATRIX_multiply(mat, line_matrix);
+      mat = MATRIX_multiply(line_matrix, mat);
       MATRIX_delete_all(tmp, line_matrix);
     }
 
@@ -226,7 +240,26 @@ MATRIX_Matrix *YAMLLOADER_parse_transform(char *data) {
   return mat;
 }
 
-void create_object(char *type, char *buffer, CONFIGURATION_Config *config) {
+void YAMLLOADER_parse_shape_info(SHAPE_Shape *shape, char *buffer) {
+  assert(shape);
+  assert(buffer);
+  if (!*trim(buffer)) {
+    //do nothing if we are handed nothing but whitespace
+    return;
+  }
+  char *next_line = NULL;
+  if (strncmp("transform:", ltrim(buffer), 10) == 0 && (next_line = strchr(buffer, ':'))) {
+      MATRIX_Matrix* transform = YAMLLOADER_parse_transform(next_line + 1);
+      SHAPE_set_transform(shape, transform);
+      MATRIX_delete(transform);
+  } else {
+    LOGGER_log(LOGGER_ERROR, "Error parsing shape information (%s)\n", buffer);
+    Throw(E_PARSE_FAILED);
+    return;
+  }
+}
+
+static void create_object(char *type, char *buffer, CONFIGURATION_Config *config) {
   assert(type);
   assert(buffer);
   assert(config);
@@ -238,10 +271,15 @@ void create_object(char *type, char *buffer, CONFIGURATION_Config *config) {
     WORLD_set_light(config->world, LIGHTS_parse_light(buffer));
   } else if (strcmp("camera", type) == 0) {
     config->camera = CAMERA_parse_camera(buffer);
+  } else if (strcmp("cube", type) == 0) {
+    CUBE_Cube *cube = CUBE_new();
+    YAMLLOADER_parse_shape_info(cube, buffer);
+    WORLD_add_object(config->world, cube);
   } else {
     LOGGER_log(LOGGER_ERROR, "Unknown type found when parsing: %s\n", type);
     free(buffer);
     Throw(E_PARSE_FAILED);
+    return;
   }
   free(buffer);
 }
@@ -271,7 +309,7 @@ static char *handle_array_item(char *first_entry, char *data, CONFIGURATION_Conf
     char *next_line = strchr(current_line, '\n');
     if (*current_line) {
       char *trimmed_current_line = ltrim(current_line);
-      if (*trimmed_current_line == '-') {
+      if (strncmp("- add", trimmed_current_line, 5) == 0) {
         //reached next object, parse the buffer and move on
         create_object(first_type, buffer, config);
         return current_line;

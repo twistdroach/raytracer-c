@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/times.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "exceptions.h"
 #include "utilities.h"
@@ -85,4 +86,57 @@ UTILITIES_Timer_Results UTILITIES_Timer_stop(UTILITIES_Timer *timer) {
 
   free(timer);
   return results;
+}
+
+char* UTILITIES_concat(const char *s1, const char *s2) {
+  assert(s1);
+  assert(s2);
+  char *result = malloc(strlen(s1) + strlen(s2) + 1);
+  if (!result) {
+    Throw(E_MALLOC_FAILED);
+  }
+  strcpy(result, s1);
+  strcat(result, s2);
+  return result;
+}
+
+char *UTILITIES_slurp(char *input_filename) {
+  assert(input_filename);
+  FILE *file = fopen(input_filename, "r");
+  if (!file) {
+    Throw(E_FILE_FAILED);
+    return NULL;
+  }
+
+  if (fseek(file, 0, SEEK_END) != 0) {
+    Throw(E_FILE_FAILED);
+    return NULL;
+  }
+
+  long length = ftell(file);
+  if (fseek(file, 0, SEEK_SET) != 0) {
+    Throw(E_FILE_FAILED);
+    return NULL;
+  }
+
+  char *buffer = calloc(length + 1, sizeof(char));
+  if (!buffer) {
+    Throw(E_MALLOC_FAILED);
+    return NULL;
+  }
+
+  fread(buffer, sizeof(char), length, file);
+  if (ferror(file) != 0) {
+    Throw(E_FILE_FAILED);
+    free(buffer);
+    return NULL;
+  }
+
+  //not checked, not sure what I'd do if it failed?
+  fclose(file);
+
+  //terminate the string!
+  buffer[length] = '\0';
+
+  return buffer;
 }

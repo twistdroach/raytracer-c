@@ -5,6 +5,7 @@
 
 #include <camera.h>
 #include <configuration.h>
+#include <cube.h>
 #include <matrix.h>
 #include <tuples.h>
 
@@ -261,6 +262,59 @@ void test_separate_yaml_array_entities() {
 }
  */
 
+void test_get_a_cube_from_yaml() {
+  char data[] = "- add: light\n"
+                "  at: [0, 6.9, -5]\n"
+                "  intensity: [1, 1, 0.9]\n"
+                "- add: camera\n"
+                "  width: 400\n"
+                "  height: 200\n"
+                "  field_of_view: 0.785\n"
+                "  from: [8, 6, -8]\n"
+                "  to: [0, 3, 0]\n"
+                "  up: [0, 1, 0]\n\n"
+                "- add: cube\n";
+
+  CONFIGURATION_Config *config = YAMLLOADER_parse(data);
+  TEST_ASSERT_NOT_NULL(config);
+  TEST_ASSERT_NOT_NULL(config->world);
+  TEST_ASSERT_EQUAL(1, WORLD_get_object_count(config->world));
+  TEST_ASSERT_NOT_NULL(WORLD_get_object(config->world, 0));
+  WORLD_delete(config->world);
+}
+
+void test_get_a_transformed_cube_from_yaml() {
+  char data[] = "- add: light\n"
+                "  at: [0, 6.9, -5]\n"
+                "  intensity: [1, 1, 0.9]\n"
+                "- add: camera\n"
+                "  width: 400\n"
+                "  height: 200\n"
+                "  field_of_view: 0.785\n"
+                "  from: [8, 6, -8]\n"
+                "  to: [0, 3, 0]\n"
+                "  up: [0, 1, 0]\n\n"
+                "- add: cube\n"
+                "  transform:\n"
+                "    - [translate, 0, 1, 0]\n"
+                "    - [scale, 20, 7, 20]\n\n";
+
+  MATRIX_Matrix *translate = MATRIX_new_translation(0, 1, 0);
+  MATRIX_Matrix *scale = MATRIX_new_scaling(20, 7, 20);
+  MATRIX_Matrix *expected_transform = MATRIX_multiply(translate, scale);
+
+  CONFIGURATION_Config *config = YAMLLOADER_parse(data);
+  TEST_ASSERT_NOT_NULL(config);
+  TEST_ASSERT_NOT_NULL(config->world);
+  TEST_ASSERT_EQUAL(1, WORLD_get_object_count(config->world));
+  TEST_ASSERT_NOT_NULL(WORLD_get_object(config->world, 0));
+  MATRIX_Matrix *result_transform = SHAPE_get_transform(WORLD_get_object(config->world, 0));
+
+  TEST_ASSERT_TRUE(MATRIX_is_equal(expected_transform, result_transform));
+  WORLD_delete(config->world);
+  MATRIX_delete_all(translate, scale, expected_transform);
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_parse_bool);
@@ -280,5 +334,7 @@ int main(void) {
   RUN_TEST(test_parse_simple_world_with_extra_newlines);
   RUN_TEST(test_world_parser_should_ignore_comments);
 //  RUN_TEST(test_separate_yaml_array_entities);
+  RUN_TEST(test_get_a_cube_from_yaml);
+  RUN_TEST(test_get_a_transformed_cube_from_yaml);
   return UNITY_END();
 }

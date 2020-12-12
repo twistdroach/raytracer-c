@@ -73,4 +73,5 @@ void SHAPE_parent_space_bounds_of(BOUND_Box *dest_box, const SHAPE_Shape *shape)
 
 void SHAPE_divide(SHAPE_Shape *shape, unsigned int minimum_size);
 
+void SHAPE_parse_attributes(SHAPE_Shape *shape, char *data);
 #endif // DATA_STRUCTURES_SHAPE_H

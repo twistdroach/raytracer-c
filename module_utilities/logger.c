@@ -7,7 +7,7 @@
 /**
  * Based on https://github.com/VKoskiv/c-ray/blob/master/src/utils/logging.c
  */
-void LOGGER_log(LOGGER_LEVEL level, const char *fmt, ...) {
+void LOGGER_log_with_file_line(LOGGER_LEVEL level, char *file, int line, const char *fmt, ...) {
   time_t local_time;       /* calendar time */
   local_time = time(NULL); /* get current cal time */
   char timestamp[26];
@@ -21,21 +21,21 @@ void LOGGER_log(LOGGER_LEVEL level, const char *fmt, ...) {
   switch (level) {
   case LOGGER_ERROR:
     // Red
-    printf("\x1b[31mError: ");
+    printf("\x1b[31mError ");
     break;
   case LOGGER_WARN:
     // Yellow
-    printf("\x1b[33mWarning: ");
+    printf("\x1b[33mWarning ");
     break;
   case LOGGER_INFO:
-    printf("Info: ");
+    printf("Info ");
     break;
   case LOGGER_DEBUG:
-    printf("Debug: ");
+    printf("Debug ");
     break;
   }
   // Reset formatting
-  printf("\x1b[0m");
+  printf("\x1b[0m(%s:%d): ", file, line);
 
   char buf[512];
   va_list vargs;

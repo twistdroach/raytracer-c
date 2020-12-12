@@ -169,3 +169,4 @@ void SHAPE_divide(SHAPE_Shape *shape, unsigned int minimum_size) {
     shape->vtable->divide(shape, minimum_size);
   }
 }
+

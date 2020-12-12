@@ -34,6 +34,15 @@ double UTILITIES_min(double a, double b, double c);
   }
 
 /**
+ * Simple string concatenation.  Does not modify either argument.  Returned ptr must be freed.
+ * From: https://stackoverflow.com/questions/8465006/how-do-i-concatenate-two-strings-in-c
+ * @param s1
+ * @param s2
+ * @return
+ */
+char* UTILITIES_concat(const char *s1, const char *s2);
+
+/**
  * Generic vectorization of functions that take a single pointer.
  * Example:
  * #define Free_all(...) Fn_apply(void, free, __VA_ARGS__);
@@ -65,5 +74,7 @@ typedef struct UTILITIES_Timer_Results {
 } UTILITIES_Timer_Results;
 UTILITIES_Timer *UTILITIES_Timer_start();
 UTILITIES_Timer_Results UTILITIES_Timer_stop(UTILITIES_Timer *timer);
+
+char *UTILITIES_slurp(char *input_filename);
 
 #endif // UTILITIES_UTILITIES_H

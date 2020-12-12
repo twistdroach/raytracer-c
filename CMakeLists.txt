@@ -75,6 +75,7 @@ add_subdirectory(module_patterns)
 add_subdirectory(module_utilities)
 
 add_subdirectory(demo)
+add_subdirectory(main)
 
 include(CTest)
 add_subdirectory(test)
