@@ -130,7 +130,7 @@ void test_parse_transform_chain() {
   MATRIX_Matrix *scale = MATRIX_new_scaling(0.1, 1.5, 0.1);
   MATRIX_Matrix *translate = MATRIX_new_translation(2.7, 1.5, -1.7);
   MATRIX_Matrix *rotate = MATRIX_new_rotation_y(0.5);
-  MATRIX_Matrix *expected = MATRIX_multiply_many(scale, translate, rotate);
+  MATRIX_Matrix *expected = MATRIX_multiply_many(rotate, translate, scale);
   MATRIX_Matrix *result = YAMLLOADER_parse_transform(data);
   TEST_ASSERT_NOT_NULL(result);
   if (!MATRIX_is_equal(expected, result)) {
@@ -301,7 +301,7 @@ void test_get_a_transformed_cube_from_yaml() {
 
   MATRIX_Matrix *translate = MATRIX_new_translation(0, 1, 0);
   MATRIX_Matrix *scale = MATRIX_new_scaling(20, 7, 20);
-  MATRIX_Matrix *expected_transform = MATRIX_multiply(translate, scale);
+  MATRIX_Matrix *expected_transform = MATRIX_multiply(scale, translate);
 
   CONFIGURATION_Config *config = YAMLLOADER_parse(data);
   TEST_ASSERT_NOT_NULL(config);
