@@ -280,7 +280,11 @@ void test_get_a_cube_from_yaml() {
   TEST_ASSERT_NOT_NULL(config->world);
   TEST_ASSERT_EQUAL(1, WORLD_get_object_count(config->world));
   TEST_ASSERT_NOT_NULL(WORLD_get_object(config->world, 0));
+  LIGHTS_delete(WORLD_get_light(config->world));
+  WORLD_delete_all_objects(config->world);
   WORLD_delete(config->world);
+  CAMERA_delete(config->camera);
+  free(config);
 }
 
 void test_get_a_transformed_cube_from_yaml() {
@@ -311,8 +315,12 @@ void test_get_a_transformed_cube_from_yaml() {
   MATRIX_Matrix *result_transform = SHAPE_get_transform(WORLD_get_object(config->world, 0));
 
   TEST_ASSERT_TRUE(MATRIX_is_equal(expected_transform, result_transform));
+  LIGHTS_delete(WORLD_get_light(config->world));
+  WORLD_delete_all_objects(config->world);
   WORLD_delete(config->world);
+  CAMERA_delete(config->camera);
   MATRIX_delete_all(translate, scale, expected_transform);
+  free(config);
 }
 
 int main(void) {

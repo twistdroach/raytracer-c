@@ -30,7 +30,7 @@ static char *ltrim(char *s)
 static char *rtrim(char *s)
 {
   char* back = s + strlen(s);
-  while(isspace(*--back));
+  while(isspace(*--back) && back > s);
   *(back+1) = '\0';
   return s;
 }
