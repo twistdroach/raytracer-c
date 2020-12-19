@@ -275,6 +275,10 @@ static void create_object(char *type, char *buffer, CONFIGURATION_Config *config
     CUBE_Cube *cube = CUBE_new();
     YAMLLOADER_parse_shape_info(cube, buffer);
     WORLD_add_object(config->world, cube);
+  } else if (strcmp("sphere", type) == 0) {
+    SPHERE_Sphere *sphere = SPHERE_new();
+    YAMLLOADER_parse_shape_info(sphere, buffer);
+    WORLD_add_object(config->world, sphere);
   } else {
     LOGGER_log(LOGGER_ERROR, "Unknown type found when parsing: %s\n", type);
     free(buffer);

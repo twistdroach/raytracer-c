@@ -10,7 +10,7 @@ UTILITIES_Timer_Results CONFIGURATION_render(CONFIGURATION_Config *config) {
   assert(config);
   assert(config->world);
   assert(config->camera);
-  //not asserting filename, if none is given, we just don't write one
+  //not asserting filename, if none is given, we just don't write one (benchmarking)
 
   LOGGER_log(LOGGER_INFO, "Rendering...\n");
   UTILITIES_Timer* render_timer = UTILITIES_Timer_start();

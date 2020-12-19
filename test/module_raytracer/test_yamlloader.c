@@ -13,7 +13,6 @@ void setUp() {}
 void tearDown() {}
 
 
-//void YAMLLOADER_parse_map_entries(char *data, void (*process_entry)(char *key, char *value, void *context), void *context);
 static int parse_map_entries;
 void validate_key_value(char *key, char *value, void *context) {
   UNUSED(context);
@@ -323,6 +322,31 @@ void test_get_a_transformed_cube_from_yaml() {
   free(config);
 }
 
+void test_get_a_sphere_from_yaml() {
+  char data[] = "- add: light\n"
+                "  at: [0, 6.9, -5]\n"
+                "  intensity: [1, 1, 0.9]\n"
+                "- add: camera\n"
+                "  width: 400\n"
+                "  height: 200\n"
+                "  field_of_view: 0.785\n"
+                "  from: [8, 6, -8]\n"
+                "  to: [0, 3, 0]\n"
+                "  up: [0, 1, 0]\n\n"
+                "- add: sphere\n";
+
+  CONFIGURATION_Config *config = YAMLLOADER_parse(data);
+  TEST_ASSERT_NOT_NULL(config);
+  TEST_ASSERT_NOT_NULL(config->world);
+  TEST_ASSERT_EQUAL(1, WORLD_get_object_count(config->world));
+  TEST_ASSERT_NOT_NULL(WORLD_get_object(config->world, 0));
+  LIGHTS_delete(WORLD_get_light(config->world));
+  WORLD_delete_all_objects(config->world);
+  WORLD_delete(config->world);
+  CAMERA_delete(config->camera);
+  free(config);
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_parse_bool);
@@ -343,6 +367,7 @@ int main(void) {
   RUN_TEST(test_world_parser_should_ignore_comments);
 //  RUN_TEST(test_separate_yaml_array_entities);
   RUN_TEST(test_get_a_cube_from_yaml);
+  RUN_TEST(test_get_a_sphere_from_yaml);
   RUN_TEST(test_get_a_transformed_cube_from_yaml);
   return UNITY_END();
 }
