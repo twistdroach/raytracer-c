@@ -1,0 +1,85 @@
+# A re-creation of the Putting It Together scene from Chapter 7 - Putting It Together
+
+- add: camera
+  width: 100
+  height: 50
+  field-of-view: 1.0471975511965977461542144610932
+  from: [ 0, 1.5, -5 ]
+  to: [ 0, 1, 0 ]
+  up: [ 0, 1, 0 ]
+
+
+- add: light
+  at: [ -10, 10, -10 ]
+  intensity: [ 1, 1, 1 ]
+
+- define: floor-material
+  value:
+    color: [ 1, 0.9, 0.9 ]
+    specular: 0
+    ambient: 0.3
+
+- define: large-green-material
+  value:
+    color: [ 0.5, 1, 0.1 ]
+    diffuse: 0.7
+    specular: 0.3
+
+- define: small-green-material
+  value:
+    color: [ 0.1, 1, 0.5 ]
+    diffuse: 0.7
+    specular: 0.3
+
+
+- define: smallest-material
+  value:
+    color: [ 1, 0.8, 0.1 ]
+    diffuse: 0.7
+    specular: 0.3
+
+# FLOOR - a flattened sphere
+- add: sphere
+  material: floor-material
+  transform:
+    - [ scale, 10, 0.01, 10 ]
+
+# LEFT WALL - a flattened sphere
+- add: sphere
+  material: floor-material
+  transform:
+    - [ scale, 10, 0.01, 10 ]
+    - [ rotate-x, 1.5707963267948966192313216916398 ] # pi/2
+    - [ rotate-y, -0.78539816339744830961566084581988 ] # -pi/4
+    - [ translate, 0, 0, 5 ]
+
+
+# RIGHT WALL - a flattened sphere
+- add: sphere
+  material: floor-material
+  transform:
+    - [ scale, 10, 0.01, 10 ]
+    - [ rotate-x, 1.5707963267948966192313216916398 ] # pi/2
+    - [ rotate-y, 0.78539816339744830961566084581988 ] # pi/4
+    - [ translate, 0, 0, 5 ]
+
+
+# LARGE GREEN SPHERE
+- add: sphere
+  material: large-green-material
+  transform:
+    - [ translate, -0.5, 1, 0.5 ]
+
+# SMALL GREEN SPHERE
+- add: sphere
+  material: small-green-material
+  transform:
+    - [ scale, 0.5, 0.5, 0.5 ]
+    - [ translate, 1.5, 0.5, -0.5 ]
+
+# SMALLEST SPHERE
+- add: sphere
+  material: smallest-material
+  transform:
+    - [ scale, 0.33, 0.33, 0.33 ]
+    - [ translate, -1.5, 0.33, -0.75 ]
