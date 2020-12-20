@@ -278,7 +278,8 @@ void test_create_material_from_yaml() {
                 "    shininess: 300\n"
                 "    reflective: 0.7\n"
                 "    transparency: 0.8\n"
-                "    refractive_index: 1.5\n\n";
+                "    refractive-index: 1.5\n"
+                "    shadow: false\n\n";
 
   MATERIAL_Material *result = MATERIAL_parse_material(data);
   TEST_ASSERT_NOT_NULL(result);
@@ -294,6 +295,7 @@ void test_create_material_from_yaml() {
   TEST_ASSERT_EQUAL_DOUBLE(0.7, result->reflective);
   TEST_ASSERT_EQUAL_DOUBLE(0.8, result->transparency);
   TEST_ASSERT_EQUAL_DOUBLE(1.5, result->refractive_index);
+  TEST_ASSERT_FALSE(result->shadow_calc);
 
   MATERIAL_delete(result);
 }

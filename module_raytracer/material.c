@@ -167,8 +167,10 @@ void parse_material_map_entry(char *key, char *value, void *context) {
     YAMLLOADER_parse_double(value, &mat->reflective);
   } else if (strcmp("transparency", key) == 0) {
     YAMLLOADER_parse_double(value, &mat->transparency);
-  } else if (strcmp("refractive_index", key) == 0) {
+  } else if (strcmp("refractive-index", key) == 0) {
     YAMLLOADER_parse_double(value, &mat->refractive_index);
+  } else if (strcmp("shadow", key) == 0) {
+    YAMLLOADER_parse_bool(value, &mat->shadow_calc);
   } else {
     LOGGER_log(LOGGER_WARN, "Unrecognized map key while parsing material: %s", key);
   }

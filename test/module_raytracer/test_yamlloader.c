@@ -12,6 +12,7 @@
 void setUp() {}
 void tearDown() {}
 
+CEXCEPTION_T exception;
 
 static int parse_map_entries;
 void validate_key_value(char *key, char *value, void *context) {
@@ -347,7 +348,36 @@ void test_get_a_sphere_from_yaml() {
   free(config);
 }
 
-int main(void) {
+void test_get_material_with_color_from_yaml() {
+  char data[] = "\n"
+                "- add: cube\n"
+                "  transform:\n"
+                "    - [ scale, 0.05, 0.2, 0.05 ]\n"
+                "    - [ rotate-y, 0.8 ]\n"
+                "    - [ translate, -0.6, 3.4, -1 ]\n"
+                "  material:\n"
+                "    color: [0.5, 0.15, 1]\n";
+
+    Try {
+      CONFIGURATION_Config *config = YAMLLOADER_parse(data);
+      TEST_ASSERT_NOT_NULL(config);
+      TEST_ASSERT_NOT_NULL(config->world);
+      TEST_ASSERT_EQUAL(1, WORLD_get_object_count(config->world));
+      TEST_ASSERT_NOT_NULL(WORLD_get_object(config->world, 0));
+      MATERIAL_Material *mat = SHAPE_get_material(WORLD_get_object(config->world, 0));
+      TUPLES_Color expected;
+      TUPLES_init_color(&expected, 0.5, 0.15, 1);
+      test_tuples(&expected, &mat->color);
+      WORLD_delete_all_objects(config->world);
+      WORLD_delete(config->world);
+      free(config);
+    } Catch(exception) {
+      printf("Exception: %s\n", EXCEPTIONS_strings[exception]);
+      TEST_FAIL_MESSAGE("Caught exception");
+    }
+  }
+
+  int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_parse_bool);
   RUN_TEST(test_parse_uint);
@@ -369,5 +399,6 @@ int main(void) {
   RUN_TEST(test_get_a_cube_from_yaml);
   RUN_TEST(test_get_a_sphere_from_yaml);
   RUN_TEST(test_get_a_transformed_cube_from_yaml);
+  RUN_TEST(test_get_material_with_color_from_yaml);
   return UNITY_END();
 }

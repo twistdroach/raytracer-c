@@ -222,7 +222,7 @@ MATRIX_Matrix *YAMLLOADER_parse_transform(char *data) {
   assert(data);
   MATRIX_Matrix *mat = MATRIX_new_identity(4);
   char *current_line = data;
-  while(current_line) {
+  while(current_line && (strncmp("material:", ltrim(current_line), 9) != 0)) {
     char *next_line = strchr(current_line, '\n');
     if (next_line) {
       *next_line = '\0';
@@ -248,15 +248,26 @@ void YAMLLOADER_parse_shape_info(SHAPE_Shape *shape, char *buffer) {
     return;
   }
   char *next_line = NULL;
-  if (strncmp("transform:", ltrim(buffer), 10) == 0 && (next_line = strchr(buffer, ':'))) {
-      MATRIX_Matrix* transform = YAMLLOADER_parse_transform(next_line + 1);
-      SHAPE_set_transform(shape, transform);
-      MATRIX_delete(transform);
-  } else {
+  char *transform_txt = strstr(buffer, "transform:");
+  char *material_txt = strstr(buffer, "material:");
+
+  if (transform_txt && (next_line = strchr(transform_txt, ':'))) {
+  MATRIX_Matrix* transform = YAMLLOADER_parse_transform(next_line + 1);
+    SHAPE_set_transform(shape, transform);
+    MATRIX_delete(transform);
+  }
+
+  if (material_txt && (next_line = strchr(material_txt, ':'))) {
+    MATERIAL_Material *material = MATERIAL_parse_material(next_line + 1);
+    SHAPE_set_material(shape, material);
+    MATERIAL_delete(material);
+  }
+  /* TODO What are the failure modes here?
+   * else {
     LOGGER_log(LOGGER_ERROR, "Error parsing shape information (%s)\n", buffer);
     Throw(E_PARSE_FAILED);
     return;
-  }
+  } */
 }
 
 static void create_object(char *type, char *buffer, CONFIGURATION_Config *config) {
