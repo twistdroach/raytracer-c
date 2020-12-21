@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <cube.h>
+#include <plane.h>
 #include <logger.h>
 #include <string.h>
 #include <world.h>
@@ -290,6 +291,10 @@ static void create_object(char *type, char *buffer, CONFIGURATION_Config *config
     SPHERE_Sphere *sphere = SPHERE_new();
     YAMLLOADER_parse_shape_info(sphere, buffer);
     WORLD_add_object(config->world, sphere);
+  } else if (strcmp("plane", type) == 0) {
+    PLANE_Plane *plane = PLANE_new();
+    YAMLLOADER_parse_shape_info(plane, buffer);
+    WORLD_add_object(config->world, plane);
   } else {
     LOGGER_log(LOGGER_ERROR, "Unknown type found when parsing: %s\n", type);
     free(buffer);

@@ -9,8 +9,8 @@
 # =========================================================
 
 - add: camera
-  width: 400
-  height: 160
+  width: 1920
+  height: 1080
   field-of-view: 0.7854
   from: [-3, 1, 2.5]
   to: [0, 0.5, 0]
@@ -29,15 +29,15 @@
 # up in reflections as a physical thing. Naturally, the cube must
 # opt out of shadow tests...
 - add: cube
+  transform:
+    - [ scale, 1, 1, 0.01 ]
+    - [ translate, 0, 3, 4 ]
   material:
+    shadow: false
     color: [1.5, 1.5, 1.5]
     ambient: 1
     diffuse: 0
     specular: 0
-  transform:
-    - [ scale, 1, 1, 0.01 ]
-    - [ translate, 0, 3, 4 ]
-  shadow: false
 
 - add: plane
   material:
