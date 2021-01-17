@@ -19,6 +19,7 @@ ARRLIST_List *ARRLIST_new() {
   ARRLIST_List *list = malloc(sizeof(ARRLIST_List));
   if (!list) {
     Throw(E_MALLOC_FAILED);
+      return NULL;
   }
   list->items = NULL;
   list->count = 0;

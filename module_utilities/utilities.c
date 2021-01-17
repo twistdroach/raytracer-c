@@ -95,6 +95,7 @@ char* UTILITIES_concat(const char *s1, const char *s2) {
   char *result = malloc(strlen(s1) + strlen(s2) + 1);
   if (!result) {
     Throw(E_MALLOC_FAILED);
+    return NULL;
   }
   strcpy(result, s1);
   strcat(result, s2);
